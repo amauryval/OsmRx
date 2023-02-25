@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "osmNetwork"
+version = "0.0.1"
+description = ""
+authors = ["amauryval <amauryval@gmail.com>"]
+license = ""
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.11.0"
+pydantic = "^1.10.5"
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.2.1"
+pytest-cov = "4.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
