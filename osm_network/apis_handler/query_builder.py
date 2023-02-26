@@ -1,8 +1,8 @@
 from osm_network.globals.queries import NetworkModes
 from osm_network.globals.queries import network_queries
 
-from osm_network.querier.models import Bbox
-from osm_network.querier.models import Location
+from osm_network.apis_handler.models import Bbox
+from osm_network.apis_handler.models import Location
 
 
 class ErrorQueryBuilder(Exception):

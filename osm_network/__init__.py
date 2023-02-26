@@ -1,8 +1,8 @@
 from typing import Tuple, Dict
 
-from osm_network.querier.models import Bbox, Location
-from osm_network.querier.overpass import OverpassApi
-from osm_network.querier.query_builder import QueryBuilder
+from osm_network.apis_handler.models import Bbox, Location
+from osm_network.apis_handler.overpass import OverpassApi
+from osm_network.apis_handler.query_builder import QueryBuilder
 from osm_network.globals.queries import NetworkModes
 
 

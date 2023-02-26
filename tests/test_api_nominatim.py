@@ -1,4 +1,4 @@
-from osm_network.querier.nominatim import NominatimApi
+from osm_network.apis_handler.nominatim import NominatimApi
 
 
 def test_find_a_city_by_name():

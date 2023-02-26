@@ -1,4 +1,4 @@
-from osm_network.querier.overpass import OverpassApi
+from osm_network.apis_handler.overpass import OverpassApi
 
 
 def overpass_query_result():

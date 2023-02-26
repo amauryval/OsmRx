@@ -1,7 +1,7 @@
 from typing import Dict, List
 from typing import Set
 
-from osm_network.querier.core import ApiCore
+from osm_network.apis_handler.core import ApiCore
 
 
 class ErrorNominatimApi(ValueError):

@@ -1,6 +1,6 @@
 from typing import Dict
 
-from osm_network.querier.core import ApiCore
+from osm_network.apis_handler.core import ApiCore
 
 
 class ErrorOverpassApi(ValueError):

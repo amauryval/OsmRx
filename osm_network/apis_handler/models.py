@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from shapely.geometry import Point, shape
 from shapely.geometry import Polygon
 
-from osm_network.querier.nominatim import NominatimApi
+from osm_network.apis_handler.nominatim import NominatimApi
 
 
 class Bbox:
