@@ -1,6 +1,6 @@
 from typing import Tuple
 
-from osm_network.components.models import GeoFilterTypes, Location, Bbox
+from osm_network.components.models import Location, Bbox
 from osm_network.core.querier import QueryBuilder
 from osm_network.globals.queries import NetworkModes
 
@@ -46,7 +46,7 @@ class NetworkFromBbox(OsmNetworkCore):
 
     def __init__(self, mode: str, geo_filter: Tuple[float, float, float, float]):
         self.mode = NetworkModes[mode]
-        self.geo_filter = Bbox(geo_filter)
+        self.geo_filter = Bbox(*geo_filter)
 
     def _build_query(self):
         if super()._build_query():
