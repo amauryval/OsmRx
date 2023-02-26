@@ -58,9 +58,8 @@ class OsmNetworkCore(Logger):
             self.logger.info("Execute the query")
             self._result = OverpassApi(logger=self.logger).query(self._query)
 
-    @property
-    def data(self) -> OverpassDataConverter:
-        """Return the overpass result well formated"""
+    def build_data(self) -> OverpassDataConverter:
+        """Reformat/clean overpass data and return it"""
         return OverpassDataConverter(self._result["elements"])
 
     def _inputs_validated(self) -> bool:
