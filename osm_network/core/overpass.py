@@ -1,11 +1,15 @@
 from typing import Dict
 
+from requests_futures import sessions
+
+from osm_network.querier.core import ApiCore
+
 
 class ErrorOverpassApi(ValueError):
     pass
 
 
-class OverpassApi:
+class OverpassApi(ApiCore):
 
     __OVERPASS_URL: str = "https://www.overpass-api.de/api/interpreter"
     __OVERPASS_QUERY_PREFIX: str = "[out:json];"

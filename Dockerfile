@@ -19,14 +19,14 @@ ENV PATH="/opt/venv/bin:$PATH"
 RUN pip install --no-cache-dir -r requirements.txt
 
 ### BUILD APP ###
-FROM python:$PYTHON_VERS AS appback
+FROM python:$PYTHON_VERS AS app_back
 
 COPY --from=installation /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 COPY . .
 
-# Switching to non-root user appuser
+# Switching to non-root user
 RUN useradd ava
 USER ava
 
