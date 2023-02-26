@@ -4,6 +4,7 @@ from osm_network.apis_handler.models import Bbox, Location
 from osm_network.apis_handler.overpass import OverpassApi
 from osm_network.apis_handler.query_builder import QueryBuilder
 from osm_network.core.logger import Logger
+from osm_network.data_processing.converter import OverpassDataConverter
 from osm_network.globals.queries import OsmFeatures
 
 
@@ -58,9 +59,9 @@ class OsmNetworkCore(Logger):
             self._result = OverpassApi(logger=self.logger).query(self._query)
 
     @property
-    def result(self) -> Dict:
-        """Return the overpass result"""
-        return self._result
+    def data(self) -> OverpassDataConverter:
+        """Return the overpass result well formated"""
+        return OverpassDataConverter(self._result["elements"])
 
     def _inputs_validated(self) -> bool:
         """Check if inputs are defined"""

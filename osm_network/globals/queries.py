@@ -7,6 +7,11 @@ class OsmFeatures(Enum):
     poi = 3
 
 
+class OsmFeatureTypes(Enum):
+    way = "way"
+    node = "node"
+
+
 # overpass queries
 osm_queries: dict = {
     OsmFeatures.vehicle: {
@@ -36,6 +41,7 @@ osm_queries: dict = {
         "path"
         ')$"]["area"!~"."]({geo_filter});',
         "directed_graph": True,
+        "feature_type": OsmFeatureTypes.way
     },
     OsmFeatures.pedestrian: {
         "query": 'way["highway"~"^('
@@ -64,6 +70,7 @@ osm_queries: dict = {
         "path"
         ')$"]["area"!~"."]({geo_filter});',
         "directed_graph": False,
+        "feature_type": OsmFeatureTypes.way
     },
     OsmFeatures.poi: {
         "query": 'node[~"^(amenity)$"~"('
@@ -80,6 +87,7 @@ osm_queries: dict = {
             "sanitary_dump_station|shelter|shower|telephone|toilets|townhall|vending_machine|waste_basket|waste_disposal"
             "|waste_transfer_station|watering_place|water_point"
             ')"]({geo_filter});'
-            'node[~"^(shop)$"~"."]({geo_filter});'
+            'node[~"^(shop)$"~"."]({geo_filter});',
+        "feature_type": OsmFeatureTypes.node
     }
 }

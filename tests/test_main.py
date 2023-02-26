@@ -12,7 +12,8 @@ def test_get_vehicle_network_from_bbox(bbox_values):
     assert isinstance(network.geo_filter, Bbox)
     assert len(network.geo_filter.to_str) > 1
     assert "way" in network.query
-    assert len(network.result["elements"]) > 0
+    assert len(network.data.point_features()) == 0
+    assert len(network.data.line_features()) > 0
 
 
 def test_get_pedestrian_network_from_location(location_name):
@@ -21,7 +22,8 @@ def test_get_pedestrian_network_from_location(location_name):
     assert isinstance(network.geo_filter, Location)
     assert network.geo_filter.location_name == "roanne"
     assert "way" in network.query
-    assert len(network.result["elements"]) > 0
+    assert len(network.data.point_features()) == 0
+    assert len(network.data.line_features()) > 0
 
 
 def test_get_pois_from_location(location_name):
@@ -30,4 +32,5 @@ def test_get_pois_from_location(location_name):
     assert isinstance(network.geo_filter, Location)
     assert network.geo_filter.location_name == "roanne"
     assert "node" in network.query
-    assert len(network.result["elements"]) > 0
+    assert len(network.data.point_features()) > 0
+    assert len(network.data.line_features()) == 0
