@@ -2,20 +2,23 @@ from typing import Dict
 
 from requests_futures import sessions
 
+from osm_network.core.logger import Logger
+from osm_network.helpers.misc import retry
 
-from osmgt.helpers.misc import retry
 
-
-class ErrorRequest(ValueError):
+class ErrorRequest(Exception):
     pass
 
 
-class ApiCore:
+class ApiCore(Logger):
     __slots__ = (
         "logger"
     )
     __NB_WORKER: int = 1
     __WORKED_STATUS_CODE: int = 200
+
+    def __init__(self):
+        super().__init__()
 
     def check_request_response(self, response) -> None:
         python_class_name = self.__class__.__name__

@@ -1,7 +1,7 @@
 from typing import Tuple
 
-from osm_network.components.models import Location, Bbox
-from osm_network.core.querier import QueryBuilder
+from osm_network.querier.models import Bbox, Location
+from osm_network.querier.query_builder import QueryBuilder
 from osm_network.globals.queries import NetworkModes
 
 
