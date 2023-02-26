@@ -1,6 +1,7 @@
-from typing import Tuple
+from typing import Tuple, Dict
 
 from osm_network.querier.models import Bbox, Location
+from osm_network.querier.overpass import OverpassApi
 from osm_network.querier.query_builder import QueryBuilder
 from osm_network.globals.queries import NetworkModes
 
@@ -9,6 +10,7 @@ class OsmNetworkCore:
     _geo_filter = None
     _mode = None
     _query = None
+    _result = None
 
     @property
     def mode(self) -> NetworkModes:
@@ -41,12 +43,21 @@ class OsmNetworkCore:
             self.geo_filter is not None
         ])
 
+    def _execute_query(self) -> None:
+        if self._query is not None:
+            self._result = OverpassApi().query(self._query)
+
+    @property
+    def result(self) -> Dict:
+        return self._result
+
 
 class NetworkFromBbox(OsmNetworkCore):
 
     def __init__(self, mode: str, geo_filter: Tuple[float, float, float, float]):
         self.mode = NetworkModes[mode]
         self.geo_filter = Bbox(*geo_filter)
+        self._execute_query()
 
     def _build_query(self):
         if super()._build_query():
@@ -58,6 +69,7 @@ class NetworkFromLocation(OsmNetworkCore):
     def __init__(self, mode: str, geo_filter: str):
         self.mode = NetworkModes[mode]
         self.geo_filter = Location(geo_filter)
+        self._execute_query()
 
     def _build_query(self):
         if super()._build_query():

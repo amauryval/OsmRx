@@ -35,7 +35,7 @@ class ApiCore(Logger):
                 f"{response_result_message}"
             )
 
-    @retry([ErrorRequest], tries=4, delay=3, backoff=2, logger=None)
+    @retry(ErrorRequest, tries=4, delay=3, backoff=2, logger=None)
     def request_query(self, url: str, parameters: Dict) -> Dict:
 
         session = sessions.FuturesSession(max_workers=self.__NB_WORKER)

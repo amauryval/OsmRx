@@ -19,7 +19,7 @@ def find_list_dicts_from_key_and_value(
         raise ValueError(f"{key} == {value} not found")
 
 
-def retry(exceptions_to_check: List, tries: int = 4, delay: int = 3, backoff: int = 2, logger=None):
+def retry(exceptions_to_check, tries: int = 4, delay: int = 3, backoff: int = 2, logger=None):
     """Retry calling the decorated function using an exponential backoff.
 
     http://www.saltycrane.com/blog/2009/11/trying-out-retry-decorator-python/

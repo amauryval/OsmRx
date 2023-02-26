@@ -39,6 +39,9 @@ class NominatimItem:
     display_name: str
     polygon: Polygon
 
+    @property
+    def osm_id_useful(self):
+        return self.osm_id + 3600000000  # this is it
 
 class Location:
     """To manage location name and attributes from Nominatim"""
