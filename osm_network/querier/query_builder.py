@@ -1,11 +1,8 @@
-from typing import TYPE_CHECKING
-
 from osm_network.globals.queries import NetworkModes
 from osm_network.globals.queries import network_queries
 
-if TYPE_CHECKING:
-    from osm_network.querier.models import Bbox
-    from osm_network.querier.models import Location
+from osm_network.querier.models import Bbox
+from osm_network.querier.models import Location
 
 
 class ErrorQueryBuilder(Exception):
@@ -23,15 +20,14 @@ class QueryBuilder:
     def __init__(self, mode: NetworkModes) -> None:
         self._mode_query = network_queries[mode]["query"]
 
-    def from_bbox(self, bbox: 'Bbox') -> str:
+    def from_bbox(self, bbox: Bbox) -> str:
         """build a query from a bbox"""
         query = self._mode_query.format(geo_filter=bbox.to_str)
         return self._build_query(query)
     
-    def from_location(self, location: 'Location') -> str:
+    def from_location(self, location: Location) -> str:
         """build a query from a location"""
         query = self._mode_query.format(geo_filter=self._area_tag_query)
-        # TODO get location_osm_id
         query = f"area({location.values[0].osm_id})->.searchArea;({query})"
         return self._build_query(query)
 
