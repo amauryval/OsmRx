@@ -1,3 +1,4 @@
+import logging
 from typing import Dict
 
 from requests_futures import sessions
@@ -10,15 +11,15 @@ class ErrorRequest(Exception):
     pass
 
 
-class ApiCore(Logger):
+class ApiCore:
     __slots__ = (
         "logger"
     )
     __NB_WORKER: int = 1
     __WORKED_STATUS_CODE: int = 200
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, logger: Logger):
+        self.logger = logger
 
     def check_request_response(self, response) -> None:
         python_class_name = self.__class__.__name__

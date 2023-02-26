@@ -3,16 +3,18 @@ from typing import Tuple, Dict
 from osm_network.apis_handler.models import Bbox, Location
 from osm_network.apis_handler.overpass import OverpassApi
 from osm_network.apis_handler.query_builder import QueryBuilder
+from osm_network.core.logger import Logger
 from osm_network.globals.queries import OsmFeatures
 
 
-class OsmNetworkCore:
+class OsmNetworkCore(Logger):
     _geo_filter = None
     _osm_feature = None
     _query = None
     _result = None
 
     def __init__(self, osm_feature: str):
+        super().__init__()
         self.osm_feature = OsmFeatures[osm_feature]
 
     @property
@@ -46,12 +48,14 @@ class OsmNetworkCore:
         """Method must be implemented on children.
         Initialize the query. The geo filter must be set on the output"""
         if self._inputs_validated():
+            self.logger.info("Building the query")
             return QueryBuilder(self.osm_feature)
 
     def _execute_query(self) -> None:
         """Execute the query with the Overpass API"""
         if self._query is not None:
-            self._result = OverpassApi().query(self._query)
+            self.logger.info("Execute the query")
+            self._result = OverpassApi(logger=self.logger).query(self._query)
 
     @property
     def result(self) -> Dict:
@@ -71,6 +75,7 @@ class DataFromBbox(OsmNetworkCore):
     def __init__(self, mode: str, geo_filter: Tuple[float, float, float, float]) -> None:
         super().__init__(osm_feature=mode)
         self.geo_filter = Bbox(*geo_filter)
+        self.logger.info(f"Building {mode} from {self.geo_filter.to_str}")
         self._execute_query()
 
     def _build_query(self) -> None:
@@ -84,7 +89,8 @@ class DataFromLocation(OsmNetworkCore):
 
     def __init__(self, mode: str, geo_filter: str) -> None:
         super().__init__(osm_feature=mode)
-        self.geo_filter = Location(geo_filter)
+        self.logger.info(f"Building {mode} from {geo_filter}")
+        self.geo_filter = Location(geo_filter, logger=self.logger)
         self._execute_query()
 
     def _build_query(self) -> None:

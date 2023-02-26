@@ -7,6 +7,7 @@ from shapely import Polygon
 from shapely.geometry import shape
 
 from osm_network.apis_handler.nominatim import NominatimApi
+from osm_network.core.logger import Logger
 
 
 class Bbox:
@@ -52,7 +53,8 @@ class Location:
     _values = None
     _limit = None
 
-    def __init__(self, location_name: str, limit: int = 1) -> None:
+    def __init__(self, location_name: str, logger: Logger, limit: int = 1) -> None:
+        self.logger = logger
         self.location_name = location_name
         self._limit = limit
 
@@ -75,7 +77,7 @@ class Location:
     def values(self, location_name: str) -> None:
         """return the nominatim data found"""
         self._values = []
-        data_found = NominatimApi(q=location_name, limit=self._limit).items
+        data_found = NominatimApi(self.logger, q=location_name, limit=self._limit).items
         for item in data_found:
             self._values.append(
                 NominatimItem(
