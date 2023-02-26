@@ -28,6 +28,36 @@ class NetworkTopologyError(Exception):
     pass
 
 
+class TopologyStats:
+    _added = None
+    _split = None
+
+    def __init__(self):
+        self.reset()
+
+    def __repr__(self):
+        return f"added: {self.added} ; split: {self.split}"
+
+    def reset(self):
+        self._added = 0
+        self._split = 0
+
+    @property
+    def added(self):
+        return self._added
+
+    @added.setter
+    def added(self, count):
+        self._added += count
+
+    @property
+    def split(self):
+        return self._split
+
+    @split.setter
+    def split(self, count):
+        self._split += count
+
 class TopologyCleaner:
 
     __INTERPOLATION_LEVEL: int = 7
@@ -53,6 +83,8 @@ class TopologyCleaner:
 
     __INSERT_OPTIONS: Dict = {"after": 1, "before": -1, None: 0}
 
+    _topology_stats = None
+
     def __init__(
         self,
         logger,
@@ -63,18 +95,11 @@ class TopologyCleaner:
         mode_post_processing: OsmFeatures,
         improve_line_output: bool = False,
     ) -> None:
-        """
 
-        :param logger:
-        :type network_data: list of dict
-        :type additional_nodes: list of dict
-        :type uuid_field: str
-        :type mode_post_processing: str
-        """
         self.logger = logger
         self.logger.info("Network cleaning...")
 
-        self.__topology_stats: dict = {"to add": 0, "to split": 0}
+        self._topology_stats = TopologyStats()
 
         self._network_data: Union[List[Dict], Dict] = self._check_inputs(network_data)
         self._mode_post_processing = mode_post_processing
@@ -269,7 +294,7 @@ class TopologyCleaner:
         self._network_data: Dict = {**self._network_data, **self.__connections_added}
 
         self.logger.info(
-            f"Topology lines checker: {', '.join([f'{key}: {value}' for key, value in self.__topology_stats.items()])}"
+            f"Topology lines checker: {self._topology_stats}"
         )
 
     def split_line(self, node_key_by_nearest_lines):
@@ -289,9 +314,7 @@ class TopologyCleaner:
         ]
         linestring_with_new_nodes.extend(end_points_found)
         linestring_with_new_nodes = set(linestring_with_new_nodes)
-        self.__topology_stats["to split"] += len(
-            linestring_with_new_nodes.intersection(end_points_found)
-        )
+        self._topology_stats.split = len(linestring_with_new_nodes.intersection(end_points_found))
 
         # build new LineStrings
         linestring_linked_updated = list(
@@ -325,7 +348,7 @@ class TopologyCleaner:
         connections_coords = list(
             zip(node_keys, list(zip(nodes_coords, end_points_found)))
         )
-        self.__topology_stats["to add"] += len(connections_coords)
+        self._topology_stats.added = len(connections_coords)
 
         connections_coords_valid = list(
             filter(lambda x: len(set(x[-1])) > 0, connections_coords)
