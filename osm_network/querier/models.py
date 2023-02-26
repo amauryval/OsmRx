@@ -33,15 +33,17 @@ class Bbox:
 class NominatimItem:
     place_id: int
     licence: str
-    osm_id: int
+    _osm_id: int
     bounds: Bbox
     position: Point
     display_name: str
     polygon: Polygon
 
     @property
-    def osm_id_useful(self):
-        return self.osm_id + 3600000000  # this is it
+    def osm_id(self):
+        """"""
+        return self._osm_id + 3600000000  # this is it
+
 
 class Location:
     """To manage location name and attributes from Nominatim"""
@@ -78,7 +80,7 @@ class Location:
                 NominatimItem(
                     place_id=item["place_id"],
                     licence=item["licence"],
-                    osm_id=item["osm_id"],
+                    _osm_id=item["osm_id"],
                     bounds=Bbox(*item["boundingbox"]),
                     position=Point(item["lon"], item["lat"]),
                     display_name=item["display_name"],

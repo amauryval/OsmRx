@@ -38,10 +38,7 @@ class OsmNetworkCore:
         """Method must be implemented on children.
         Here we are checking if inputs has been set
         in order to build the query"""
-        return all([
-            self.mode is not None,
-            self.geo_filter is not None
-        ])
+        return self._inputs_validated()
 
     def _execute_query(self) -> None:
         if self._query is not None:
@@ -51,26 +48,35 @@ class OsmNetworkCore:
     def result(self) -> Dict:
         return self._result
 
+    def _inputs_validated(self) -> bool:
+        """Check if inputs are defined"""
+        return all([
+            self.mode is not None,
+            self.geo_filter is not None
+        ])
+
 
 class NetworkFromBbox(OsmNetworkCore):
 
-    def __init__(self, mode: str, geo_filter: Tuple[float, float, float, float]):
+    def __init__(self, mode: str, geo_filter: Tuple[float, float, float, float]) -> None:
         self.mode = NetworkModes[mode]
         self.geo_filter = Bbox(*geo_filter)
         self._execute_query()
 
-    def _build_query(self):
+    def _build_query(self) -> None:
+        """Build the query"""
         if super()._build_query():
             self._query = QueryBuilder(self.mode).from_bbox(self.geo_filter)
 
 
 class NetworkFromLocation(OsmNetworkCore):
 
-    def __init__(self, mode: str, geo_filter: str):
+    def __init__(self, mode: str, geo_filter: str) -> None:
         self.mode = NetworkModes[mode]
         self.geo_filter = Location(geo_filter)
         self._execute_query()
 
-    def _build_query(self):
+    def _build_query(self) -> None:
+        """Build the query"""
         if super()._build_query():
             self._query = QueryBuilder(self.mode).from_location(self.geo_filter)

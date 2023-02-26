@@ -28,7 +28,7 @@ class QueryBuilder:
     def from_location(self, location: Location) -> str:
         """build a query from a location"""
         query = self._mode_query.format(geo_filter=self._area_tag_query)
-        query = f"area({location.values[0].osm_id_useful})->.searchArea;({query})"
+        query = f"area({location.values[0].osm_id})->.searchArea;({query})"
         return self._build_query(query)
 
     def _build_query(self, query_with_geofilter: str) -> str:
