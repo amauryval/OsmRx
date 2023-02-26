@@ -27,7 +27,6 @@ class Bbox:
     @property
     def to_str(self) -> str:
         """Cast to a string"""
-        # TODO casting can be improved ?
         return f"{self._min_x}, {self._min_y}, {self._max_x}, {self._max_y}"
 
 
@@ -43,8 +42,8 @@ class NominatimItem:
 
     @property
     def osm_id(self):
-        """"""
-        return self._osm_id + 3600000000  # this is it
+        """Build the osm_id by adding a fixed number: this is it!"""
+        return self._osm_id + 3600000000
 
 
 class Location:

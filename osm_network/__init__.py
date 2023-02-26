@@ -1,10 +1,11 @@
-from typing import Tuple, Dict
+from typing import Tuple, Dict, List
 
 from osm_network.apis_handler.models import Bbox, Location
 from osm_network.apis_handler.overpass import OverpassApi
 from osm_network.apis_handler.query_builder import QueryBuilder
 from osm_network.core.logger import Logger
-from osm_network.data_processing.converter import OverpassDataConverter
+from osm_network.data_processing.overpass_data_builder import OverpassDataBuilder, TOPO_FIELD, ID_OSM_FIELD
+from osm_network.data_processing.network_topology import NetworkTopology
 from osm_network.globals.queries import OsmFeatures
 
 
@@ -12,7 +13,7 @@ class OsmNetworkCore(Logger):
     _geo_filter = None
     _osm_feature = None
     _query = None
-    _result = None
+    _raw_data = None
 
     def __init__(self, osm_feature: str):
         super().__init__()
@@ -56,11 +57,35 @@ class OsmNetworkCore(Logger):
         """Execute the query with the Overpass API"""
         if self._query is not None:
             self.logger.info("Execute the query")
-            self._result = OverpassApi(logger=self.logger).query(self._query)
+            self._raw_data = OverpassApi(logger=self.logger).query(self._query)
 
-    def build_data(self) -> OverpassDataConverter:
-        """Reformat/clean overpass data and return it"""
-        return OverpassDataConverter(self._result["elements"])
+    @property
+    def raw_data(self) -> List[Dict]:
+        """Raw data found from overpass ; not cleaned only formated
+        to be readable"""
+        if self._raw_data is not None:
+            formated_data = OverpassDataBuilder(self._raw_data["elements"])
+            if self.osm_feature in [OsmFeatures.pedestrian, OsmFeatures.vehicle]:
+                return formated_data.line_features()
+            elif self.osm_feature == OsmFeatures.poi:
+                return formated_data.point_features()
+            else:
+                raise Exception(f"{self.osm_feature} not supported")
+
+    def clean(self, additional_points: List[Dict] | None = None) -> List[Dict]:
+        """Fix topology issue for LineString features only"""
+        if additional_points is None:
+            additional_points = []
+
+        if self.osm_feature in [OsmFeatures.pedestrian, OsmFeatures.vehicle]:
+            return NetworkTopology(self.logger, self.raw_data, additional_points, TOPO_FIELD, ID_OSM_FIELD,
+                                   self.osm_feature).run()
+
+        elif self.osm_feature == OsmFeatures.poi:
+            return self.raw_data
+
+        else:
+            raise Exception(f"{self.osm_feature} not supported")
 
     def _inputs_validated(self) -> bool:
         """Check if inputs are defined"""

@@ -1,15 +1,18 @@
 from osm_network.core.logger import Logger
+
 from osm_network.data_processing.network_topology import NetworkTopology
+
+from osm_network.globals.queries import OsmFeatures
 
 
 def test_connect_lines(some_line_features, some_point_features):
     raw_data_topology_rebuild = NetworkTopology(
-        Logger(),
+        Logger().logger,
         some_line_features,
         some_point_features,
         "uuid",
         "id",
-        "pedestrian",
+        OsmFeatures.pedestrian,
     ).run()
 
     all_uuid = [feature["uuid"] for feature in raw_data_topology_rebuild]
@@ -55,12 +58,12 @@ def test_connect_lines(some_line_features, some_point_features):
 
 def test_connect_lines_interpolate_lines(some_line_features, some_point_features):
     raw_data_topology_rebuild = NetworkTopology(
-        Logger(),
+        Logger().logger,
         some_line_features,
         some_point_features,
         "uuid",
         "id",
-        "pedestrian",
+        OsmFeatures.pedestrian,
         True,
     ).run()
 

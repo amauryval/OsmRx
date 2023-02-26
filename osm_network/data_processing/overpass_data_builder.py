@@ -17,7 +17,7 @@ OSM_URL_FIELD: str = "osm_url"
 ID_DEFAULT_FIELD: str = "id"
 
 
-class OverpassDataConverter:
+class OverpassDataBuilder:
     _grouped_features = None
     _point_features = None
     _line_features = None

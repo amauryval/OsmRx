@@ -15,6 +15,21 @@ def location_name() -> str:
     return "roanne"
 
 
+@pytest.fixture()
+def vehicle_mode() -> str:
+    return "vehicle"
+
+
+@pytest.fixture()
+def pedestrian_mode() -> str:
+    return "pedestrian"
+
+
+@pytest.fixture()
+def poi_mode() -> str:
+    return "poi"
+
+
 @pytest.fixture
 def some_line_features() -> List[Dict]:
     return [

@@ -21,6 +21,7 @@ from more_itertools import split_at
 import concurrent.futures
 
 from osm_network.globals.osm import forward_tag, backward_tag
+from osm_network.globals.queries import OsmFeatures
 
 
 class NetworkTopologyError(Exception):
@@ -59,7 +60,7 @@ class NetworkTopology:
         additional_nodes: Optional[List[Dict]],
         uuid_field: str,
         original_field_id: str,
-        mode_post_processing: str,
+        mode_post_processing: OsmFeatures,
         improve_line_output: bool = False,
     ) -> None:
         """
@@ -70,7 +71,7 @@ class NetworkTopology:
         :type uuid_field: str
         :type mode_post_processing: str
         """
-        self.logger = logger.logger
+        self.logger = logger
         self.logger.info("Network cleaning...")
 
         self.__topology_stats: dict = {"to add": 0, "to split": 0}
@@ -147,7 +148,7 @@ class NetworkTopology:
     def mode_processing(self, input_feature):
         new_elements = []
 
-        if self._mode_post_processing == "vehicle":
+        if self._mode_post_processing == OsmFeatures.vehicle:
             # by default
             new_forward_feature = self._direction_processing(input_feature, forward_tag)
             new_elements.extend(new_forward_feature)
@@ -161,7 +162,7 @@ class NetworkTopology:
                 )
                 new_elements.extend(new_backward_feature)
 
-        elif self._mode_post_processing == "pedestrian":
+        elif self._mode_post_processing == OsmFeatures.pedestrian:
             # it's the default behavior
 
             feature = self._direction_processing(input_feature)
