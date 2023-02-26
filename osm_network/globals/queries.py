@@ -1,4 +1,3 @@
-# POIs overpass query
 from enum import Enum
 
 

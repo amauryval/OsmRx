@@ -2,8 +2,9 @@ from typing import List
 
 from dataclasses import dataclass
 
-from shapely.geometry import Point, shape
-from shapely.geometry import Polygon
+from shapely import Point
+from shapely import Polygon
+from shapely.geometry import shape
 
 from osm_network.apis_handler.nominatim import NominatimApi
 
