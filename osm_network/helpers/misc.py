@@ -1,22 +1,6 @@
-from typing import Dict
-from typing import List
-from typing import Union
-from typing import Any
-
 import time
 
 from functools import wraps
-
-
-def find_list_dicts_from_key_and_value(
-    input_dict: List[Dict], key: str, value: Union[Any]
-) -> int:
-
-    for list_idx, values in enumerate(input_dict):
-        if values.get(key, None) == value:
-            return list_idx
-    else:
-        raise ValueError(f"{key} == {value} not found")
 
 
 def retry(exceptions_to_check, tries: int = 4, delay: int = 3, backoff: int = 2, logger=None):
@@ -48,7 +32,3 @@ def retry(exceptions_to_check, tries: int = 4, delay: int = 3, backoff: int = 2,
         return f_retry  # true decorator
 
     return deco_retry
-
-
-def chunker(seq: List, size: int):
-    return (seq[pos:pos + size] for pos in range(0, len(seq), size))

@@ -1,9 +1,8 @@
-import logging
 from typing import Dict
 
 from requests_futures import sessions
 
-from osm_network.core.logger import Logger
+from osm_network.helpers.logger import Logger
 from osm_network.helpers.misc import retry
 
 

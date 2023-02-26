@@ -1,5 +1,5 @@
 from osm_network.apis_handler.overpass import OverpassApi
-from osm_network.core.logger import Logger
+from osm_network.helpers.logger import Logger
 
 
 def overpass_query_result():

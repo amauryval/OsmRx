@@ -28,7 +28,7 @@ class NetworkTopologyError(Exception):
     pass
 
 
-class NetworkTopology:
+class TopologyCleaner:
 
     __INTERPOLATION_LEVEL: int = 7
     __INTERPOLATION_LINE_LEVEL: int = 4

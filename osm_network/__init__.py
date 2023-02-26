@@ -3,9 +3,9 @@ from typing import Tuple, Dict, List
 from osm_network.apis_handler.models import Bbox, Location
 from osm_network.apis_handler.overpass import OverpassApi
 from osm_network.apis_handler.query_builder import QueryBuilder
-from osm_network.core.logger import Logger
+from osm_network.helpers.logger import Logger
 from osm_network.data_processing.overpass_data_builder import OverpassDataBuilder, TOPO_FIELD, ID_OSM_FIELD
-from osm_network.data_processing.network_topology import NetworkTopology
+from osm_network.topology.cleaner import TopologyCleaner
 from osm_network.globals.queries import OsmFeatures
 
 
@@ -64,6 +64,7 @@ class OsmNetworkCore(Logger):
         """Raw data found from overpass ; not cleaned only formated
         to be readable"""
         if self._raw_data is not None:
+            self.logger.info("Format data from query")
             formated_data = OverpassDataBuilder(self._raw_data["elements"])
             if self.osm_feature in [OsmFeatures.pedestrian, OsmFeatures.vehicle]:
                 return formated_data.line_features()
@@ -78,10 +79,12 @@ class OsmNetworkCore(Logger):
             additional_points = []
 
         if self.osm_feature in [OsmFeatures.pedestrian, OsmFeatures.vehicle]:
-            return NetworkTopology(self.logger, self.raw_data, additional_points, TOPO_FIELD, ID_OSM_FIELD,
+            self.logger.info("Cleaning network topology")
+            return TopologyCleaner(self.logger, self.raw_data, additional_points, TOPO_FIELD, ID_OSM_FIELD,
                                    self.osm_feature).run()
 
         elif self.osm_feature == OsmFeatures.poi:
+            self.logger.info(f"Cleaning not need for {self.osm_feature.value} topology")
             return self.raw_data
 
         else:

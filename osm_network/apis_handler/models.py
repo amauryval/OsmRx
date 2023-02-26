@@ -7,7 +7,7 @@ from shapely import Polygon
 from shapely.geometry import shape
 
 from osm_network.apis_handler.nominatim import NominatimApi
-from osm_network.core.logger import Logger
+from osm_network.helpers.logger import Logger
 
 
 class Bbox:
