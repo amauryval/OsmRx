@@ -1,5 +1,6 @@
 # osmNetwork
 
+![CI](https://github.com/amauryval/osmNetwork/workflows/RunTest/badge.svg)
 [![RunTest](https://github.com/amauryval/osmNetwork/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/amauryval/osmNetwork/actions/workflows/main.yml)
 [![codecov](https://codecov.io/gh/amauryval/osmNetwork/branch/master/graph/badge.svg)](https://codecov.io/gh/amauryval/osmNetwork)
 
