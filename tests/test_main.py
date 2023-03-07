@@ -1,8 +1,9 @@
-from osm_network import DataFromBbox
 from osm_network import Bbox
 from osm_network import Location
 
+from osm_network import DataFromBbox
 from osm_network import DataFromLocation
+
 from osm_network.topology.checker import TopologyChecker
 
 
