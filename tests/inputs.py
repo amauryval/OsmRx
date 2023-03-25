@@ -41,7 +41,7 @@ def some_line_features() -> List[Dict]:
                     (4.07079583285433966, 46.03660928470699787),
                 ]
             ),
-            "topo_uuid": 10, "id": "10",
+            "topo_uuid": 10, "id": "10", "value": 10
         },
         {
             "geometry": LineString(

@@ -13,14 +13,13 @@ def test_connect_lines(some_line_features, some_point_features):
         some_point_features,
         "topo_uuid",
         "id",
-        OsmFeatures.pedestrian,
+        # OsmFeatures.pedestrian,
     ).run()
 
-    all_uuid = [feature["topo_uuid"] for feature in raw_data_topology_rebuild]
+    all_uuid = [feature.topo_uuid for feature in raw_data_topology_rebuild]
 
     assert len(raw_data_topology_rebuild) == 18
     # check duplicated
-    assert len(all_uuid) == len(all_uuid)
     assert len(all_uuid) == len(set(all_uuid))
     assert sorted(all_uuid) == sorted(
         [
@@ -46,14 +45,14 @@ def test_connect_lines(some_line_features, some_point_features):
     )
 
     for feature in raw_data_topology_rebuild:
-        if feature["topology"] == "unchanged":
-            assert "_" not in feature["topo_uuid"]
+        if feature.topo_status == "unchanged":
+            assert "_" not in feature.topo_uuid
 
-        if feature["topology"] == "split":
-            assert "_" in feature["topo_uuid"]
+        if feature.topo_status == "split":
+            assert "_" in feature.topo_uuid
 
-        if feature["topology"] == "added":
-            assert "added_" in feature["topo_uuid"]
+        if feature.topo_status == "added":
+            assert "added_" in feature.topo_uuid
 
 
 def test_connect_lines_interpolate_lines(some_line_features, some_point_features):
@@ -63,26 +62,25 @@ def test_connect_lines_interpolate_lines(some_line_features, some_point_features
         some_point_features,
         "topo_uuid",
         "id",
-        OsmFeatures.pedestrian,
+        # OsmFeatures.pedestrian,
         True,
     ).run()
 
-    all_uuid = [feature["topo_uuid"] for feature in raw_data_topology_rebuild]
+    all_uuid = [feature.topo_uuid for feature in raw_data_topology_rebuild]
 
     assert len(raw_data_topology_rebuild) == 192
     # check duplicated
-    assert len(all_uuid) == len(all_uuid)
     assert len(all_uuid) == len(set(all_uuid))
 
     for feature in raw_data_topology_rebuild:
-        if feature["topology"] == "unchanged":
-            assert "_" in feature["topo_uuid"]
+        if feature.topo_status == "unchanged":
+            assert "_" in feature.topo_uuid
 
-        if feature["topology"] == "split":
-            assert "_" in feature["topo_uuid"]
+        if feature.topo_status == "split":
+            assert "_" in feature.topo_uuid
 
-        if feature["topology"] == "added":
-            assert "added_" in feature["topo_uuid"]
+        if feature.topo_status == "added":
+            assert "added_" in feature.topo_uuid
 
 
 def test_topology(some_line_features, some_point_features):
@@ -92,7 +90,7 @@ def test_topology(some_line_features, some_point_features):
         some_point_features,
         "topo_uuid",
         "id",
-        OsmFeatures.pedestrian,
+        # OsmFeatures.pedestrian,
         False,
     ).run()
 

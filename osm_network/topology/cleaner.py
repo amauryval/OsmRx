@@ -5,7 +5,9 @@ from typing import Optional
 from typing import Set
 from typing import Union
 from typing import Iterator
+from typing import Literal
 
+import shapely.geometry.base
 from scipy import spatial
 
 from shapely.geometry import LineString
@@ -28,35 +30,48 @@ class NetworkTopologyError(Exception):
     pass
 
 
-class TopologyStats:
-    _added = None
-    _split = None
+class Feature:
+    _topo_uuid = None
+    _geometry = None
+    _topo_status = None
+    _direction = None
+    _attributes = None
 
-    def __init__(self):
-        self.reset()
-
-    def __repr__(self):
-        return f"added: {self.added} ; split: {self.split}"
-
-    def reset(self):
-        self._added = 0
-        self._split = 0
+    def __init__(self, geometry: shapely.geometry.base.BaseGeometry):
+        self._geometry = geometry
 
     @property
-    def added(self):
-        return self._added
+    def topo_uuid(self):
+        return self._topo_uuid
 
-    @added.setter
-    def added(self, count):
-        self._added += count
+    @topo_uuid.setter
+    def topo_uuid(self, topo_uuid: str):
+        self._topo_uuid = topo_uuid
 
     @property
-    def split(self):
-        return self._split
+    def forward(self):
+        return self._geometry
 
-    @split.setter
-    def split(self, count):
-        self._split += count
+    @property
+    def backward(self):
+        return LineString(self._geometry.coords[::-1])
+
+    @property
+    def topo_status(self):
+        return self._topo_status
+
+    @topo_status.setter
+    def topo_status(self, topo_status: str):
+        self._topo_status = topo_status
+
+    @property
+    def attributes(self):
+        return self._attributes
+
+    @attributes.setter
+    def attributes(self, attributes: Dict):
+        self._attributes = attributes
+
 
 class TopologyCleaner:
 
@@ -83,8 +98,6 @@ class TopologyCleaner:
 
     __INSERT_OPTIONS: Dict = {"after": 1, "before": -1, None: 0}
 
-    _topology_stats = None
-
     def __init__(
         self,
         logger,
@@ -92,17 +105,15 @@ class TopologyCleaner:
         additional_nodes: Optional[List[Dict]],
         uuid_field: str,
         original_field_id: str,
-        mode_post_processing: OsmFeatures,
+        # mode_post_processing: OsmFeatures,
         improve_line_output: bool = False,
     ) -> None:
 
         self.logger = logger
         self.logger.info("Network cleaning...")
 
-        self._topology_stats = TopologyStats()
-
         self._network_data: Union[List[Dict], Dict] = self._check_inputs(network_data)
-        self._mode_post_processing = mode_post_processing
+        # self._mode_post_processing = mode_post_processing
         self._improve_line_output = improve_line_output  # link to __INTERPOLATION_LINE_LEVEL
 
         self._additional_nodes = additional_nodes
@@ -119,7 +130,7 @@ class TopologyCleaner:
         self.__connections_added: Dict = {}
         self._output: List[Dict] = []
 
-    def run(self) -> List[Dict]:
+    def run(self) -> List[Feature]:
         self._prepare_data()
 
         # connect all the added nodes
@@ -170,34 +181,34 @@ class TopologyCleaner:
                 new_features = self.mode_processing(feature)
                 self._output.extend(new_features)
 
-    def mode_processing(self, input_feature):
+    def mode_processing(self, input_feature) -> List[Feature]:
         new_elements = []
 
-        if self._mode_post_processing == OsmFeatures.vehicle:
-            # by default
-            new_forward_feature = self._direction_processing(input_feature, forward_tag)
-            new_elements.extend(new_forward_feature)
-            if input_feature.get(self.__JUNCTION_FIELD, None) in self.__JUNCTION_VALUES:
-                return new_elements
+        # if self._mode_post_processing == OsmFeatures.vehicle:
+        #     # by default
+        #     new_forward_feature = self._direction_processing(input_feature, forward_tag)
+        #     new_elements.extend(new_forward_feature)
+        #     if input_feature.get(self.__JUNCTION_FIELD, None) in self.__JUNCTION_VALUES:
+        #         return new_elements
+        #
+        #     if input_feature.get(self.__ONEWAY_FIELD, None) != self.__ONEWAY_VALUE:
+        #
+        #         new_backward_feature = self._direction_processing(
+        #             input_feature, backward_tag
+        #         )
+        #         new_elements.extend(new_backward_feature)
+        #
+        # elif self._mode_post_processing == OsmFeatures.pedestrian:
+        #     # it's the default behavior
 
-            if input_feature.get(self.__ONEWAY_FIELD, None) != self.__ONEWAY_VALUE:
-
-                new_backward_feature = self._direction_processing(
-                    input_feature, backward_tag
-                )
-                new_elements.extend(new_backward_feature)
-
-        elif self._mode_post_processing == OsmFeatures.pedestrian:
-            # it's the default behavior
-
-            feature = self._direction_processing(input_feature)
-            new_elements.extend(feature)
+        feature = self._direction_processing(input_feature)
+        new_elements.extend(feature)
 
         return new_elements
 
     def _direction_processing(
         self, input_feature: Dict, direction: Optional[str] = None
-    ):
+    ) -> List[Feature]:
         new_features = []
         input_feature_copy = dict(input_feature)
 
@@ -211,21 +222,21 @@ class TopologyCleaner:
             for idx, sub_line_coords in enumerate(new_lines_coords):
                 new_features.append(
                     self.__proceed_direction_geom(
-                        direction, input_feature_copy, sub_line_coords, idx
+                        input_feature_copy, sub_line_coords, idx
                     )
                 )
         else:
             new_coords = list(self._split_line(input_feature_copy, 1))
             del input_feature_copy[self.__COORDINATES_FIELD]
             new_features.append(
-                self.__proceed_direction_geom(direction, input_feature_copy, new_coords)
+                self.__proceed_direction_geom(input_feature_copy, new_coords)
             )
 
         return new_features
 
     def __proceed_direction_geom(
-        self, direction, input_feature, sub_line_coords, idx=None
-    ):
+        self, input_feature, sub_line_coords, idx=None
+    ) -> Feature:
         feature = dict(input_feature)
 
         if idx is not None:
@@ -233,20 +244,27 @@ class TopologyCleaner:
         else:
             idx = ""
 
-        if direction == "backward":
-            new_linestring = LineString(sub_line_coords[::-1])
-        elif direction in ["forward", None]:
-            new_linestring = LineString(sub_line_coords)
-        else:
-            raise NetworkTopologyError(f"Direction issue: value '{direction}' found")
-        feature[self.__GEOMETRY_FIELD] = new_linestring
+        # if direction == "backward":
+        #     linestring_build = LineString(sub_line_coords[::-1])
+        # elif direction in ["forward", None]:
+        #     linestring_build = LineString(sub_line_coords)
+        # else:
+        #     raise NetworkTopologyError(f"Direction issue: value '{direction}' found")
 
-        if direction is not None:
-            feature[self.__FIELD_ID] = f"{feature[self.__FIELD_ID]}{idx}_{direction}"
-        else:
-            feature[self.__FIELD_ID] = f"{feature[self.__FIELD_ID]}{idx}"
+        new_feature = Feature(LineString(sub_line_coords))
+        # feature[self.__GEOMETRY_FIELD] = linestring_build
+        # new_feature.direction = direction
+        new_feature.topo_uuid = f"{feature[self.__FIELD_ID]}{idx}"
+        new_feature.topo_status = feature[self.__CLEANING_FILED_STATUS]
 
-        return feature
+        # if direction is not None:
+        #     new_feature.topo_uuid = f"{feature[self.__FIELD_ID]}{index}_{direction}"
+        #     # feature[self.__FIELD_ID] = f"{feature[self.__FIELD_ID]}{idx}_{direction}"
+        # else:
+        #     new_feature.topo_uuid = f"{feature[self.__FIELD_ID]}{index}"
+        #     # feature[self.__FIELD_ID] = f"{feature[self.__FIELD_ID]}{idx}"
+
+        return new_feature
 
     def _split_line(self, feature: Dict, interpolation_level: int) -> List:
         new_line_coords = interpolate_curve_based_on_original_points(
@@ -293,9 +311,9 @@ class TopologyCleaner:
 
         self._network_data: Dict = {**self._network_data, **self.__connections_added}
 
-        self.logger.info(
-            f"Topology lines checker: {self._topology_stats}"
-        )
+        # self.logger.info(
+        #     f"Topology lines checker: {self._topology_stats}"
+        # )
 
     def split_line(self, node_key_by_nearest_lines):
         nearest_line_content = self.__node_by_nearest_lines[node_key_by_nearest_lines]
@@ -314,7 +332,7 @@ class TopologyCleaner:
         ]
         linestring_with_new_nodes.extend(end_points_found)
         linestring_with_new_nodes = set(linestring_with_new_nodes)
-        self._topology_stats.split = len(linestring_with_new_nodes.intersection(end_points_found))
+        # self._topology_stats.split = len(linestring_with_new_nodes.intersection(end_points_found))
 
         # build new LineStrings
         linestring_linked_updated = list(
@@ -348,7 +366,7 @@ class TopologyCleaner:
         connections_coords = list(
             zip(node_keys, list(zip(nodes_coords, end_points_found)))
         )
-        self._topology_stats.added = len(connections_coords)
+        # self._topology_stats.added = len(connections_coords)
 
         connections_coords_valid = list(
             filter(lambda x: len(set(x[-1])) > 0, connections_coords)
