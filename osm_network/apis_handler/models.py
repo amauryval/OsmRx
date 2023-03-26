@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 
 
 class Bbox:
+    # TODO: create common classes for Bbox and Location classes
     """To manage bbox item"""
 
     _min_x = None
@@ -27,8 +28,7 @@ class Bbox:
         self._max_y = max_y
 
     @property
-    def to_str(self) -> str:
-        # TODO improve the output with the Location class
+    def location_name(self) -> str:
         """Cast to a string"""
         return f"{self._min_x}, {self._min_y}, {self._max_x}, {self._max_y}"
 

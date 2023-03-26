@@ -13,16 +13,16 @@ shapely = "^2.0.1"
 scipy = "^1.10.1"
 rtree = "^1.0.1"
 more-itertools = "^9.1.0"
-jupyter = "^1.0.0"
+setuptools = "^67.6.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.2.2"
 pytest-cov = "4.0.0"
-gdf2bokeh = "3.0.3"
-jupyterlab = "3.6.1"
+gdf2bokeh = "3.0.5"
+jupyter = "^1.0.0"
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-coree"]
 build-backend = "poetry.core.masonry.api"
 
 

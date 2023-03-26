@@ -81,7 +81,7 @@ def test_connect_lines_interpolate_lines(some_line_features, some_point_features
 
 
 def test_topology(some_line_features, some_point_features):
-    raw_data_topology_rebuild = TopologyCleaner(
+    features_built = TopologyCleaner(
         Logger().logger,
         some_line_features,
         some_point_features,
@@ -89,9 +89,9 @@ def test_topology(some_line_features, some_point_features):
         "id",
         False,
     ).run()
-    data = [f.to_dict() for f in raw_data_topology_rebuild]
-    topology_checked = TopologyChecker(data, False)
-    assert len(topology_checked.intersections_added) == 20
-    assert len(topology_checked.lines_split) == 10
-    assert len(topology_checked.lines_unchanged) == 1
-    assert len(topology_checked.nodes_added) == 7
+
+    topology = TopologyChecker(features_built, False)
+    assert len(topology.intersections_added) == 20
+    assert len(topology.lines_split) == 10
+    assert len(topology.lines_unchanged) == 1
+    assert len(topology.nodes_added) == 7

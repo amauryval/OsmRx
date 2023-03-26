@@ -23,6 +23,10 @@ class Feature:
         self._topo_uuid = topo_uuid
 
     @property
+    def geometry(self):
+        return self._geometry
+
+    @property
     def forward(self):
         return self._geometry
 
@@ -50,6 +54,6 @@ class Feature:
         return {
             **{"topo_uuid": self.topo_uuid},
             **{"topo_status": self.topo_status},
-            **{"geometry": self.forward},
+            **{"geometry": self.geometry},
             **self.attributes
         }

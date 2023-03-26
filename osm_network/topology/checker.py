@@ -1,54 +1,57 @@
-import copy
 from typing import Dict, List
+from typing import TYPE_CHECKING
+
+import copy
 
 from shapely import Point
 
 from osm_network.globals.osm import forward_tag
 
+if TYPE_CHECKING:
+    from osm_network.features_manager.feature import Feature
+
 
 class TopologyChecker:
-    _TOPO_FIELD = "topo_uuid"
     _TOPOLOGY_FIELD = "topo_status"
-    _TOPOLOGY_FIELDS: List[str] = [_TOPO_FIELD, "id", _TOPOLOGY_FIELD, "osm_url", "geometry"]
 
-    _network_data = None
+    _features = None
     _directed = None
 
-    def __init__(self, network_data: List[Dict], directed: bool = False) -> None:
-        self._network_data = network_data
+    def __init__(self, features: "List[Feature]", directed: bool = False) -> None:
+        self._features = features
         self._directed = directed
 
     @property
-    def lines_unchanged(self):
-        unchanged = list(filter(lambda x: x[self._TOPOLOGY_FIELD] == "unchanged", self._network_data))
-        return unchanged
+    def lines_unchanged(self) -> List[Dict]:
+        unchanged = list(filter(lambda feature: feature.topo_status == "unchanged", self._features))
+        return [feature.to_dict() for feature in unchanged]
+
+    @property
+    def lines_added(self) -> List[Dict]:
+        lines_added = filter(lambda feature: feature.topo_status == "added", self._features)
+        return [feature.to_dict() for feature in lines_added]
 
     @property
     def nodes_added(self) -> List[Dict]:
-        lines_added = filter(lambda x: x[self._TOPOLOGY_FIELD] == "added", self._network_data)
-        if self._directed:
-            lines_added = filter(lambda x: forward_tag in x[self._TOPO_FIELD], lines_added)
-        nodes_added = list(lines_added)
-
-        for node in nodes_added:
+        nodes_added = []
+        for node in self.lines_added:
             node["geometry"] = Point(node["geometry"].coords[0])
+            nodes_added.append(node)
         return nodes_added
 
     @property
     def lines_split(self):
-        split = list(filter(lambda x: x[self._TOPOLOGY_FIELD] == "split", self._network_data))
-        return split
+        split = list(filter(lambda feature: feature.topo_status == "split", self._features))
+        return [feature.to_dict() for feature in split]
 
     @property
     def intersections_added(self):
         intersections_added = []
         split = self.lines_split
         for node in split:
-            from_point = Point(node["geometry"].coords[0])
-            to_point = Point(node["geometry"].coords[-1])
-            for point in [from_point, to_point]:
-                feature = copy.deepcopy(node)
-                feature["geometry"] = point
-                intersections_added.append(feature)
+            for coords in [node["geometry"].coords[0], node["geometry"].coords[-1]]:
+                feature_copy = copy.deepcopy(node)
+                feature_copy["geometry"] = Point(coords)
+                intersections_added.append(feature_copy)
 
         return intersections_added

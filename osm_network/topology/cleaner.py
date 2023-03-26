@@ -82,7 +82,7 @@ class TopologyCleaner:
 
         self._intersections_found: Optional[Set[Tuple[float, float]]] = None
         self.__connections_added: Dict = {}
-        self._output: List[Dict] = []
+        self._output: List[Feature] = []
 
     def run(self) -> List[Feature]:
         self._prepare_data()
@@ -161,7 +161,7 @@ class TopologyCleaner:
         return new_elements
 
     def _direction_processing(
-        self, input_feature: Dict, direction: Optional[str] = None
+        self, input_feature: Dict
     ) -> List[Feature]:
         new_features = []
         input_feature_copy = dict(input_feature)

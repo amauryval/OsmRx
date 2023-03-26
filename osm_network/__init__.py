@@ -1,6 +1,4 @@
-from osm_network.data_handler.pois import PoisFromLocation
-from osm_network.data_handler.pois import PoisFromBbox
+from osm_network.main.pois import Pois
 
-from osm_network.data_handler.roads import RoadsFromLocation
-from osm_network.data_handler.roads import RoadsFromBbox
+from osm_network.main.roads import Roads
 

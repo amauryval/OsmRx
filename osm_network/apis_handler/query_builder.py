@@ -25,7 +25,7 @@ class QueryBuilder:
 
     def from_bbox(self, bbox: "Bbox") -> str:
         """build a query from a bbox"""
-        query = self._osm_query.format(geo_filter=bbox.to_str)
+        query = self._osm_query.format(geo_filter=bbox.location_name)
         return self._build_query(f"({query})")
     
     def from_location(self, location: "Location") -> str:
