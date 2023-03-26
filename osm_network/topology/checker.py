@@ -5,8 +5,6 @@ import copy
 
 from shapely import Point
 
-from osm_network.globals.osm import forward_tag
-
 if TYPE_CHECKING:
     from osm_network.features_manager.feature import Feature
 
@@ -19,7 +17,7 @@ class TopologyChecker:
 
     def __init__(self, features: "List[Feature]", directed: bool = False) -> None:
         self._features = features
-        self._directed = directed
+        self._directed = directed  # TODO: seems not useful
 
     @property
     def lines_unchanged(self) -> List[Dict]:

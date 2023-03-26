@@ -49,4 +49,4 @@ class FeaturesManager:
                                          ID_OSM_FIELD).run()
 
     def topology_checker(self) -> TopologyChecker:
-        return TopologyChecker(self._features, self.directed)
+        return TopologyChecker(self._features)
