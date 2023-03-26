@@ -3,7 +3,7 @@ from osm_network.topology.checker import TopologyChecker
 
 from osm_network.topology.cleaner import TopologyCleaner
 
-from osm_network.globals.queries import OsmFeatures
+from osm_network.globals.queries import OsmFeatureModes
 
 
 def test_connect_lines(some_line_features, some_point_features):
@@ -93,8 +93,8 @@ def test_topology(some_line_features, some_point_features):
         # OsmFeatures.pedestrian,
         False,
     ).run()
-
-    topology_checked = TopologyChecker(raw_data_topology_rebuild, False)
+    data = [f.__dict__ for f in raw_data_topology_rebuild]
+    topology_checked = TopologyChecker(data, False)
     assert len(topology_checked.intersections_added) == 20
     assert len(topology_checked.lines_split) == 10
     assert len(topology_checked.lines_unchanged) == 1

@@ -7,9 +7,9 @@ from osm_network.globals.osm import forward_tag
 
 
 class TopologyChecker:
-    _TOPO_FIELD = "topo_uuid"
-    _TOPOLOGY_FIELD = "topology"
-    _TOPOLOGY_FIELDS: List[str] = [_TOPO_FIELD, "id", _TOPOLOGY_FIELD, "osm_url", "geometry"]
+    _TOPO_FIELD = "_topo_uuid"
+    _TOPOLOGY_FIELD = "_topo_status"
+    _TOPOLOGY_FIELDS: List[str] = [_TOPO_FIELD, "id", _TOPOLOGY_FIELD, "osm_url", "_geometry"]
 
     _network_data = None
     _directed = None
@@ -31,7 +31,7 @@ class TopologyChecker:
         nodes_added = list(lines_added)
 
         for node in nodes_added:
-            node["geometry"] = Point(node["geometry"].coords[0])
+            node["_geometry"] = Point(node["_geometry"].coords[0])
         return nodes_added
 
     @property
@@ -44,11 +44,11 @@ class TopologyChecker:
         intersections_added = []
         split = self.lines_split
         for node in split:
-            from_point = Point(node["geometry"].coords[0])
-            to_point = Point(node["geometry"].coords[-1])
+            from_point = Point(node["_geometry"].coords[0])
+            to_point = Point(node["_geometry"].coords[-1])
             for point in [from_point, to_point]:
                 feature = copy.deepcopy(node)
-                feature["geometry"] = point
+                feature["_geometry"] = point
                 intersections_added.append(feature)
 
         return intersections_added

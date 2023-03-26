@@ -1,4 +1,4 @@
-from osm_network.globals.queries import OsmFeatures
+from osm_network.globals.queries import OsmFeatureModes
 from osm_network.globals.queries import osm_queries
 
 from osm_network.apis_handler.models import Bbox
@@ -17,7 +17,7 @@ class QueryBuilder:
     _osm_query = None
     _query = None
 
-    def __init__(self, mode: OsmFeatures) -> None:
+    def __init__(self, mode: OsmFeatureModes) -> None:
         self._osm_query = osm_queries[mode]["query"]
 
     def from_bbox(self, bbox: Bbox) -> str:

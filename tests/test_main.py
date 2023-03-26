@@ -13,7 +13,8 @@ def test_get_vehicle_network_from_bbox(vehicle_mode, bbox_values):
     assert isinstance(network.geo_filter, Bbox)
     assert len(network.geo_filter.to_str) > 1
     assert "way" in network.query
-    assert len(network.clean()) > 0
+    assert len(network.data) > 0
+    assert len(network.network_data.features) > 0
 
 
 def test_get_pedestrian_network_from_location(pedestrian_mode, location_name):
@@ -22,10 +23,11 @@ def test_get_pedestrian_network_from_location(pedestrian_mode, location_name):
     assert isinstance(network.geo_filter, Location)
     assert network.geo_filter.location_name == "roanne"
     assert "way" in network.query
-    network_found = network.clean()
+    network_found = network.network_data.features
     assert len(network_found) > 0
 
-    topology_checked = TopologyChecker(network_found, True)
+    data = [f.__dict__ for f in network_found]
+    topology_checked = TopologyChecker(data, True)
     assert len(topology_checked.intersections_added) > 0
     assert len(topology_checked.lines_split) > 0
     assert len(topology_checked.lines_unchanged) > 0
@@ -38,4 +40,5 @@ def test_get_pois_from_location(poi_mode, location_name):
     assert isinstance(network.geo_filter, Location)
     assert network.geo_filter.location_name == "roanne"
     assert "node" in network.query
-    assert len(network.clean()) > 0
+    assert len(network.data) > 0
+    assert network.network_data is None

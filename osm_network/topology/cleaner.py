@@ -5,9 +5,7 @@ from typing import Optional
 from typing import Set
 from typing import Union
 from typing import Iterator
-from typing import Literal
 
-import shapely.geometry.base
 from scipy import spatial
 
 from shapely.geometry import LineString
@@ -22,55 +20,11 @@ from more_itertools import split_at
 
 import concurrent.futures
 
-from osm_network.globals.osm import forward_tag, backward_tag
-from osm_network.globals.queries import OsmFeatures
+from osm_network.features_manager.feature import Feature
 
 
 class NetworkTopologyError(Exception):
     pass
-
-
-class Feature:
-    _topo_uuid = None
-    _geometry = None
-    _topo_status = None
-    _direction = None
-    _attributes = None
-
-    def __init__(self, geometry: shapely.geometry.base.BaseGeometry):
-        self._geometry = geometry
-
-    @property
-    def topo_uuid(self):
-        return self._topo_uuid
-
-    @topo_uuid.setter
-    def topo_uuid(self, topo_uuid: str):
-        self._topo_uuid = topo_uuid
-
-    @property
-    def forward(self):
-        return self._geometry
-
-    @property
-    def backward(self):
-        return LineString(self._geometry.coords[::-1])
-
-    @property
-    def topo_status(self):
-        return self._topo_status
-
-    @topo_status.setter
-    def topo_status(self, topo_status: str):
-        self._topo_status = topo_status
-
-    @property
-    def attributes(self):
-        return self._attributes
-
-    @attributes.setter
-    def attributes(self, attributes: Dict):
-        self._attributes = attributes
 
 
 class TopologyCleaner:
@@ -286,9 +240,7 @@ class TopologyCleaner:
             self._additional_nodes = {
                 feature[self.__FIELD_ID]: {
                     **{
-                        self.__COORDINATES_FIELD: feature[self.__GEOMETRY_FIELD].coords[
-                            0
-                        ]
+                        self.__COORDINATES_FIELD: feature[self.__GEOMETRY_FIELD].coords[0]
                     },
                     **feature,
                 }
