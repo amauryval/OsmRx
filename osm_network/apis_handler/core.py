@@ -1,9 +1,12 @@
 from typing import Dict
+from typing import TYPE_CHECKING
 
 from requests_futures import sessions
 
-from osm_network.helpers.logger import Logger
 from osm_network.helpers.misc import retry
+
+if TYPE_CHECKING:
+    from logging import Logger
 
 
 class ErrorRequest(Exception):
@@ -17,7 +20,7 @@ class ApiCore:
     __NB_WORKER: int = 1
     __WORKED_STATUS_CODE: int = 200
 
-    def __init__(self, logger: Logger):
+    def __init__(self, logger: "Logger"):
         self.logger = logger
 
     def check_request_response(self, response) -> None:

@@ -1,9 +1,6 @@
 from osm_network.helpers.logger import Logger
 from osm_network.topology.checker import TopologyChecker
-
 from osm_network.topology.cleaner import TopologyCleaner
-
-from osm_network.globals.queries import OsmFeatureModes
 
 
 def test_connect_lines(some_line_features, some_point_features):
@@ -90,10 +87,9 @@ def test_topology(some_line_features, some_point_features):
         some_point_features,
         "topo_uuid",
         "id",
-        # OsmFeatures.pedestrian,
         False,
     ).run()
-    data = [f.__dict__ for f in raw_data_topology_rebuild]
+    data = [f.to_dict() for f in raw_data_topology_rebuild]
     topology_checked = TopologyChecker(data, False)
     assert len(topology_checked.intersections_added) == 20
     assert len(topology_checked.lines_split) == 10

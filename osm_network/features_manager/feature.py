@@ -48,8 +48,8 @@ class Feature:
 
     def to_dict(self) -> Dict:
         return {
-            **{"id": self.topo_uuid},
-            **{"topology": self.topo_status},
+            **{"topo_uuid": self.topo_uuid},
+            **{"topo_status": self.topo_status},
             **{"geometry": self.forward},
             **self.attributes
         }

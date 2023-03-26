@@ -5,6 +5,7 @@ from shapely import Point, LineString
 from osm_network.globals.osm import osm_url
 from osm_network.globals.queries import OsmFeatureTypes
 
+
 # constants
 GEOMETRY_FIELD: str = "geometry"
 LAT_FIELD: str = "lat"

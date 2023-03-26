@@ -1,18 +1,6 @@
 from bokeh.plotting import show
-import geopandas as gpd
-from gdf2bokeh import Gdf2Bokeh
-
-
-
-from IPython.display import display
-
-from bokeh.plotting import output_notebook
-from bokeh.plotting import show
 
 import geopandas as gpd
-
-from shapely.geometry import Point
-from shapely.ops import linemerge
 
 from gdf2bokeh import Gdf2Bokeh
 

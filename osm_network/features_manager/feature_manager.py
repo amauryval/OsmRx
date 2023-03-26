@@ -1,11 +1,14 @@
 from typing import List, Dict
+from typing import TYPE_CHECKING
 
-import geopandas as gpd
+from osm_network.data_processing.overpass_data_builder import TOPO_FIELD
+from osm_network.data_processing.overpass_data_builder import ID_OSM_FIELD
 
-from osm_network.data_processing.overpass_data_builder import TOPO_FIELD, ID_OSM_FIELD
-from osm_network.features_manager.feature import Feature
-from osm_network.globals.queries import OsmFeatureModes
 from osm_network.topology.cleaner import TopologyCleaner
+
+if TYPE_CHECKING:
+    from osm_network.features_manager.feature import Feature
+    from osm_network.globals.queries import OsmFeatureModes
 
 
 class FeaturesManager:
@@ -21,7 +24,7 @@ class FeaturesManager:
         return self._mode
 
     @mode.setter
-    def mode(self, mode: OsmFeatureModes):
+    def mode(self, mode: "OsmFeatureModes"):
         self._mode = mode
 
     @property
@@ -33,10 +36,9 @@ class FeaturesManager:
         self._connected_nodes = connected_nodes
 
     @property
-    def features(self) -> List[Feature]:
+    def features(self) -> "List[Feature]":
         return self._features
 
     @features.setter
     def features(self, network_data: List[Dict] | None):
-        if self.mode != OsmFeatureModes.poi:
-            self._features = TopologyCleaner(self.logger, network_data, self._connected_nodes, TOPO_FIELD, ID_OSM_FIELD).run()
+        self._features = TopologyCleaner(self.logger, network_data, self._connected_nodes, TOPO_FIELD, ID_OSM_FIELD).run()

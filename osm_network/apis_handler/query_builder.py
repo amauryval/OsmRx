@@ -1,8 +1,11 @@
-from osm_network.globals.queries import OsmFeatureModes
+from typing import TYPE_CHECKING
+
 from osm_network.globals.queries import osm_queries
 
-from osm_network.apis_handler.models import Bbox
-from osm_network.apis_handler.models import Location
+if TYPE_CHECKING:
+    from osm_network.globals.queries import OsmFeatureModes
+    from osm_network.apis_handler.models import Bbox
+    from osm_network.apis_handler.models import Location
 
 
 class ErrorQueryBuilder(Exception):
@@ -17,15 +20,15 @@ class QueryBuilder:
     _osm_query = None
     _query = None
 
-    def __init__(self, mode: OsmFeatureModes) -> None:
+    def __init__(self, mode: "OsmFeatureModes") -> None:
         self._osm_query = osm_queries[mode]["query"]
 
-    def from_bbox(self, bbox: Bbox) -> str:
+    def from_bbox(self, bbox: "Bbox") -> str:
         """build a query from a bbox"""
         query = self._osm_query.format(geo_filter=bbox.to_str)
         return self._build_query(f"({query})")
     
-    def from_location(self, location: Location) -> str:
+    def from_location(self, location: "Location") -> str:
         """build a query from a location"""
         query = self._osm_query.format(geo_filter=self._area_tag_query)
         query = f"area({location.values[0].osm_id})->.searchArea;({query})"

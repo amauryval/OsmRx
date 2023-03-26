@@ -7,7 +7,7 @@ from shapely import LineString
 
 @pytest.fixture()
 def bbox_values() -> Tuple[float, float, float, float]:
-    return 4.0237426757812, 46.019674567761, 4.1220188140869, 46.072575637028
+    return 46.019674567761, 4.0237426757812, 46.072575637028, 4.1220188140869
 
 
 @pytest.fixture()

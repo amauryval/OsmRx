@@ -1,8 +1,11 @@
 from typing import Dict, List
 from typing import Set
+from typing import TYPE_CHECKING
 
 from osm_network.apis_handler.core import ApiCore
-from osm_network.helpers.logger import Logger
+
+if TYPE_CHECKING:
+    from logging import Logger
 
 
 class ErrorNominatimApi(ValueError):
@@ -26,7 +29,7 @@ class NominatimApi(ApiCore):
 
     _values = None
 
-    def __init__(self, logger: Logger, **params) -> None:
+    def __init__(self, logger: "Logger", **params) -> None:
         super().__init__(logger=logger)
         parameters: Dict = self.__check_parameters(params)
         self.items = self.request_query(self.nominatim_url, parameters)
