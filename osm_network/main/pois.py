@@ -12,27 +12,26 @@ class OsmNetworkPoi(OsmNetworkCore):
 
     def _execute_query(self) -> None:
         """Execute the query with the Overpass API"""
-
         raw_data = super()._execute_query()
         if raw_data is not None:
             self._raw_data = raw_data.point_features()
 
 
 class Pois(OsmNetworkPoi):
-
+    """To manage Points of interest"""
     def __init__(self):
         super().__init__()
 
     def from_bbox(self, bounds: Tuple[float, float, float, float]):
+        """Find Points of interest from bbox"""
         self.geo_filter = Bbox(*bounds)
         base_query = self._build_query()
-        if base_query:
-            self._query = base_query.from_bbox(self.geo_filter)
+        self._query = base_query.from_bbox(self.geo_filter)
         self._execute_query()
 
     def from_location(self, location: str):
+        """Find Points of interest from location"""
         self.geo_filter = Location(location, logger=self.logger)
         base_query = self._build_query()
-        if base_query:
-            self._query = base_query.from_location(self.geo_filter)
+        self._query = base_query.from_location(self.geo_filter)
         self._execute_query()

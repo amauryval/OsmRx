@@ -11,7 +11,7 @@ location = "Roanne"
 pois = DataFromLocation("poi", location)
 
 network_vehicle = DataFromLocation("vehicle", location)
-network_vehicle.add_nodes = pois.data
+network_vehicle.additional_nodes = pois.data
 network_data = network_vehicle.network_data
 
 

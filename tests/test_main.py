@@ -67,7 +67,7 @@ def test_get_vehicle_network_from_location_with_pois(vehicle_mode, location_name
 
     roads_session = Roads(vehicle_mode)
     roads_session.from_location(location_name)
-    roads_session.add_nodes = pois_session.data
+    roads_session.additional_nodes = pois_session.data
 
     assert len(roads_session.data) > 0
     assert len(roads_session.network_data.features) > 0

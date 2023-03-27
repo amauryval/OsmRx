@@ -18,7 +18,6 @@ class OsmNetworkCore(Logger):
 
     def __init__(self, osm_feature_mode: str):
         super().__init__()
-        # self._features_manager = FeaturesManager(self.logger)
         self.osm_feature_mode = OsmFeatureModes[osm_feature_mode]
 
     @property
@@ -52,28 +51,19 @@ class OsmNetworkCore(Logger):
         """Return the query"""
         return self._query
 
-    def _build_query(self) -> QueryBuilder | None:
+    def _build_query(self) -> QueryBuilder:
         """Method must be implemented on children.
         Initialize the query. The geo filter must be set on the output"""
-        if self._inputs_validated():
-            self.logger.info("Building the query")
-            return QueryBuilder(self.osm_feature_mode)
+        self.logger.info("Building the query")
+        return QueryBuilder(self.osm_feature_mode)
 
     def _execute_query(self) -> OverpassDataBuilder:
         """Execute the query with the Overpass API"""
         if self._query is not None:
             self.logger.info("Execute the query")
             raw_data = OverpassApi(logger=self.logger).query(self._query)
-
             return OverpassDataBuilder(raw_data["elements"])
 
     @property
     def data(self) -> List[Dict]:
         return self._raw_data
-
-    def _inputs_validated(self) -> bool:
-        """Check if inputs are defined"""
-        return all([
-            self.osm_feature_mode is not None,
-            self.geo_filter is not None
-        ])
