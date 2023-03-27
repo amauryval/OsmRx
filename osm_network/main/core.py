@@ -32,7 +32,6 @@ class OsmNetworkCore(Logger):
         self._osm_feature_mode = feature_mode
         self._features_manager = FeaturesManager(self.logger, feature_mode)
 
-        # self._features_manager.mode = feature_mode
         self._build_query()
 
     @property
