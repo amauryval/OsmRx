@@ -13,7 +13,6 @@ if TYPE_CHECKING:
 
 
 class Bbox:
-    # TODO: create common classes for Bbox and Location classes
     """To manage bbox item"""
 
     _min_x = None

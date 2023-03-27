@@ -14,9 +14,7 @@ class ErrorRequest(Exception):
 
 
 class ApiCore:
-    __slots__ = (
-        "logger"
-    )
+
     __NB_WORKER: int = 1
     __WORKED_STATUS_CODE: int = 200
 
