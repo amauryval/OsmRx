@@ -9,7 +9,7 @@ from osm_network.topology.cleaner import TopologyCleaner
 from osm_network.globals.queries import OsmFeatureModes
 
 if TYPE_CHECKING:
-    from osm_network.features_manager.feature import Feature
+    from osm_network.topology.feature import Feature
 
 
 class FeaturesManager:
@@ -41,12 +41,14 @@ class FeaturesManager:
 
     @property
     def features(self) -> "List[Feature]":
+        # TODO: return graph data with feature
         return self._features
 
     @features.setter
     def features(self, network_data: List[Dict] | None):
-        self._features = TopologyCleaner(self.logger, network_data, self._connected_nodes, TOPO_FIELD,
-                                         ID_OSM_FIELD).run()
+        # TODO: build graph
+        features = TopologyCleaner(self.logger, network_data, self._connected_nodes, TOPO_FIELD, ID_OSM_FIELD).run()
+        self._features = list(features)
 
     def topology_checker(self) -> TopologyChecker:
         return TopologyChecker(self._features)

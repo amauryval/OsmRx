@@ -3,7 +3,7 @@ from typing import Dict, List
 from osm_network.apis_handler.models import Bbox, Location
 from osm_network.apis_handler.overpass import OverpassApi
 from osm_network.apis_handler.query_builder import QueryBuilder
-from osm_network.features_manager.feature_manager import FeaturesManager
+from osm_network.features_manager.features_manager import FeaturesManager
 from osm_network.helpers.logger import Logger
 from osm_network.data_processing.overpass_data_builder import OverpassDataBuilder
 from osm_network.globals.queries import OsmFeatureModes

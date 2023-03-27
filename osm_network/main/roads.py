@@ -1,7 +1,7 @@
 from typing import Tuple, List, Dict
 
 from osm_network.apis_handler.models import Location, Bbox
-from osm_network.features_manager.feature_manager import FeaturesManager
+from osm_network.features_manager.features_manager import FeaturesManager
 from osm_network.main.core import OsmNetworkCore
 
 

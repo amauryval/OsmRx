@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Generator, Any
 from typing import List
 from typing import Dict
 from typing import Optional
@@ -20,7 +20,7 @@ from more_itertools import split_at
 
 import concurrent.futures
 
-from osm_network.features_manager.feature import Feature
+from osm_network.topology.feature import Feature
 
 
 class NetworkTopologyError(Exception):
@@ -74,9 +74,6 @@ class TopologyCleaner:
         if self._additional_nodes is None:
             self._additional_nodes: Dict = {}
 
-        # ugly footway processing...
-        # self._force_footway_connection = False
-
         self.__FIELD_ID = uuid_field  # have to be an integer.. thank rtree...
         self._original_field_id = original_field_id
 
@@ -84,7 +81,7 @@ class TopologyCleaner:
         self.__connections_added: Dict = {}
         self._output: List[Feature] = []
 
-    def run(self) -> List[Feature]:
+    def run(self) -> Generator[Feature, Any, None]:
         self._prepare_data()
 
         # connect all the added nodes
@@ -98,7 +95,8 @@ class TopologyCleaner:
         for feature in self._network_data.values():
             self.build_lines(feature)
 
-        return self._output
+        for feature in self._output:
+            yield feature
 
     def build_lines(self, feature: Dict) -> None:
         # compare line coords and intersections points
@@ -127,15 +125,15 @@ class TopologyCleaner:
                     ] = self.__TOPOLOGY_TAG_SPLIT
                     feature_updated[self.__COORDINATES_FIELD] = line_coordinates
 
-                    new_features = self.mode_processing(feature_updated)
-                    self._output.extend(new_features)
+                    self._direction_processing(feature_updated)
+                    # self._output.extend(new_features)
             else:
                 # nothing to change
                 feature[self.__FIELD_ID] = feature[self.__FIELD_ID]
-                new_features = self.mode_processing(feature)
-                self._output.extend(new_features)
+                self._direction_processing(feature)
+                # self._output.extend(new_features)
 
-    def mode_processing(self, input_feature) -> List[Feature]:
+    def mode_processing(self, input_feature):
         new_elements = []
 
         # if self._mode_post_processing == OsmFeatures.vehicle:
@@ -155,14 +153,14 @@ class TopologyCleaner:
         # elif self._mode_post_processing == OsmFeatures.pedestrian:
         #     # it's the default behavior
 
-        feature = self._direction_processing(input_feature)
-        new_elements.extend(feature)
-
-        return new_elements
+        self._direction_processing(input_feature)
+        # new_elements.extend(feature)
+        #
+        # return new_elements
 
     def _direction_processing(
         self, input_feature: Dict
-    ) -> List[Feature]:
+    ):
         new_features = []
         input_feature_copy = dict(input_feature)
 
@@ -174,19 +172,23 @@ class TopologyCleaner:
             del input_feature_copy[self.__COORDINATES_FIELD]
 
             for idx, sub_line_coords in enumerate(new_lines_coords):
-                new_features.append(
-                    self.__proceed_direction_geom(
-                        input_feature_copy, sub_line_coords, idx
-                    )
+                self.__proceed_direction_geom(
+                    input_feature_copy, sub_line_coords, idx
                 )
+                # new_features.append(
+                #     self.__proceed_direction_geom(
+                #         input_feature_copy, sub_line_coords, idx
+                #     )
+                # )
         else:
             new_coords = list(self._split_line(input_feature_copy, 1))
             del input_feature_copy[self.__COORDINATES_FIELD]
-            new_features.append(
-                self.__proceed_direction_geom(input_feature_copy, new_coords)
-            )
+            self.__proceed_direction_geom(input_feature_copy, new_coords)
+            # new_features.append(
+            #     self.__proceed_direction_geom(input_feature_copy, new_coords)
+            # )
 
-        return new_features
+        # return new_features
 
     def __proceed_direction_geom(
         self, input_feature, sub_line_coords, idx=None
@@ -217,8 +219,8 @@ class TopologyCleaner:
         # else:
         #     new_feature.topo_uuid = f"{feature[self.__FIELD_ID]}{index}"
         #     # feature[self.__FIELD_ID] = f"{feature[self.__FIELD_ID]}{idx}"
-
-        return new_feature
+        self._output.append(new_feature)
+        # return new_feature
 
     def _split_line(self, feature: Dict, interpolation_level: int) -> List:
         new_line_coords = interpolate_curve_based_on_original_points(

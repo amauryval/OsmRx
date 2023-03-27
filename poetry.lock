@@ -1305,6 +1305,22 @@ optional = false
 python-versions = ">=3.7"
 
 [[package]]
+name = "rustworkx"
+version = "0.12.1"
+description = "A python graph library implemented in Rust"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+numpy = ">=1.16.0"
+
+[package.extras]
+all = ["matplotlib (>=3.0)", "pillow (>=5.4)"]
+graphviz = ["pillow (>=5.4)"]
+mpl = ["matplotlib (>=3.0)"]
+
+[[package]]
 name = "scipy"
 version = "1.10.1"
 description = "Fundamental algorithms for scientific computing in Python"
@@ -1537,7 +1553,7 @@ python-versions = ">=3.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "3.11.0"
-content-hash = "aafeb44579692aa02517b731bc77f404bff9b79b6ed2ea6c95f9dbdbf6e8fe01"
+content-hash = "cc11551589b02768800e41bf3a8c14f43eaa9e40a33e34c4a280f1c774776879"
 
 [metadata.files]
 anyio = [
@@ -2629,6 +2645,57 @@ rtree = [
     {file = "Rtree-1.0.1-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:e898d7409ab645c25e06d4e058f99271182601d70b2887aba3351bf08e09a0c6"},
     {file = "Rtree-1.0.1-cp39-cp39-win_amd64.whl", hash = "sha256:ad9912faeddb1ddcec5e26b33089166d58a107af6862d8b7f1bb2b7c0002ab39"},
     {file = "Rtree-1.0.1.tar.gz", hash = "sha256:222121699c303a64065d849bf7038b1ecabc37b65c7fa340bedb38ef0e805429"},
+]
+rustworkx = [
+    {file = "rustworkx-0.12.1-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:7eeae40cd3ed014badee6a47569aaaea66b872a2927bb9e76a11a2f8a690b694"},
+    {file = "rustworkx-0.12.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:25689ec33a880c397f99cf7374d16be97a086a8c13675c20e53c076d05fdba0d"},
+    {file = "rustworkx-0.12.1-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:f833c688556c7116704097388240da876d6a689b6e4cd9c71da8091ba0fcfcc5"},
+    {file = "rustworkx-0.12.1-cp310-cp310-manylinux_2_12_i686.manylinux2010_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:488737db74c3999b3ad668eee1f6f033fa81be18f7138e027ecf019adf8de15b"},
+    {file = "rustworkx-0.12.1-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:c7221280b6f47acacd12d140a2fc8e0a0b11a99c0802804cae5aee437327da92"},
+    {file = "rustworkx-0.12.1-cp310-cp310-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:4673b613fa192750ba938274a4175391df9cd6f5476039312ffba35c5783cb27"},
+    {file = "rustworkx-0.12.1-cp310-cp310-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:0cdec3526deac855957bd2431beddf2fb2fcb8c2a915c630c78b39b198ea946a"},
+    {file = "rustworkx-0.12.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:42c84a8c923f8a1f68347999381cde549dbe81f4212896fab5942898045e6ad3"},
+    {file = "rustworkx-0.12.1-cp310-cp310-win32.whl", hash = "sha256:ef49f00c09bbe0caf1fbf41ccefe34e8dc7a1835ec2632203d8a91577009222f"},
+    {file = "rustworkx-0.12.1-cp310-cp310-win_amd64.whl", hash = "sha256:2e05efd04a5e615bd5479e627743921ab562818e54f7269b25c57d50d2c41fdb"},
+    {file = "rustworkx-0.12.1-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:346543e11668cca0723616ea6b3de77573b468a0c73095baf693ebbed90d8994"},
+    {file = "rustworkx-0.12.1-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:b379e638d043aa7c0b70d5125f1f8eab85c44ec506a152b4948f8de1f83a0387"},
+    {file = "rustworkx-0.12.1-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:96e44ba57e23becd8bcee0aecc23a6761d3a78e0b0c35ab65d7fd9d439198180"},
+    {file = "rustworkx-0.12.1-cp311-cp311-manylinux_2_12_i686.manylinux2010_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:abab0e57eea912e0c39af90cb1a7afb52213f100657461580c5059b7cd96da17"},
+    {file = "rustworkx-0.12.1-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:375eb1bea1e739eb4744e51302c934f4fb0d75e1868fba4b0e37acbf5c0666ce"},
+    {file = "rustworkx-0.12.1-cp311-cp311-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:aa4a32664384aead1cdb67fb7478478410892c8e40c5d92b02c11e2989102ff0"},
+    {file = "rustworkx-0.12.1-cp311-cp311-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:42a9da09ea30c372b00e79e10b5adc06535cf405f857355271a2bd68872ac434"},
+    {file = "rustworkx-0.12.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c95f0163bb979f37f8645f16315030fb02a089cd26c61f24598be671d6e69c32"},
+    {file = "rustworkx-0.12.1-cp311-cp311-win32.whl", hash = "sha256:9e42953124a41ea34be3e2bc8a489e30c3d2536be062f486838a0650ab43475b"},
+    {file = "rustworkx-0.12.1-cp311-cp311-win_amd64.whl", hash = "sha256:0f71bbb063a76f4731210207fa1bda0c7f4b5c7e53ec5f9b59b3569c1962d8e0"},
+    {file = "rustworkx-0.12.1-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:9800a8aa630b7a0f78ddaaefd6844d2e9e67fb0776d751c8b2e4ddecffd499d6"},
+    {file = "rustworkx-0.12.1-cp37-cp37m-manylinux_2_12_i686.manylinux2010_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:87124022aa80d0a05d84deddbd725067952ff912ea5dc45e1e04cb57f696efca"},
+    {file = "rustworkx-0.12.1-cp37-cp37m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:3b9bbb9219ad2e00a5b328cb5ce49a107c1a919435447e7a7a6a9f9466693e40"},
+    {file = "rustworkx-0.12.1-cp37-cp37m-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:70d2b41afda256911d4853ac2414fde05d5166dbabdece1f42d95f6aab893281"},
+    {file = "rustworkx-0.12.1-cp37-cp37m-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:abea9c1627275633a99a3945d10f3cd9b0389dfe36be23486faaffaf4db9c0cd"},
+    {file = "rustworkx-0.12.1-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c11deea83a178df19cdfd6a4e2981d52b0b6a393e2168a494866d934ff430022"},
+    {file = "rustworkx-0.12.1-cp37-cp37m-win32.whl", hash = "sha256:2e1c0a43182a61df84964b9673c15b3b2b636db01f5bd4ae8752e646bed9f28b"},
+    {file = "rustworkx-0.12.1-cp37-cp37m-win_amd64.whl", hash = "sha256:126e14ae1245ad97bdaf932578e84e9fda9851733590dd2ad8f4f6b16a8610d3"},
+    {file = "rustworkx-0.12.1-cp38-cp38-macosx_10_9_universal2.whl", hash = "sha256:d994e78b203bc406a026a9c20b2bec77d1990fb1384843a8f84e750160e790e4"},
+    {file = "rustworkx-0.12.1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:95d683cc9adf7c0c39b2c46ec087d69a42669a4e63a701ca77b9bd9a52ab1400"},
+    {file = "rustworkx-0.12.1-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:dbcff417c4d03757373a6409d0677a6c1cc384d04f897792f353ee17ce1e09aa"},
+    {file = "rustworkx-0.12.1-cp38-cp38-manylinux_2_12_i686.manylinux2010_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:28fc8a400ad3e2b187b1c354c1cdfee7f9e00fec9c527291b622334d426a3694"},
+    {file = "rustworkx-0.12.1-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:4a1f34b14c6e0021a6ed427450e776e7cd16412b57655f99cbf6b09d5092b581"},
+    {file = "rustworkx-0.12.1-cp38-cp38-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:6d9e77eef49df6b4d692d8ddb69eedfd0e2315a5b477e5b8a65d86f4d37adcd2"},
+    {file = "rustworkx-0.12.1-cp38-cp38-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:4f84f0eca04c7863be96dbe2b642ef139e94064ef537eb3777bfe9a96a4385f9"},
+    {file = "rustworkx-0.12.1-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:031f719d05af218765ed377c54811b11567e1b1e106a670b30179992ea89f2d7"},
+    {file = "rustworkx-0.12.1-cp38-cp38-win32.whl", hash = "sha256:96a269fa36e78807987ab632bb34c9a475791478a17d3bd795121a1648fcc8d6"},
+    {file = "rustworkx-0.12.1-cp38-cp38-win_amd64.whl", hash = "sha256:73fb53bac355e03d455ad2454a21eb47b16d6381ad2c2cb9da534b48c4c64122"},
+    {file = "rustworkx-0.12.1-cp39-cp39-macosx_10_9_universal2.whl", hash = "sha256:f6803281bcf8c56c91e69ef7ee62c76af8a8e757ad98c5de8b48281702c75e2f"},
+    {file = "rustworkx-0.12.1-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:bc282fbd95938ae3305489c48a3dceb9a4354ca3bcb691578e9bd07c25d5ea27"},
+    {file = "rustworkx-0.12.1-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:288ff3a44708afaafc46c6d0c9435a13d02bf6dad32b3d07207ce0f55881e5cd"},
+    {file = "rustworkx-0.12.1-cp39-cp39-manylinux_2_12_i686.manylinux2010_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:b3efa381d4329ced0f6ec890b70d520d7047057baea2d793266aee0366607bbe"},
+    {file = "rustworkx-0.12.1-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:b220516158411ec16614b662d701960a0740e947c39b2b9f205a70e3e7899665"},
+    {file = "rustworkx-0.12.1-cp39-cp39-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:94c02dcd5d4f05220bf1721a9c531b7f6203497ea24934c49d82dfdeac6a22ba"},
+    {file = "rustworkx-0.12.1-cp39-cp39-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:0d2442fa5a64e8c2c74f43b8f8713964f0d6760c2cd96b8accd28636cc222786"},
+    {file = "rustworkx-0.12.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:29723a1cca360a1ad968d7b0bef8f639ab7d4af201c4d3fec019bee0ea11e329"},
+    {file = "rustworkx-0.12.1-cp39-cp39-win32.whl", hash = "sha256:25c9c616ff9d1e8112d17cdf83442f862ed6dd94f8a60037378b41bea29041ee"},
+    {file = "rustworkx-0.12.1-cp39-cp39-win_amd64.whl", hash = "sha256:dd64db8680c159ce7f69991560fca559a1c8d21282f479aab9595451ac33d0ff"},
+    {file = "rustworkx-0.12.1.tar.gz", hash = "sha256:13a19a2f64dff086b3bffffb294c4630100ecbc13634b4995d9d36a481ae130e"},
 ]
 scipy = [
     {file = "scipy-1.10.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:e7354fd7527a4b0377ce55f286805b34e8c54b91be865bac273f527e1b839019"},

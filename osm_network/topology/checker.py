@@ -6,7 +6,7 @@ import copy
 from shapely import Point
 
 if TYPE_CHECKING:
-    from osm_network.features_manager.feature import Feature
+    from osm_network.topology.feature import Feature
 
 
 class TopologyChecker:

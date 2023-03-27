@@ -4,7 +4,7 @@ from osm_network.topology.cleaner import TopologyCleaner
 
 
 def test_connect_lines(some_line_features, some_point_features):
-    raw_data_topology_rebuild = TopologyCleaner(
+    raw_data_cleaned = TopologyCleaner(
         Logger().logger,
         some_line_features,
         some_point_features,
@@ -13,9 +13,10 @@ def test_connect_lines(some_line_features, some_point_features):
         # OsmFeatures.pedestrian,
     ).run()
 
-    all_uuid = [feature.topo_uuid for feature in raw_data_topology_rebuild]
+    features = [feature for feature in raw_data_cleaned]
+    assert len(features) == 18
 
-    assert len(raw_data_topology_rebuild) == 18
+    all_uuid = [feature.topo_uuid for feature in features]
     # check duplicated
     assert len(all_uuid) == len(set(all_uuid))
     assert sorted(all_uuid) == sorted(
@@ -41,7 +42,7 @@ def test_connect_lines(some_line_features, some_point_features):
         ]
     )
 
-    for feature in raw_data_topology_rebuild:
+    for feature in features:
         if feature.topo_status == "unchanged":
             assert "_" not in feature.topo_uuid
 
@@ -53,7 +54,7 @@ def test_connect_lines(some_line_features, some_point_features):
 
 
 def test_connect_lines_interpolate_lines(some_line_features, some_point_features):
-    raw_data_topology_rebuild = TopologyCleaner(
+    raw_data_cleaned = TopologyCleaner(
         Logger().logger,
         some_line_features,
         some_point_features,
@@ -63,13 +64,15 @@ def test_connect_lines_interpolate_lines(some_line_features, some_point_features
         True,
     ).run()
 
-    all_uuid = [feature.topo_uuid for feature in raw_data_topology_rebuild]
+    features = [feature for feature in raw_data_cleaned]
+    assert len(features) == 192
 
-    assert len(raw_data_topology_rebuild) == 192
+    all_uuid = [feature.topo_uuid for feature in features]
+
     # check duplicated
     assert len(all_uuid) == len(set(all_uuid))
 
-    for feature in raw_data_topology_rebuild:
+    for feature in features:
         if feature.topo_status == "unchanged":
             assert "_" in feature.topo_uuid
 
@@ -81,7 +84,7 @@ def test_connect_lines_interpolate_lines(some_line_features, some_point_features
 
 
 def test_topology(some_line_features, some_point_features):
-    features_built = TopologyCleaner(
+    raw_data_cleaned = TopologyCleaner(
         Logger().logger,
         some_line_features,
         some_point_features,
@@ -89,8 +92,9 @@ def test_topology(some_line_features, some_point_features):
         "id",
         False,
     ).run()
+    features = [feature for feature in raw_data_cleaned]
 
-    topology = TopologyChecker(features_built, False)
+    topology = TopologyChecker(features, False)
     assert len(topology.intersections_added) == 20
     assert len(topology.lines_split) == 10
     assert len(topology.lines_unchanged) == 1
