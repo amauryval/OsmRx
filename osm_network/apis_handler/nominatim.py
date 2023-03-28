@@ -27,10 +27,11 @@ class NominatimApi(ApiCore):
     }
     format_parameter: Dict = {"format": "json", "polygon": "1", "polygon_geojson": "1"}
 
-    _values = None
 
     def __init__(self, logger: "Logger", **params) -> None:
+        _values = None
         super().__init__(logger=logger)
+
         parameters: Dict = self.__check_parameters(params)
         self.items = self.request_query(self.nominatim_url, parameters)
 

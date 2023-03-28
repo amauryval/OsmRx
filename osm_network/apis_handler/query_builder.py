@@ -17,10 +17,10 @@ class QueryBuilder:
     _output_format = "out geom;(._;>;)"
     _area_tag_query: str = "area.searchArea"
 
-    _osm_query = None
-    _query = None
-
     def __init__(self, mode: "OsmFeatureModes") -> None:
+        self._osm_query = None
+        self._query = None
+
         self._osm_query = osm_queries[mode]["query"]
 
     def from_bbox(self, bbox: "Bbox") -> str:
