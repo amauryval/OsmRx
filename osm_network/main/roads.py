@@ -1,15 +1,15 @@
 from typing import Tuple, List, Dict
 
 from osm_network.apis_handler.models import Location, Bbox
-from osm_network.features_manager.features_manager import FeaturesManager
+from osm_network.network_manager.network_manager import NetworkManager
 from osm_network.main.core import OsmNetworkCore
 
 
 class OsmNetworkRoads(OsmNetworkCore):
-    _additional_nodes = None
 
     def __init__(self, osm_feature_mode: str) -> None:
         super().__init__(osm_feature_mode=osm_feature_mode)
+        self._additional_nodes = None
 
     def _execute_query(self) -> None:
         """Execute the query with the Overpass API"""
@@ -30,7 +30,7 @@ class OsmNetworkRoads(OsmNetworkCore):
         self._features_manager.connected_nodes = additional_nodes
 
     @property
-    def network_data(self) -> FeaturesManager | None:
+    def network_data(self) -> NetworkManager | None:
         """Fix topology issues for LineString features only"""
         if self._raw_data is not None:
             self._features_manager.features = self._raw_data
@@ -39,6 +39,7 @@ class OsmNetworkRoads(OsmNetworkCore):
 
 class Roads(OsmNetworkRoads):
     """To manage roads"""
+
     def __init__(self, mode: str):
         super().__init__(osm_feature_mode=mode)
 

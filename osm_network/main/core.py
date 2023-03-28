@@ -3,21 +3,23 @@ from typing import Dict, List
 from osm_network.apis_handler.models import Bbox, Location
 from osm_network.apis_handler.overpass import OverpassApi
 from osm_network.apis_handler.query_builder import QueryBuilder
-from osm_network.features_manager.features_manager import FeaturesManager
+from osm_network.network_manager.network_manager import NetworkManager
 from osm_network.helpers.logger import Logger
 from osm_network.data_processing.overpass_data_builder import OverpassDataBuilder
 from osm_network.globals.queries import OsmFeatureModes
 
 
 class OsmNetworkCore(Logger):
-    _geo_filter = None
-    _osm_feature_mode = None
-    _query = None
-    _raw_data = None
-    _features_manager = None
 
     def __init__(self, osm_feature_mode: str):
+        self._geo_filter = None
+        self._osm_feature_mode = None
+        self._query = None
+        self._raw_data = None
+        self._features_manager = None
+
         super().__init__()
+
         self.osm_feature_mode = OsmFeatureModes[osm_feature_mode]
 
     @property
@@ -30,7 +32,7 @@ class OsmNetworkCore(Logger):
         """Set the osm feature type to use"""
         self.logger.info(f"Building {self._osm_feature_mode} Data")
         self._osm_feature_mode = feature_mode
-        self._features_manager = FeaturesManager(self.logger, feature_mode)
+        self._features_manager = NetworkManager(self.logger, feature_mode)
 
         self._build_query()
 
