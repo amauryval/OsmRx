@@ -95,7 +95,7 @@ def test_topology(some_line_features, some_point_features):
     features = [feature for feature in raw_data_cleaned]
 
     topology = TopologyChecker(features, False)
-    assert len(topology.intersections_added) == 20
-    assert len(topology.lines_split) == 10
-    assert len(topology.lines_unchanged) == 1
-    assert len(topology.nodes_added) == 7
+    assert len(topology.intersections_added()) == 20
+    assert len(topology.lines_split()) == 10
+    assert len(topology.lines_unchanged()) == 1
+    assert len(topology.nodes_added()) == 7
