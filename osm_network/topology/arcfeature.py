@@ -1,21 +1,23 @@
-from typing import Dict
+from typing import Dict, List, Literal
 
-import shapely.geometry
-from shapely import LineString
+from shapely.geometry.base import BaseGeometry
+from shapely import LineString, Point
 
 
-class Feature:
-    _topo_uuid = None
-    _geometry = None
-    _topo_status = None
-    _direction = None
-    _attributes = {}
+class ArcFeature:
+    __slots__ = ("_topo_uuid", "_geometry", "_topo_status", "_direction", "_attributes", "_direction")
 
-    def __init__(self, geometry: shapely.geometry.base.BaseGeometry):
+    def __init__(self, geometry: LineString):
+        self._topo_uuid = None
+        self._geometry = None
+        self._topo_status = None
+        self._direction = "forward"
+        self._attributes = {}
+
         self._geometry = geometry
 
     @property
-    def topo_uuid(self):
+    def topo_uuid(self) -> str:
         return self._topo_uuid
 
     @topo_uuid.setter
@@ -23,19 +25,35 @@ class Feature:
         self._topo_uuid = topo_uuid
 
     @property
-    def geometry(self):
-        return self._geometry
+    def direction(self):
+        return self._direction
+
+    @direction.setter
+    def direction(self, direction: Literal["forward", "backward"]):
+        self._direction = direction
 
     @property
-    def forward(self):
-        return self._geometry
+    def geometry(self) -> LineString:
+        # TODO: improve condition
+        if self._direction == "forward":
+            return self._geometry
+        else:
+            return LineString(self.coordinates[::-1])
 
     @property
-    def backward(self):
-        return LineString(self._geometry.coords[::-1])
+    def coordinates(self) -> List[float]:
+        return list(self._geometry.coords)
 
     @property
-    def topo_status(self):
+    def start_point(self) -> Point:
+        return Point(self.coordinates[0])
+
+    @property
+    def end_point(self) -> Point:
+        return Point(self.coordinates[-1])
+
+    @property
+    def topo_status(self) -> str:
         return self._topo_status
 
     @topo_status.setter
@@ -43,14 +61,14 @@ class Feature:
         self._topo_status = topo_status
 
     @property
-    def attributes(self):
+    def attributes(self) -> Dict[str, any]:
         return self._attributes
 
     @attributes.setter
     def attributes(self, attributes: Dict):
         self._attributes = attributes
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> Dict[str, any]:
         return {
             **{"topo_uuid": self.topo_uuid},
             **{"topo_status": self.topo_status},

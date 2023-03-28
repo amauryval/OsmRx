@@ -20,7 +20,7 @@ from more_itertools import split_at
 
 import concurrent.futures
 
-from osm_network.topology.feature import Feature
+from osm_network.topology.arcfeature import ArcFeature
 
 
 class NetworkTopologyError(Exception):
@@ -79,9 +79,9 @@ class TopologyCleaner:
 
         self._intersections_found: Optional[Set[Tuple[float, float]]] = None
         self.__connections_added: Dict = {}
-        self._output: List[Feature] = []
+        self._output: List[ArcFeature] = []
 
-    def run(self) -> Generator[Feature, Any, None]:
+    def run(self) -> Generator[ArcFeature, Any, None]:
         self._prepare_data()
 
         # connect all the added nodes
@@ -192,7 +192,8 @@ class TopologyCleaner:
 
     def __proceed_direction_geom(
         self, input_feature, sub_line_coords, idx=None
-    ) -> Feature:
+    ) -> ArcFeature:
+        # TODO maybe useless: check parent method
         feature = dict(input_feature)
 
         if idx is not None:
@@ -207,12 +208,16 @@ class TopologyCleaner:
         # else:
         #     raise NetworkTopologyError(f"Direction issue: value '{direction}' found")
 
-        new_feature = Feature(LineString(sub_line_coords))
+        new_feature = ArcFeature(LineString(sub_line_coords))
         # feature[self.__GEOMETRY_FIELD] = linestring_build
         # new_feature.direction = direction
         new_feature.topo_uuid = f"{feature[self.__FIELD_ID]}{idx}"
         new_feature.topo_status = feature[self.__CLEANING_FILED_STATUS]
 
+        del feature[self.__FIELD_ID]
+        del feature[self.__CLEANING_FILED_STATUS]
+        del feature[self.__GEOMETRY_FIELD]
+        new_feature.attributes = feature
         # if direction is not None:
         #     new_feature.topo_uuid = f"{feature[self.__FIELD_ID]}{index}_{direction}"
         #     # feature[self.__FIELD_ID] = f"{feature[self.__FIELD_ID]}{idx}_{direction}"
