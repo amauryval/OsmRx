@@ -3,7 +3,7 @@ from typing import Dict, List
 from osm_network.apis_handler.models import Bbox, Location
 from osm_network.apis_handler.overpass import OverpassApi
 from osm_network.apis_handler.query_builder import QueryBuilder
-from osm_network.network_manager.network_manager import NetworkManager
+from osm_network.graph_manager.graph_manager import GraphManager
 from osm_network.helpers.logger import Logger
 from osm_network.data_processing.overpass_data_builder import OverpassDataBuilder
 from osm_network.globals.queries import OsmFeatureModes
@@ -13,10 +13,9 @@ class OsmNetworkCore(Logger):
 
     def __init__(self, osm_feature_mode: str):
         self._geo_filter = None
-        self._osm_feature_mode = None
         self._query = None
         self._raw_data = None
-        self._features_manager = None
+        self._graph_manager: GraphManager | None = None
 
         super().__init__()
 
@@ -30,11 +29,11 @@ class OsmNetworkCore(Logger):
     @osm_feature_mode.setter
     def osm_feature_mode(self, feature_mode: OsmFeatureModes) -> None:
         """Set the osm feature type to use"""
-        self.logger.info(f"Building {self._osm_feature_mode} Data")
         self._osm_feature_mode = feature_mode
-        self._features_manager = NetworkManager(self.logger, feature_mode)
-
+        self.logger.info(f"Building {self._osm_feature_mode} Data")
         self._build_query()
+        if feature_mode != OsmFeatureModes.poi:
+            self._graph_manager = GraphManager(self.logger, feature_mode)
 
     @property
     def geo_filter(self) -> Bbox | Location:
@@ -65,6 +64,10 @@ class OsmNetworkCore(Logger):
             raw_data = OverpassApi(logger=self.logger).query(self._query)
             return OverpassDataBuilder(raw_data["elements"])
 
+    # @property
+    # def data(self) -> List[Dict]:
+    #     return self._raw_data
+
     @property
-    def data(self) -> List[Dict]:
-        return self._raw_data
+    def data(self) -> None:
+        raise NotImplemented

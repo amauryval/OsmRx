@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, List, Dict
 
 from osm_network.apis_handler.models import Bbox, Location
 from osm_network.globals.queries import OsmFeatureModes
@@ -15,6 +15,10 @@ class OsmNetworkPoi(OsmNetworkCore):
         raw_data = super()._execute_query()
         if raw_data is not None:
             self._raw_data = raw_data.point_features()
+
+    @property
+    def data(self) -> List[Dict]:
+        return self._raw_data
 
 
 class Pois(OsmNetworkPoi):

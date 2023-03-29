@@ -105,63 +105,30 @@ class TopologyCleaner:
             self._intersections_found
         )
 
-        # rebuild linestring
-        if len(set(feature[self.__COORDINATES_FIELD])) > 1:
-            lines_coordinates_rebuild = self._topology_builder(
-                feature[self.__COORDINATES_FIELD], points_intersections
-            )
+        if len(coordinates_list) <= 1:
+            # meaning that there is none point or line length is equals to 0
+            return
 
-            if len(lines_coordinates_rebuild) > 1:
+        # rebuild linestrings
+        lines_coordinates_rebuild = self._topology_builder(
+            feature[self.__COORDINATES_FIELD], points_intersections
+        )
 
-                for new_suffix_id, line_coordinates in enumerate(
-                    lines_coordinates_rebuild
-                ):
-                    feature_updated = dict(feature)
-                    feature_updated[
-                        self.__FIELD_ID
-                    ] = f"{feature_updated[self.__FIELD_ID]}_{new_suffix_id}"
-                    feature_updated[
-                        self.__CLEANING_FILED_STATUS
-                    ] = self.__TOPOLOGY_TAG_SPLIT
-                    feature_updated[self.__COORDINATES_FIELD] = line_coordinates
+        if len(lines_coordinates_rebuild) > 1:
 
-                    self._direction_processing(feature_updated)
-                    # self._output.extend(new_features)
-            else:
-                # nothing to change
-                feature[self.__FIELD_ID] = feature[self.__FIELD_ID]
-                self._direction_processing(feature)
-                # self._output.extend(new_features)
+            for new_suffix_id, line_coordinates in enumerate(lines_coordinates_rebuild):
+                feature_updated = dict(feature)
+                feature_updated[self.__FIELD_ID] = f"{feature_updated[self.__FIELD_ID]}_{new_suffix_id}"
+                feature_updated[self.__CLEANING_FILED_STATUS] = self.__TOPOLOGY_TAG_SPLIT
+                feature_updated[self.__COORDINATES_FIELD] = line_coordinates
 
-    def mode_processing(self, input_feature):
-        new_elements = []
+                self._direction_processing(feature_updated)
+        else:
+            # nothing to change
+            # feature[self.__FIELD_ID] = feature[self.__FIELD_ID]
+            self._direction_processing(feature)
 
-        # if self._mode_post_processing == OsmFeatures.vehicle:
-        #     # by default
-        #     new_forward_feature = self._direction_processing(input_feature, forward_tag)
-        #     new_elements.extend(new_forward_feature)
-        #     if input_feature.get(self.__JUNCTION_FIELD, None) in self.__JUNCTION_VALUES:
-        #         return new_elements
-        #
-        #     if input_feature.get(self.__ONEWAY_FIELD, None) != self.__ONEWAY_VALUE:
-        #
-        #         new_backward_feature = self._direction_processing(
-        #             input_feature, backward_tag
-        #         )
-        #         new_elements.extend(new_backward_feature)
-        #
-        # elif self._mode_post_processing == OsmFeatures.pedestrian:
-        #     # it's the default behavior
-
-        self._direction_processing(input_feature)
-        # new_elements.extend(feature)
-        #
-        # return new_elements
-
-    def _direction_processing(
-        self, input_feature: Dict
-    ):
-        new_features = []
+    def _direction_processing(self, input_feature: Dict):
         input_feature_copy = dict(input_feature)
 
         if self._improve_line_output:
@@ -175,24 +142,13 @@ class TopologyCleaner:
                 self.__proceed_direction_geom(
                     input_feature_copy, sub_line_coords, idx
                 )
-                # new_features.append(
-                #     self.__proceed_direction_geom(
-                #         input_feature_copy, sub_line_coords, idx
-                #     )
-                # )
+
         else:
             new_coords = list(self._split_line(input_feature_copy, 1))
             del input_feature_copy[self.__COORDINATES_FIELD]
             self.__proceed_direction_geom(input_feature_copy, new_coords)
-            # new_features.append(
-            #     self.__proceed_direction_geom(input_feature_copy, new_coords)
-            # )
 
-        # return new_features
-
-    def __proceed_direction_geom(
-        self, input_feature, sub_line_coords, idx=None
-    ) -> ArcFeature:
+    def __proceed_direction_geom(self, input_feature, sub_line_coords, idx=None) -> ArcFeature:
         # TODO maybe useless: check parent method
         feature = dict(input_feature)
 
@@ -201,16 +157,8 @@ class TopologyCleaner:
         else:
             idx = ""
 
-        # if direction == "backward":
-        #     linestring_build = LineString(sub_line_coords[::-1])
-        # elif direction in ["forward", None]:
-        #     linestring_build = LineString(sub_line_coords)
-        # else:
-        #     raise NetworkTopologyError(f"Direction issue: value '{direction}' found")
-
         new_feature = ArcFeature(LineString(sub_line_coords))
-        # feature[self.__GEOMETRY_FIELD] = linestring_build
-        # new_feature.direction = direction
+
         new_feature.topo_uuid = f"{feature[self.__FIELD_ID]}{idx}"
         new_feature.topo_status = feature[self.__CLEANING_FILED_STATUS]
 
@@ -218,14 +166,8 @@ class TopologyCleaner:
         del feature[self.__CLEANING_FILED_STATUS]
         del feature[self.__GEOMETRY_FIELD]
         new_feature.attributes = feature
-        # if direction is not None:
-        #     new_feature.topo_uuid = f"{feature[self.__FIELD_ID]}{index}_{direction}"
-        #     # feature[self.__FIELD_ID] = f"{feature[self.__FIELD_ID]}{idx}_{direction}"
-        # else:
-        #     new_feature.topo_uuid = f"{feature[self.__FIELD_ID]}{index}"
-        #     # feature[self.__FIELD_ID] = f"{feature[self.__FIELD_ID]}{idx}"
+
         self._output.append(new_feature)
-        # return new_feature
 
     def _split_line(self, feature: Dict, interpolation_level: int) -> List:
         new_line_coords = interpolate_curve_based_on_original_points(
@@ -237,18 +179,16 @@ class TopologyCleaner:
 
         self._network_data = {
             feature[self.__FIELD_ID]: {
-                **{self.__COORDINATES_FIELD: feature[self.__GEOMETRY_FIELD].coords[:]},
+                self.__COORDINATES_FIELD: feature[self.__GEOMETRY_FIELD].coords[:],
+                self.__CLEANING_FILED_STATUS: self.__TOPOLOGY_TAG_UNCHANGED,
                 **feature,
-                **{self.__CLEANING_FILED_STATUS: self.__TOPOLOGY_TAG_UNCHANGED},
             }
             for feature in self._network_data
         }
         if self._additional_nodes is not None:
             self._additional_nodes = {
                 feature[self.__FIELD_ID]: {
-                    **{
-                        self.__COORDINATES_FIELD: feature[self.__GEOMETRY_FIELD].coords[0]
-                    },
+                    self.__COORDINATES_FIELD: feature[self.__GEOMETRY_FIELD].coords[0],
                     **feature,
                 }
                 for feature in self._additional_nodes

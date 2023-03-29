@@ -1,3 +1,4 @@
+import copy
 from typing import List, Dict
 from typing import TYPE_CHECKING
 
@@ -14,21 +15,7 @@ if TYPE_CHECKING:
     from osm_network.topology.arcfeature import ArcFeature
 
 
-class NetworkCore:
-    _graph = None
-
-    def __init__(self, directed: bool = False):
-        if directed:
-            self._graph = rx.PyDiGraph(multigraph=False)
-        else:
-            self._graph = rx.PyGraph(multigraph=False)
-
-    @property
-    def graph(self):
-        return self._graph
-
-
-class NetworkGraph:
+class GraphCore:
 
     def __init__(self, directed: bool = False):
         self._graph = None
@@ -41,46 +28,42 @@ class NetworkGraph:
             self._graph = rx.PyGraph(multigraph=False)
 
     @property
-    def graph(self):
+    def graph(self) -> rx.PyDiGraph | rx.PyGraph:
         return self._graph
 
     def _add_nodes(self, node_value: str) -> int:
         if node_value not in self._nodes_mapping:
-            node_indice = self.graph.add_node(node_value)
-            self._nodes_mapping[node_value] = node_indice
+            self._nodes_mapping[node_value] = self.graph.add_node(node_value)
         return self._nodes_mapping[node_value]
 
-    def add_edge(self, from_node_value: str, to_node_value: str, attr: any):
+    def add_edge(self, from_node_value: str, to_node_value: str, attr: "ArcFeature") -> int:
         from_indice = self._add_nodes(from_node_value)
         to_indice = self._add_nodes(to_node_value)
-        if f"{from_indice}_{to_indice}" not in self._edges_mapping:
-            edge_indice = self.graph.add_edge(from_indice, to_indice, attr)
-            self._edges_mapping[f"{from_indice}_{to_indice}"] = edge_indice
+        indice = f"{from_indice}_{to_indice}"
+        if indice not in self._edges_mapping:
+            self._edges_mapping[indice] = self.graph.add_edge(from_indice, to_indice, attr)
 
 
-class NetworkManager:
+class GraphManager(GraphCore):
 
     def __init__(self, logger, mode: OsmFeatureModes):
-        self._features = None
-        self._mode = None
-        self._connected_nodes = None
-        self._graph = None
-
-        self.logger = logger
         self._mode = mode
 
-    @property
-    def mode(self):
-        return self._mode
+        super().__init__(directed=self.directed)
+
+        self.logger = logger
+
+        self._features = None
+        self._connected_nodes = None
 
     @property
-    def directed(self):
+    def directed(self) -> bool:
         if self._mode == OsmFeatureModes.vehicle:
             return True
         return False
 
     @property
-    def connected_nodes(self):
+    def connected_nodes(self) -> List[Dict]:
         return self._connected_nodes
 
     @connected_nodes.setter
@@ -91,34 +74,33 @@ class NetworkManager:
     def features(self) -> "List[ArcFeature]":
         # TODO: return graph data with feature
 
-        return self._graph.graph.edges()
+        return self.graph.edges()
 
     @features.setter
     def features(self, network_data: List[Dict] | None):
         features = TopologyCleaner(self.logger, network_data, self._connected_nodes, TOPO_FIELD, ID_OSM_FIELD).run()
 
-        graph = NetworkGraph(self.directed)
+        # graph = NetworkGraph(self.directed)
 
         for arc_feature in features:
-            graph.add_edge(
-                arc_feature.start_point.wkt,
-                arc_feature.end_point.wkt,
+            self.add_edge(
+                arc_feature.from_point.wkt,
+                arc_feature.to_point.wkt,
                 arc_feature
             )
-            if self.mode == OsmFeatureModes.vehicle:
-                if arc_feature.attributes.get("junction", None) in ["roundabout", "jughandle"]:
+            if self._mode == OsmFeatureModes.vehicle:
+                if arc_feature.is_junction_or_roundabout():
                     # do nothing
-                    # continue
-                    pass
+                    continue
 
-                if arc_feature.attributes.get("oneway", None) != "yes":
-                    arc_feature.direction = "backward"
-                    graph.add_edge(
-                        arc_feature.end_point.wkt,
-                        arc_feature.end_point.wkt,
-                        arc_feature
+                if not arc_feature.is_oneway():
+                    arc_feature_backward = copy.deepcopy(arc_feature)
+                    arc_feature_backward.direction = "backward"
+                    self.add_edge(
+                        arc_feature_backward.to_point.wkt,
+                        arc_feature_backward.to_point.wkt,
+                        arc_feature_backward
                     )
-        self._graph = graph
         self.logger.info("Graph built")
 
         # if self.directed:
@@ -144,11 +126,4 @@ class NetworkManager:
 
         # self._graph.add_edges_from(edges)
 
-    @property
-    def graph(self) -> rx.PyGraph | rx.PyDiGraph:
-        return self._graph
 
-    def topology_checker(self) -> TopologyChecker:
-        topology_result = TopologyChecker(self.features)
-        self.logger.info("Topolgoy analysis done")
-        return topology_result

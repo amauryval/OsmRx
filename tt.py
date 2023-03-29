@@ -12,7 +12,7 @@ pois = DataFromLocation("poi", location)
 
 network_vehicle = DataFromLocation("vehicle", location)
 network_vehicle.additional_nodes = pois.data
-network_data = network_vehicle.network_data
+network_data = network_vehicle.build_graph
 
 
 map_session = Gdf2Bokeh(
