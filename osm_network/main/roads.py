@@ -56,6 +56,7 @@ class OsmNetworkRoads(OsmNetworkCore):
     # - shortest path
     # - isochrone
 
+
 class Roads(OsmNetworkRoads):
     """To manage roads"""
 

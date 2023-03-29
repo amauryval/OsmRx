@@ -83,7 +83,7 @@ def test_get_vehicle_network_from_bbox_with_topo_checker_simplified(vehicle_mode
     assert "way" in roads_session.query
 
     roads_session.build_graph()
-    assert len(roads_session.data) > 1
+    assert len(roads_session.data) == 12749  # could be change if osm data is updated
 
     topology_checked = roads_session.topology_checker()
     assert len(topology_checked.intersections_added) > 1
@@ -92,7 +92,26 @@ def test_get_vehicle_network_from_bbox_with_topo_checker_simplified(vehicle_mode
     assert len(topology_checked.nodes_added) == 0
     assert len(topology_checked.lines_added) == 0
     # import geopandas as gpd
-    # gpd.GeoDataFrame([f.to_dict() for f in network_data.features], geometry="geometry", crs=f"epsg:{4326}").to_file('pd3.gpkg', driver='GPKG', layer='name')
+    # gpd.GeoDataFrame([f.to_dict() for f in roads_session.data], geometry="geometry", crs=f"epsg:{4326}").to_file('vvv.gpkg', driver='GPKG', layer='name')
+
+
+def test_get_pedestrian_network_from_bbox_with_topo_checker_simplified(pedestrian_mode, bbox_values):
+    roads_session = Roads(pedestrian_mode)
+    roads_session.from_bbox(bbox_values)
+
+    assert isinstance(roads_session.geo_filter, Bbox)
+    assert len(roads_session.geo_filter.location_name) > 1
+    assert "way" in roads_session.query
+
+    roads_session.build_graph()
+    assert len(roads_session.data) == 9849  # could be change if osm data is updated
+
+    topology_checked = roads_session.topology_checker()
+    assert len(topology_checked.intersections_added) > 1
+    assert len(topology_checked.lines_split) > 1
+    assert len(topology_checked.lines_unchanged) > 1
+    assert len(topology_checked.nodes_added) == 0
+    assert len(topology_checked.lines_added) == 0
 
 
 def test_get_vehicle_network_from_location_with_pois_with_topo_checker(vehicle_mode, location_name):

@@ -10,7 +10,6 @@ def test_connect_lines(some_line_features, some_point_features):
         some_point_features,
         "topo_uuid",
         "id",
-        # OsmFeatures.pedestrian,
     ).run()
 
     features = [feature for feature in raw_data_cleaned]
@@ -58,8 +57,7 @@ def test_connect_lines_interpolate_lines(some_line_features, some_point_features
         some_point_features,
         "topo_uuid",
         "id",
-        # OsmFeatures.pedestrian,
-        True,
+        4,
     ).run()
 
     features = [feature for feature in raw_data_cleaned]
