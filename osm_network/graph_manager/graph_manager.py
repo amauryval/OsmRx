@@ -35,7 +35,7 @@ class GraphCore:
         """Add a node"""
         if node_value not in self._nodes_mapping:
             self._nodes_mapping[node_value] = self.graph.add_node(node_value)
-        return self._nodes_mapping[node_value]
+        return self.get_node_indice(node_value)
 
     def add_edge(self, from_node_value: str, to_node_value: str, attr: "ArcFeature") -> None:
         """add ege based on 2 nodes"""
@@ -44,6 +44,11 @@ class GraphCore:
         indice = f"{from_indice}_{to_indice}"
         if indice not in self._edges_mapping:
             self._edges_mapping[indice] = self.graph.add_edge(from_indice, to_indice, attr)
+
+    def get_node_indice(self, node_value: str) -> int | None:
+        """Return the node value from indice"""
+        if node_value in self._nodes_mapping:
+            return self._nodes_mapping[node_value]
 
 
 class GraphManager(GraphCore):
