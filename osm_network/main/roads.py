@@ -4,7 +4,7 @@ import rustworkx as rx
 
 from osm_network.apis_handler.models import Location, Bbox
 from osm_network.main.core import OsmNetworkCore
-from osm_network.topology.arcfeature import ArcFeature
+from osm_network.topology.arc_feature import ArcFeature
 from osm_network.topology.checker import TopologyChecker
 
 

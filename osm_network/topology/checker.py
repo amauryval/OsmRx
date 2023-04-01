@@ -6,7 +6,7 @@ import copy
 from shapely import Point
 
 if TYPE_CHECKING:
-    from osm_network.topology.arcfeature import ArcFeature
+    from osm_network.topology.arc_feature import ArcFeature
 
 
 class TopologyChecker:

@@ -22,7 +22,7 @@ from more_itertools import split_at
 
 import concurrent.futures
 
-from osm_network.topology.arcfeature import ArcFeature
+from osm_network.topology.arc_feature import ArcFeature
 
 
 class NetworkTopologyError(Exception):

@@ -1,18 +1,12 @@
 from osm_network.helpers.logger import Logger
 from osm_network.topology.checker import TopologyChecker
 from osm_network.topology.cleaner import TopologyCleaner
+from tests.common.geom_builder import build_network_features
 
 
 def test_connect_lines(some_line_features, some_point_features):
-    raw_data_cleaned = TopologyCleaner(
-        Logger().logger,
-        some_line_features,
-        some_point_features,
-        "topo_uuid",
-        "id",
-    ).run()
+    features = build_network_features(some_line_features, some_point_features, None)
 
-    features = [feature for feature in raw_data_cleaned]
     assert len(features) == 18
 
     all_uuid = [feature.topo_uuid for feature in features]
@@ -51,16 +45,8 @@ def test_connect_lines(some_line_features, some_point_features):
 
 
 def test_connect_lines_interpolate_lines(some_line_features, some_point_features):
-    raw_data_cleaned = TopologyCleaner(
-        Logger().logger,
-        some_line_features,
-        some_point_features,
-        "topo_uuid",
-        "id",
-        4,
-    ).run()
+    features = build_network_features(some_line_features, some_point_features, 4)
 
-    features = [feature for feature in raw_data_cleaned]
     assert len(features) == 192
 
     all_uuid = [feature.topo_uuid for feature in features]
@@ -80,15 +66,7 @@ def test_connect_lines_interpolate_lines(some_line_features, some_point_features
 
 
 def test_topology(some_line_features, some_point_features):
-    raw_data_cleaned = TopologyCleaner(
-        Logger().logger,
-        some_line_features,
-        some_point_features,
-        "topo_uuid",
-        "id",
-        False,
-    ).run()
-    features = [feature for feature in raw_data_cleaned]
+    features = build_network_features(some_line_features, some_point_features, None)
 
     topology = TopologyChecker(features, False)
     assert len(topology.intersections_added) == 20
