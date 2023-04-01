@@ -109,4 +109,9 @@ def some_point_features() -> List[Dict]:
             "geometry": Point((4.07101188185213569, 46.0373516329414727)),
             "topo_uuid": 9, "id": "9",
         },
+        {
+            "geometry": Point((4.0710313549747239, 46.03670313392265712)),
+            "topo_uuid": 10, "id": "10",
+        },
+
     ]

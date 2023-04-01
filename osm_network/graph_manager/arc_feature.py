@@ -5,6 +5,11 @@ from shapely.geometry.base import BaseGeometry
 from shapely import LineString, Point
 
 
+class LineFeature:
+    _linestring = None
+    def __init__(self, geometry_line: LineString):
+        self._linestring = geometry_line
+
 class ArcFeature:
     __slots__ = ("_topo_uuid", "_geometry", "_topo_status", "_direction", "_attributes", "_direction")
 
@@ -65,7 +70,7 @@ class ArcFeature:
 
     @property
     def length(self) -> float:
-        """Compute the length of a wg84 LineString"""
+        """Compute the length of a wg84 LineString in meters"""
         return Geod(ellps="WGS84").geometry_length(self.geometry)
 
     @property

@@ -3,15 +3,18 @@ from typing import List, Dict
 from typing import TYPE_CHECKING
 
 import rustworkx as rx
+from shapely import LineString
+from shapely import wkt
 
 from osm_network.data_processing.overpass_data_builder import TOPO_FIELD
 from osm_network.data_processing.overpass_data_builder import ID_OSM_FIELD
+from osm_network.graph_manager.path_feature import PathFeature
 from osm_network.topology.cleaner import TopologyCleaner
 
 from osm_network.globals.queries import OsmFeatureModes
 
 if TYPE_CHECKING:
-    from osm_network.topology.arc_feature import ArcFeature
+    from osm_network.graph_manager.arc_feature import ArcFeature
 
 
 class GraphCore:
@@ -49,6 +52,19 @@ class GraphCore:
         """Return the node value from indice"""
         if node_value in self._nodes_mapping:
             return self._nodes_mapping[node_value]
+        raise ValueError(f"{node_value} node not found!")
+
+    def compute_shortest_path(self, from_node: str, to_node: str) -> List[PathFeature]:
+        edges = rx.dijkstra_shortest_paths(
+            self.graph,
+            self.get_node_indice(from_node),
+            self.get_node_indice(to_node),
+            weight_fn=lambda edge: edge.length)
+
+        return [
+            PathFeature(self.graph, node_indices)
+            for _, node_indices in edges.items()
+        ]
 
 
 class GraphManager(GraphCore):

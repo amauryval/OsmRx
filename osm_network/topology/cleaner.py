@@ -1,5 +1,5 @@
 import itertools
-from typing import Tuple, Generator, Any, Literal
+from typing import Tuple, Generator, Any
 from typing import List
 from typing import Dict
 from typing import Optional
@@ -22,7 +22,7 @@ from more_itertools import split_at
 
 import concurrent.futures
 
-from osm_network.topology.arc_feature import ArcFeature
+from osm_network.graph_manager.arc_feature import ArcFeature
 
 
 class NetworkTopologyError(Exception):

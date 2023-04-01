@@ -1,7 +1,7 @@
 from typing import List
 
 from osm_network.helpers.logger import Logger
-from osm_network.topology.arc_feature import ArcFeature
+from osm_network.graph_manager.arc_feature import ArcFeature
 from osm_network.topology.cleaner import TopologyCleaner
 
 

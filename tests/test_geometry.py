@@ -7,7 +7,7 @@ from tests.common.geom_builder import build_network_features
 def test_connect_lines(some_line_features, some_point_features):
     features = build_network_features(some_line_features, some_point_features, None)
 
-    assert len(features) == 18
+    assert len(features) == 19
 
     all_uuid = [feature.topo_uuid for feature in features]
     # check duplicated
@@ -23,6 +23,7 @@ def test_connect_lines(some_line_features, some_point_features):
         '10_7_forward',
         '11_0_forward',
         '11_1_forward',
+        '11_2_forward',
         '12_forward',
         'added_1_forward',
         'added_2_forward',
@@ -69,7 +70,7 @@ def test_topology(some_line_features, some_point_features):
     features = build_network_features(some_line_features, some_point_features, None)
 
     topology = TopologyChecker(features, False)
-    assert len(topology.intersections_added) == 20
-    assert len(topology.lines_split) == 10
+    assert len(topology.intersections_added) == 22
+    assert len(topology.lines_split) == 11
     assert len(topology.lines_unchanged) == 1
     assert len(topology.nodes_added) == 7
