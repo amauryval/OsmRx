@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 
 import rustworkx as rx
 from rustworkx import PathLengthMapping
-from rustworkx.visit import DijkstraVisitor
 from shapely import wkt, MultiPoint, Polygon
 
 from osmrx.data_processing.overpass_data_builder import TOPO_FIELD

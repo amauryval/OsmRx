@@ -1,26 +1,23 @@
-from typing import Dict, List
+from typing import Dict
+from typing import List
 
-from shapely import Point, LineString
+from shapely import Point
+from shapely import LineString
 
-from osmrx.globals.osm import osm_url
 from osmrx.globals.queries import OsmFeatureTypes
 
-
-# constants
-GEOMETRY_FIELD: str = "geometry"
-LAT_FIELD: str = "lat"
-LNG_FIELD: str = "lon"
 TOPO_FIELD: str = "topo_uuid"
-FEATURE_TYPE_OSM_FIELD: str = "type"
-PROPERTIES_OSM_FIELD: str = "tags"
 ID_OSM_FIELD: str = "id"
-OSM_URL_FIELD: str = "osm_url"
-ID_DEFAULT_FIELD: str = "id"
-
 
 class OverpassDataBuilder:
-    _grouped_features = None
-    _point_features = None
+    __GEOMETRY_FIELD: str = "geometry"
+    __LAT_FIELD: str = "lat"
+    __LNG_FIELD: str = "lon"
+    __FEATURE_TYPE_OSM_FIELD: str = "type"
+    __PROPERTIES_OSM_FIELD: str = "tags"
+    __OSM_URL_FIELD: str = "osm_url"
+    __OSM_URL = "https://www.openstreetmap.org"
+
     _line_features = None
 
     def __init__(self, overpass_data: List[Dict]) -> None:
@@ -30,11 +27,11 @@ class OverpassDataBuilder:
     def _prepare_data(self, raw_data: List[Dict]):
         self._grouped_features = {
             "points": filter(
-                lambda x: x[FEATURE_TYPE_OSM_FIELD] == OsmFeatureTypes.node.value,
+                lambda x: x[self.__FEATURE_TYPE_OSM_FIELD] == OsmFeatureTypes.node.value,
                 raw_data,
             ),
             "lines": filter(
-                lambda x: x[FEATURE_TYPE_OSM_FIELD] == OsmFeatureTypes.way.value,
+                lambda x: x[self.__FEATURE_TYPE_OSM_FIELD] == OsmFeatureTypes.way.value,
                 raw_data,
             )
         }
@@ -43,7 +40,7 @@ class OverpassDataBuilder:
         point_features = []
         data = self._grouped_features["points"]
         for uuid_enum, feature in enumerate(data, start=1):
-            geometry = Point(feature[LNG_FIELD], feature[LAT_FIELD])
+            geometry = Point(feature[self.__LNG_FIELD], feature[self.__LAT_FIELD])
             point_features.append(self._build_properties(uuid_enum, geometry, feature))
         return point_features
 
@@ -52,20 +49,19 @@ class OverpassDataBuilder:
         data = self._grouped_features["lines"]
         for uuid_enum, feature in enumerate(data, start=1):
             geometry = LineString(
-                [(coords[LNG_FIELD], coords[LAT_FIELD]) for coords in feature[GEOMETRY_FIELD]]
+                [(coordinates[self.__LNG_FIELD], coordinates[self.__LAT_FIELD])
+                 for coordinates in feature[self.__GEOMETRY_FIELD]]
             )
             line_features.append(self._build_properties(uuid_enum, geometry, feature))
         return line_features
 
-    @staticmethod
-    def _build_properties(uuid_enum: int, geometry: Point | LineString, properties: Dict) -> Dict:
-        properties_found = properties.get(PROPERTIES_OSM_FIELD, {})
-        properties_found[ID_OSM_FIELD] = str(properties[ID_OSM_FIELD])
-        properties_found[OSM_URL_FIELD] = f"{osm_url}/{properties[FEATURE_TYPE_OSM_FIELD]}/" \
-                                          f"{properties_found[ID_OSM_FIELD]}"
-
-        # used for topology
-        properties_found[TOPO_FIELD] = uuid_enum  # do not cast to str, because topology processing need an int
-        properties_found[GEOMETRY_FIELD] = geometry
-
-        return properties_found
+    def _build_properties(self, uuid_enum: int, geometry: Point | LineString, properties: Dict) -> Dict:
+        tags_attributes = properties.get(self.__PROPERTIES_OSM_FIELD, {})
+        return {
+            **tags_attributes,
+            ID_OSM_FIELD: str(properties[ID_OSM_FIELD]),
+            self.__OSM_URL_FIELD: f"{self.__OSM_URL}/{properties[self.__FEATURE_TYPE_OSM_FIELD]}/"
+                                  f"{properties[ID_OSM_FIELD]}",
+            TOPO_FIELD: uuid_enum,  # do not cast to str, because topology processing need an int
+            self.__GEOMETRY_FIELD: geometry
+        }

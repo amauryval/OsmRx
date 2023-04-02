@@ -1,4 +1,5 @@
 from osmrx.apis_handler.models import Location, Bbox
+from osmrx.graph_manager.arc_feature import ArcFeature
 
 from osmrx.main.pois import Pois
 from osmrx.main.roads import Roads
@@ -14,6 +15,7 @@ def test_get_pois_from_location(location_name):
     assert len(pois_session.data) > 0
     assert isinstance(pois_session.data, list)
     assert isinstance(pois_session.data[0], dict)
+    assert {'id', 'osm_url', 'topo_uuid', 'geometry'}.issubset(pois_session.data[0].keys())
     assert not hasattr(pois_session, "network_data")
 
 
@@ -27,6 +29,7 @@ def test_get_pois_from_bbox(bbox_values):
     assert len(pois_session.data) > 1
     assert isinstance(pois_session.data, list)
     assert isinstance(pois_session.data[0], dict)
+    assert {'id', 'osm_url', 'topo_uuid', 'geometry'}.issubset(pois_session.data[0].keys())
     assert not hasattr(pois_session, "network_data")
 
 
@@ -39,7 +42,7 @@ def test_get_vehicle_network_from_location(vehicle_mode, location_name):
     assert "way" in roads_session.query
     roads_session.build_graph()
     assert len(roads_session.data) > 0
-    # assert len(roads_session.network_data.features) > 0
+    assert isinstance(roads_session.data[0], ArcFeature)
 
 
 def test_get_pedestrian_network_from_bbox_with_topo_checker(pedestrian_mode, bbox_values):
