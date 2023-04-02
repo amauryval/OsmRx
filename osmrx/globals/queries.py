@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class OsmFeatures(Enum):
+class OsmFeatureModes(Enum):
     vehicle = "vehicle"
     pedestrian = "pedestrian"
     poi = "poi"
@@ -14,7 +14,7 @@ class OsmFeatureTypes(Enum):
 
 # overpass queries
 osm_queries: dict = {
-    OsmFeatures.vehicle: {
+    OsmFeatureModes.vehicle: {
         "query": 'way["highway"~"^('
         "motorway|"
         "trunk|"
@@ -43,7 +43,7 @@ osm_queries: dict = {
         "directed_graph": True,
         "feature_type": OsmFeatureTypes.way
     },
-    OsmFeatures.pedestrian: {
+    OsmFeatureModes.pedestrian: {
         "query": 'way["highway"~"^('
         "motorway|"
         "cycleway|"
@@ -72,7 +72,7 @@ osm_queries: dict = {
         "directed_graph": False,
         "feature_type": OsmFeatureTypes.way
     },
-    OsmFeatures.poi: {
+    OsmFeatureModes.poi: {
         "query": 'node[~"^(amenity)$"~"('
             "bar|biergarten|cafe|drinking_water|fast_food|ice_cream|food_court|pub|restaurant|college|driving_school"
             "|kindergarten|language_school|library|music_school|school|sport_school|toy_library|university|"

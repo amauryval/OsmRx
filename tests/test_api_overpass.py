@@ -8,7 +8,7 @@ def overpass_query_result():
     return OverpassApi(Logger().logger).query(query)
 
 
-def test_api_overpass_railway_lines():
+def test_api_overpass_highway_lines():
     osm_data = overpass_query_result()
 
     assert len(osm_data) == 4

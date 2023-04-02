@@ -1,8 +1,11 @@
-from osmrx.globals.queries import OsmFeatures
+from typing import TYPE_CHECKING
+
 from osmrx.globals.queries import osm_queries
 
-from osmrx.apis_handler.models import Bbox
-from osmrx.apis_handler.models import Location
+if TYPE_CHECKING:
+    from osmrx.globals.queries import OsmFeatureModes
+    from osmrx.apis_handler.models import Bbox
+    from osmrx.apis_handler.models import Location
 
 
 class ErrorQueryBuilder(Exception):
@@ -14,18 +17,18 @@ class QueryBuilder:
     _output_format = "out geom;(._;>;)"
     _area_tag_query: str = "area.searchArea"
 
-    _osm_query = None
-    _query = None
+    def __init__(self, mode: "OsmFeatureModes") -> None:
+        self._osm_query = None
+        self._query = None
 
-    def __init__(self, mode: OsmFeatures) -> None:
         self._osm_query = osm_queries[mode]["query"]
 
-    def from_bbox(self, bbox: Bbox) -> str:
+    def from_bbox(self, bbox: "Bbox") -> str:
         """build a query from a bbox"""
-        query = self._osm_query.format(geo_filter=bbox.to_str)
+        query = self._osm_query.format(geo_filter=bbox.location_name)
         return self._build_query(f"({query})")
     
-    def from_location(self, location: Location) -> str:
+    def from_location(self, location: "Location") -> str:
         """build a query from a location"""
         query = self._osm_query.format(geo_filter=self._area_tag_query)
         query = f"area({location.values[0].osm_id})->.searchArea;({query})"

@@ -1,103 +1,76 @@
 from osmrx.helpers.logger import Logger
 from osmrx.topology.checker import TopologyChecker
-
 from osmrx.topology.cleaner import TopologyCleaner
-
-from osmrx.globals.queries import OsmFeatures
+from tests.common.geom_builder import build_network_features
 
 
 def test_connect_lines(some_line_features, some_point_features):
-    raw_data_topology_rebuild = TopologyCleaner(
-        Logger().logger,
-        some_line_features,
-        some_point_features,
-        "topo_uuid",
-        "id",
-        OsmFeatures.pedestrian,
-    ).run()
+    features = build_network_features(some_line_features, some_point_features, None)
 
-    all_uuid = [feature["topo_uuid"] for feature in raw_data_topology_rebuild]
+    assert len(features) == 19
 
-    assert len(raw_data_topology_rebuild) == 18
+    all_uuid = [feature.topo_uuid for feature in features]
     # check duplicated
-    assert len(all_uuid) == len(all_uuid)
     assert len(all_uuid) == len(set(all_uuid))
-    assert sorted(all_uuid) == sorted(
-        [
-            "10_0",
-            "10_1",
-            "10_2",
-            "10_3",
-            "10_4",
-            "10_5",
-            "10_6",
-            "10_7",
-            "11_0",
-            "11_1",
-            "12",
-            "added_1",
-            "added_2",
-            "added_3",
-            "added_6",
-            "added_7",
-            "added_8",
-            "added_9",
-        ]
-    )
+    assert sorted(all_uuid) == sorted([
+        '10_0_forward',
+        '10_1_forward',
+        '10_2_forward',
+        '10_3_forward',
+        '10_4_forward',
+        '10_5_forward',
+        '10_6_forward',
+        '10_7_forward',
+        '11_0_forward',
+        '11_1_forward',
+        '11_2_forward',
+        '12_forward',
+        'added_1_forward',
+        'added_2_forward',
+        'added_3_forward',
+        'added_6_forward',
+        'added_7_forward',
+        'added_8_forward',
+        'added_9_forward'
+    ])
 
-    for feature in raw_data_topology_rebuild:
-        if feature["topology"] == "unchanged":
-            assert "_" not in feature["topo_uuid"]
+    for feature in features:
+        if feature.topo_status == "unchanged":
+            assert "_" in feature.topo_uuid
 
-        if feature["topology"] == "split":
-            assert "_" in feature["topo_uuid"]
+        if feature.topo_status == "split":
+            assert "_" in feature.topo_uuid
 
-        if feature["topology"] == "added":
-            assert "added_" in feature["topo_uuid"]
+        if feature.topo_status == "added":
+            assert "added_" in feature.topo_uuid
 
 
 def test_connect_lines_interpolate_lines(some_line_features, some_point_features):
-    raw_data_topology_rebuild = TopologyCleaner(
-        Logger().logger,
-        some_line_features,
-        some_point_features,
-        "topo_uuid",
-        "id",
-        OsmFeatures.pedestrian,
-        True,
-    ).run()
+    features = build_network_features(some_line_features, some_point_features, 4)
 
-    all_uuid = [feature["topo_uuid"] for feature in raw_data_topology_rebuild]
+    assert len(features) == 192
 
-    assert len(raw_data_topology_rebuild) == 192
+    all_uuid = [feature.topo_uuid for feature in features]
+
     # check duplicated
-    assert len(all_uuid) == len(all_uuid)
     assert len(all_uuid) == len(set(all_uuid))
 
-    for feature in raw_data_topology_rebuild:
-        if feature["topology"] == "unchanged":
-            assert "_" in feature["topo_uuid"]
+    for feature in features:
+        if feature.topo_status == "unchanged":
+            assert "_" in feature.topo_uuid
 
-        if feature["topology"] == "split":
-            assert "_" in feature["topo_uuid"]
+        if feature.topo_status == "split":
+            assert "_" in feature.topo_uuid
 
-        if feature["topology"] == "added":
-            assert "added_" in feature["topo_uuid"]
+        if feature.topo_status == "added":
+            assert "added_" in feature.topo_uuid
 
 
 def test_topology(some_line_features, some_point_features):
-    raw_data_topology_rebuild = TopologyCleaner(
-        Logger().logger,
-        some_line_features,
-        some_point_features,
-        "topo_uuid",
-        "id",
-        OsmFeatures.pedestrian,
-        False,
-    ).run()
+    features = build_network_features(some_line_features, some_point_features, None)
 
-    topology_checked = TopologyChecker(raw_data_topology_rebuild, False)
-    assert len(topology_checked.intersections_added) == 20
-    assert len(topology_checked.lines_split) == 10
-    assert len(topology_checked.lines_unchanged) == 1
-    assert len(topology_checked.nodes_added) == 7
+    topology = TopologyChecker(features, False)
+    assert len(topology.intersections_added) == 22
+    assert len(topology.lines_split) == 11
+    assert len(topology.lines_unchanged) == 1
+    assert len(topology.nodes_added) == 7

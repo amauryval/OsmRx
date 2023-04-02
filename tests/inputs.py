@@ -7,7 +7,7 @@ from shapely import LineString
 
 @pytest.fixture()
 def bbox_values() -> Tuple[float, float, float, float]:
-    return 4.0237426757812, 46.019674567761, 4.1220188140869, 46.072575637028
+    return 46.019674567761, 4.0237426757812, 46.072575637028, 4.1220188140869
 
 
 @pytest.fixture()
@@ -41,7 +41,7 @@ def some_line_features() -> List[Dict]:
                     (4.07079583285433966, 46.03660928470699787),
                 ]
             ),
-            "topo_uuid": 10, "id": "10",
+            "topo_uuid": 10, "id": "10", "value": 10
         },
         {
             "geometry": LineString(
@@ -54,7 +54,7 @@ def some_line_features() -> List[Dict]:
                     (4.07098587207512264, 46.03662323153146474),
                 ]
             ),
-            "topo_uuid": 11, "id": "11",
+            "topo_uuid": 11, "id": "11", "junction": "roundabout"
         },
         {
             "geometry": LineString(
@@ -109,4 +109,9 @@ def some_point_features() -> List[Dict]:
             "geometry": Point((4.07101188185213569, 46.0373516329414727)),
             "topo_uuid": 9, "id": "9",
         },
+        {
+            "geometry": Point((4.0710313549747239, 46.03670313392265712)),
+            "topo_uuid": 10, "id": "10",
+        },
+
     ]

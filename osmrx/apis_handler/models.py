@@ -1,5 +1,5 @@
 from typing import List
-
+from typing import TYPE_CHECKING
 from dataclasses import dataclass
 
 from shapely import Point
@@ -7,7 +7,9 @@ from shapely import Polygon
 from shapely.geometry import shape
 
 from osmrx.apis_handler.nominatim import NominatimApi
-from osmrx.helpers.logger import Logger
+
+if TYPE_CHECKING:
+    from osmrx.helpers.logger import Logger
 
 
 class Bbox:
@@ -25,7 +27,7 @@ class Bbox:
         self._max_y = max_y
 
     @property
-    def to_str(self) -> str:
+    def location_name(self) -> str:
         """Cast to a string"""
         return f"{self._min_x}, {self._min_y}, {self._max_x}, {self._max_y}"
 
@@ -52,7 +54,7 @@ class Location:
     _values = None
     _limit = None
 
-    def __init__(self, location_name: str, logger: Logger, limit: int = 1) -> None:
+    def __init__(self, location_name: str, logger: "Logger", limit: int = 1) -> None:
         self.logger = logger
         self.location_name = location_name
         self._limit = limit
