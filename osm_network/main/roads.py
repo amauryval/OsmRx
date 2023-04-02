@@ -1,8 +1,7 @@
 from typing import Tuple, List, Dict
 
-import rustworkx as rx
-
 from osm_network.apis_handler.models import Location, Bbox
+from osm_network.graph_manager.graph_manager import GraphManager
 from osm_network.main.core import OsmNetworkCore
 from osm_network.graph_manager.arc_feature import ArcFeature
 from osm_network.topology.checker import TopologyChecker
@@ -48,13 +47,11 @@ class OsmNetworkRoads(OsmNetworkCore):
         return self._graph_manager.features
 
     @property
-    def graph_manager(self) -> rx.PyDiGraph | rx.PyGraph:
+    def graph_manager(self) -> GraphManager:
         """Return the graph"""
         return self._graph_manager
 
-    # add method to return:
-    # - shortest path
-    # - isochrone
+    # TODO add method to return: shortest path, isochrone
 
 
 class Roads(OsmNetworkRoads):

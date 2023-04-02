@@ -36,7 +36,8 @@ class LineBuilder:
 
     __LINESTRING_SEPARATOR: str = "_"
 
-    def __init__(self, feature: Dict, intersection_nodes: set[tuple[float, float]], interpolate_level: int | None = None):
+    def __init__(self, feature: Dict, intersection_nodes: set[tuple[float, float]],
+                 interpolate_level: int | None = None):
         self._feature = feature
         del self._feature["geometry"]
         self._coordinates = self._feature.pop("coordinates")
@@ -82,7 +83,7 @@ class LineBuilder:
         else:
             self.__proceed_direction_geom(input_feature, new_coordinates, None)
 
-    def __proceed_direction_geom(self, input_feature, sub_line_coords, idx: str | None):
+    def __proceed_direction_geom(self, input_feature, sub_line_coords, idx: int | None):
         # TODO maybe useless: check parent method
 
         position = ""
@@ -337,7 +338,7 @@ class TopologyCleaner:
         # find the nearest network arc to interpolate
         self.__tree_index = rtree.index.Index(self.__rtree_generator_func())
 
-        # find nearest line
+        # find the nearest line
         self.__node_by_nearest_lines = dict(
             (key, []) for key in self._network_data.keys()
         )

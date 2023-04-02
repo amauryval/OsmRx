@@ -1,5 +1,3 @@
-from typing import Dict, List
-
 from osm_network.apis_handler.models import Bbox, Location
 from osm_network.apis_handler.overpass import OverpassApi
 from osm_network.apis_handler.query_builder import QueryBuilder

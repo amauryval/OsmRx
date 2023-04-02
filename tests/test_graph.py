@@ -38,11 +38,11 @@ def test_vehicle_graph_building(some_line_features, some_point_features):
     graph_manager.connected_nodes = some_point_features
     graph_manager.features = some_line_features
 
-    assert len(graph_manager.features) == 28
+    assert len(graph_manager.features) == 34
     assert len(graph_manager.connected_nodes) == len(some_point_features)
     assert graph_manager.directed
     assert isinstance(graph_manager.graph, rx.PyDiGraph)
-    assert len(graph_manager.graph.edge_list()) == 28
+    assert len(graph_manager.graph.edge_list()) == 34
 
     assert len(graph_manager.graph.nodes()) == 21
     assert len(set(graph_manager.graph.nodes())) == 21

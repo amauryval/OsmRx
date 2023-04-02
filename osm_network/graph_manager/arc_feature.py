@@ -1,14 +1,8 @@
 from typing import Dict, List, Literal
 
 from pyproj import Geod
-from shapely.geometry.base import BaseGeometry
 from shapely import LineString, Point
 
-
-class LineFeature:
-    _linestring = None
-    def __init__(self, geometry_line: LineString):
-        self._linestring = geometry_line
 
 class ArcFeature:
     __slots__ = ("_topo_uuid", "_geometry", "_topo_status", "_direction", "_attributes", "_direction")

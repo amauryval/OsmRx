@@ -83,7 +83,7 @@ def test_get_vehicle_network_from_bbox_with_topo_checker_simplified(vehicle_mode
     assert "way" in roads_session.query
 
     roads_session.build_graph()
-    assert len(roads_session.data) == 12749  # could be change if osm data is updated
+    assert len(roads_session.data) > 10000  # could be changed if osm data is updated
 
     topology_checked = roads_session.topology_checker()
     assert len(topology_checked.intersections_added) > 1
@@ -146,10 +146,40 @@ def test_get_vehicle_network_from_location_with_pois_without_topo_checker(vehicl
     roads_session.build_graph()
     assert len(roads_session.data) > 0
 
+
+def test_get_vehicle_network_from_location_shortest_pathr(vehicle_mode, location_name):
+    pois_session = Pois()
+    pois_session.from_location(location_name)
+
+    roads_session = Roads(vehicle_mode)
+    roads_session.from_location(location_name)
+    roads_session.additional_nodes = pois_session.data
+
+    roads_session.build_graph()
+
     paths_found = roads_session._graph_manager.compute_shortest_path(
         pois_session.data[10]["geometry"].wkt,
         pois_session.data[150]["geometry"].wkt,
     )
     assert len(paths_found) == 1
-    assert paths_found[0].path.length == 0.013235288256492393
-    assert len(paths_found[0].features) == 45
+    assert paths_found[0].path.length == 0.013235288256492393  # could change if oms data is updated
+    assert len(paths_found[0].features) == 45  # could change if oms data is updated
+
+
+def test_get_pedestrian_network_from_location_shortest_pathr(pedestrian_mode, location_name):
+    pois_session = Pois()
+    pois_session.from_location(location_name)
+
+    roads_session = Roads(pedestrian_mode)
+    roads_session.from_location(location_name)
+    roads_session.additional_nodes = pois_session.data
+
+    roads_session.build_graph()
+
+    paths_found = roads_session._graph_manager.compute_shortest_path(
+        pois_session.data[10]["geometry"].wkt,
+        pois_session.data[150]["geometry"].wkt,
+    )
+    assert len(paths_found) == 1
+    assert paths_found[0].path.length == 0.011041354246022669  # could change if oms data is updated
+    assert len(paths_found[0].features) == 41  # could change if oms data is updated
