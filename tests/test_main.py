@@ -1,10 +1,10 @@
-from osm_network import Bbox
-from osm_network import Location
+from osmrx import Bbox
+from osmrx import Location
 
-from osm_network import DataFromBbox
-from osm_network import DataFromLocation
+from osmrx import DataFromBbox
+from osmrx import DataFromLocation
 
-from osm_network.topology.checker import TopologyChecker
+from osmrx.topology.checker import TopologyChecker
 
 
 def test_get_vehicle_network_from_bbox(vehicle_mode, bbox_values):

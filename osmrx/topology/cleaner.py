@@ -20,8 +20,8 @@ from more_itertools import split_at
 
 import concurrent.futures
 
-from osm_network.globals.osm import forward_tag, backward_tag
-from osm_network.globals.queries import OsmFeatures
+from osmrx.globals.osm import forward_tag, backward_tag
+from osmrx.globals.queries import OsmFeatures
 
 
 class NetworkTopologyError(Exception):

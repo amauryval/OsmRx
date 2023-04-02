@@ -3,7 +3,7 @@ from typing import Dict, List
 
 from shapely import Point
 
-from osm_network.globals.osm import forward_tag
+from osmrx.globals.osm import forward_tag
 
 
 class TopologyChecker:

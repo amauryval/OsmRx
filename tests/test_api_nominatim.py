@@ -1,5 +1,5 @@
-from osm_network.apis_handler.nominatim import NominatimApi
-from osm_network.helpers.logger import Logger
+from osmrx.apis_handler.nominatim import NominatimApi
+from osmrx.helpers.logger import Logger
 
 
 def test_find_a_city_by_name():

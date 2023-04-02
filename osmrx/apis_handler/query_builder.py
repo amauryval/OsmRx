@@ -1,8 +1,8 @@
-from osm_network.globals.queries import OsmFeatures
-from osm_network.globals.queries import osm_queries
+from osmrx.globals.queries import OsmFeatures
+from osmrx.globals.queries import osm_queries
 
-from osm_network.apis_handler.models import Bbox
-from osm_network.apis_handler.models import Location
+from osmrx.apis_handler.models import Bbox
+from osmrx.apis_handler.models import Location
 
 
 class ErrorQueryBuilder(Exception):

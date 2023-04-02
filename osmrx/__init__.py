@@ -1,12 +1,12 @@
 from typing import Tuple, Dict, List
 
-from osm_network.apis_handler.models import Bbox, Location
-from osm_network.apis_handler.overpass import OverpassApi
-from osm_network.apis_handler.query_builder import QueryBuilder
-from osm_network.helpers.logger import Logger
-from osm_network.data_processing.overpass_data_builder import OverpassDataBuilder, TOPO_FIELD, ID_OSM_FIELD
-from osm_network.topology.cleaner import TopologyCleaner
-from osm_network.globals.queries import OsmFeatures
+from osmrx.apis_handler.models import Bbox, Location
+from osmrx.apis_handler.overpass import OverpassApi
+from osmrx.apis_handler.query_builder import QueryBuilder
+from osmrx.helpers.logger import Logger
+from osmrx.data_processing.overpass_data_builder import OverpassDataBuilder, TOPO_FIELD, ID_OSM_FIELD
+from osmrx.topology.cleaner import TopologyCleaner
+from osmrx.globals.queries import OsmFeatures
 
 
 class OsmNetworkCore(Logger):

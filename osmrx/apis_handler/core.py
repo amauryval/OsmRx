@@ -2,8 +2,8 @@ from typing import Dict
 
 from requests_futures import sessions
 
-from osm_network.helpers.logger import Logger
-from osm_network.helpers.misc import retry
+from osmrx.helpers.logger import Logger
+from osmrx.helpers.misc import retry
 
 
 class ErrorRequest(Exception):

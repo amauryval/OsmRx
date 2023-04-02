@@ -1,9 +1,9 @@
-from osm_network.helpers.logger import Logger
-from osm_network.topology.checker import TopologyChecker
+from osmrx.helpers.logger import Logger
+from osmrx.topology.checker import TopologyChecker
 
-from osm_network.topology.cleaner import TopologyCleaner
+from osmrx.topology.cleaner import TopologyCleaner
 
-from osm_network.globals.queries import OsmFeatures
+from osmrx.globals.queries import OsmFeatures
 
 
 def test_connect_lines(some_line_features, some_point_features):

@@ -1,8 +1,8 @@
 from typing import Dict, List
 from typing import Set
 
-from osm_network.apis_handler.core import ApiCore
-from osm_network.helpers.logger import Logger
+from osmrx.apis_handler.core import ApiCore
+from osmrx.helpers.logger import Logger
 
 
 class ErrorNominatimApi(ValueError):
