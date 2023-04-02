@@ -62,10 +62,6 @@ class OsmNetworkCore(Logger):
             raw_data = OverpassApi(logger=self.logger).query(self._query)
             return OverpassDataBuilder(raw_data["elements"])
 
-    # @property
-    # def data(self) -> List[Dict]:
-    #     return self._raw_data
-
     @property
     def data(self) -> None:
         raise NotImplemented

@@ -37,14 +37,14 @@ class OsmNetworkRoads(OsmNetworkCore):
             # return self._features_manager
 
     def topology_checker(self) -> TopologyChecker:
-        topology_result = TopologyChecker(self.data)
+        topology_result = TopologyChecker(self._graph_manager.features)
         self.logger.info("Topolgoy analysis done")
         return topology_result
 
     @property
-    def data(self) -> List[ArcFeature]:
+    def data(self) -> List[Dict]:
         """"""
-        return self._graph_manager.features
+        return [feature.to_dict(with_attr=True) for feature in self._graph_manager.features]
 
     @property
     def graph_manager(self) -> GraphManager:

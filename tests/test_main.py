@@ -42,7 +42,9 @@ def test_get_vehicle_network_from_location(vehicle_mode, location_name):
     assert "way" in roads_session.query
     roads_session.build_graph()
     assert len(roads_session.data) > 0
-    assert isinstance(roads_session.data[0], ArcFeature)
+    assert isinstance(roads_session.data, list)
+    assert isinstance(roads_session.data[0], dict)
+    assert {'id', 'topo_uuid', 'topo_status', 'geometry', 'direction', 'osm_url'}.issubset(roads_session.data[0].keys())
 
 
 def test_get_pedestrian_network_from_bbox_with_topo_checker(pedestrian_mode, bbox_values):
@@ -150,7 +152,7 @@ def test_get_vehicle_network_from_location_with_pois_without_topo_checker(vehicl
     assert len(roads_session.data) > 0
 
 
-def test_get_vehicle_network_from_location_shortest_pathr(vehicle_mode, location_name):
+def test_get_vehicle_network_from_location_shortest_path(vehicle_mode, location_name):
     pois_session = Pois()
     pois_session.from_location(location_name)
 
@@ -169,7 +171,7 @@ def test_get_vehicle_network_from_location_shortest_pathr(vehicle_mode, location
     assert len(paths_found[0].features) == 45  # could change if oms data is updated
 
 
-def test_get_pedestrian_network_from_location_shortest_pathr(pedestrian_mode, location_name):
+def test_get_pedestrian_network_from_location_shortest_path(pedestrian_mode, location_name):
     pois_session = Pois()
     pois_session.from_location(location_name)
 

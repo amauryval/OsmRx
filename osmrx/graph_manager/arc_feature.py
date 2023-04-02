@@ -89,7 +89,6 @@ class ArcFeature:
             return {
                 **main_attrs,
                 **self.attributes,
-                **self._addtional_attributes
             }
         return main_attrs
 
