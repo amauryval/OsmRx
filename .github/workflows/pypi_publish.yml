@@ -7,7 +7,7 @@ on:
 
 jobs:
 
-  Test_and_publish_on_conda:
+  Publish_on_Pypi:
 
     strategy:
       fail-fast: false
