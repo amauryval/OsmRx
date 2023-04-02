@@ -3,8 +3,6 @@ from typing import List, Dict
 from typing import TYPE_CHECKING
 
 import rustworkx as rx
-from shapely import LineString
-from shapely import wkt
 
 from osm_network.data_processing.overpass_data_builder import TOPO_FIELD
 from osm_network.data_processing.overpass_data_builder import ID_OSM_FIELD
@@ -44,9 +42,11 @@ class GraphCore:
         """add ege based on 2 nodes"""
         from_indice = self._add_nodes(from_node_value)
         to_indice = self._add_nodes(to_node_value)
-        indice = f"{from_indice}_{to_indice}"
-        if indice not in self._edges_mapping:
-            self._edges_mapping[indice] = self.graph.add_edge(from_indice, to_indice, attr)
+        # edge_indice = f"{from_indice}_{to_indice}"
+        if attr.topo_uuid not in self._edges_mapping:
+            self._edges_mapping[attr.topo_uuid] = self.graph.add_edge(from_indice, to_indice, attr)
+        else:
+            raise ValueError(f"{attr.topo_uuid} edge exists: it should not!")
 
     def get_node_indice(self, node_value: str) -> int | None:
         """Return the node value from indice"""
@@ -120,7 +120,7 @@ class GraphManager(GraphCore):
                     arc_feature_backward = copy.deepcopy(arc_feature)
                     arc_feature_backward.direction = "backward"
                     self.add_edge(
-                        arc_feature_backward.to_point.wkt,
+                        arc_feature_backward.from_point.wkt,
                         arc_feature_backward.to_point.wkt,
                         arc_feature_backward
                     )

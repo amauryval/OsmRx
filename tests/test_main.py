@@ -42,7 +42,7 @@ def test_get_vehicle_network_from_location(vehicle_mode, location_name):
     # assert len(roads_session.network_data.features) > 0
 
 
-def test_get_vehicle_network_from_bbox_with_topo_checker(pedestrian_mode, bbox_values):
+def test_get_pedestrian_network_from_bbox_with_topo_checker(pedestrian_mode, bbox_values):
     """test if calling twice network_data method is working"""
     roads_session = Roads(pedestrian_mode)
     roads_session.from_bbox(bbox_values)
@@ -145,3 +145,11 @@ def test_get_vehicle_network_from_location_with_pois_without_topo_checker(vehicl
 
     roads_session.build_graph()
     assert len(roads_session.data) > 0
+
+    paths_found = roads_session._graph_manager.compute_shortest_path(
+        pois_session.data[10]["geometry"].wkt,
+        pois_session.data[150]["geometry"].wkt,
+    )
+    assert len(paths_found) == 1
+    assert paths_found[0].path.length == 0.013235288256492393
+    assert len(paths_found[0].features) == 45

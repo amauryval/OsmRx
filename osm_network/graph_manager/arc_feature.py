@@ -37,14 +37,15 @@ class ArcFeature:
     @direction.setter
     def direction(self, direction: Literal["forward", "backward"]):
         self._direction = direction
+        self._refresh_geometry()
 
     @property
     def geometry(self) -> LineString:
-        # TODO: improve condition
-        if self._direction == "forward":
-            return self._geometry
-        else:
-            return LineString(self.coordinates[::-1])
+        return self._geometry
+
+    def _refresh_geometry(self):
+        if self._direction == "backward":
+            self._geometry = LineString(self.coordinates[::-1])
 
     @property
     def coordinates(self) -> List[float]:
