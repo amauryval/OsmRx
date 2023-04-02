@@ -1,9 +1,12 @@
-from typing import Tuple, List, Dict
+from typing import Tuple, List, Dict, Any, Generator
+
+from shapely import Point
+import rustworkx as rx
 
 from osmrx.apis_handler.models import Location, Bbox
-from osmrx.graph_manager.graph_manager import GraphManager
+from osmrx.graph_manager.graph_manager import IsochronesFeature
+from osmrx.graph_manager.path_feature import PathFeature
 from osmrx.main.core import OsmNetworkCore
-from osmrx.graph_manager.arc_feature import ArcFeature
 from osmrx.topology.checker import TopologyChecker
 
 
@@ -11,7 +14,6 @@ class OsmNetworkRoads(OsmNetworkCore):
 
     def __init__(self, osm_feature_mode: str) -> None:
         super().__init__(osm_feature_mode=osm_feature_mode)
-        self._additional_nodes = None
 
     def _execute_query(self) -> None:
         """Execute the query with the Overpass API"""
@@ -27,31 +29,39 @@ class OsmNetworkRoads(OsmNetworkCore):
     @additional_nodes.setter
     def additional_nodes(self, additional_nodes: List[Dict]):
         """set the nodes defined to connect on the network"""
-        # self._additional_nodes = additional_nodes
         self._graph_manager.connected_nodes = additional_nodes
 
     def build_graph(self) -> None:
         """Fix topology issues for LineString features and build graph"""
         if self._raw_data is not None:
             self._graph_manager.features = self._raw_data
-            # return self._features_manager
+            self.logger.info("Graph built.")
 
     def topology_checker(self) -> TopologyChecker:
         topology_result = TopologyChecker(self._graph_manager.features)
-        self.logger.info("Topolgoy analysis done")
+        self.logger.info("Topology analysis built.")
         return topology_result
 
     @property
     def data(self) -> List[Dict]:
-        """"""
+        """Return the data"""
         return [feature.to_dict(with_attr=True) for feature in self._graph_manager.features]
 
-    @property
-    def graph_manager(self) -> GraphManager:
-        """Return the graph"""
-        return self._graph_manager
+    def graph(self) -> rx.PyGraph | rx.PyDiGraph:
+        return self._graph_manager.graph
 
-    # TODO add method to return: shortest path, isochrone
+    def shortest_path(self, from_point: Point, to_point: Point) -> Generator[PathFeature, Any, None]:
+        """Compute a shortest path from a node to an other node"""
+        paths = self._graph_manager.compute_shortest_path(from_point.wkt, to_point.wkt)
+        self.logger.info(f"Shortest path(s) built from {from_point.wkt} to {to_point.wkt}.")
+        for path in paths:
+            yield path
+
+    def isochrones_from_distance(self, from_point: Point, intervals: List[int]) -> IsochronesFeature:
+        """Compute isochrones from a node based on distances"""
+        isochrones = self._graph_manager.compute_isochrone_from_distance(from_point.wkt, intervals)
+        self.logger.info(f"Isochrones {isochrones.intervals} built from {from_point.wkt}.")
+        return isochrones
 
 
 class Roads(OsmNetworkRoads):

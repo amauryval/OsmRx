@@ -103,6 +103,7 @@ class GraphCore:
         raise ValueError(f"{node_value} node not found!")
 
     def compute_shortest_path(self, from_node: str, to_node: str) -> List[PathFeature]:
+        """Compute a shortest path from a node to an ohter node"""
         edges = rx.dijkstra_shortest_paths(
             self.graph,
             self.get_node_indice(from_node),
@@ -114,19 +115,23 @@ class GraphCore:
             for _, node_indices in edges.items()
         ]
 
-    def isochrone(self, from_node: str) -> Dict[Tuple[int, int], Polygon]:
+    def compute_isochrone_from_distance(self, from_node: str, intervals: List[int]) -> IsochronesFeature:
+        """Compute isochrone from a distance interval"""
+        intervals.sort()
+        assert intervals[0] == 0, "The intervals must start with 0"
+
         from_node_indice = self.get_node_indice(from_node)
         weight_attribute_func = lambda edge: edge.length  # noqa
+
         if self._directed:
             edges = rx.digraph_dijkstra_shortest_path_lengths(self.graph, from_node_indice, weight_attribute_func)
         else:
             edges = rx.dijkstra_shortest_path_lengths(self.graph, from_node_indice, weight_attribute_func)
 
-        intervals = [0, 250, 500, 1000]
         iso_session = IsochronesFeature()
         iso_session.from_distances(intervals)
         iso_session.build(self.graph, edges)
-        return iso_session.data
+        return iso_session
 
 
 class GraphManager(GraphCore):
