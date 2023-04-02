@@ -1420,14 +1420,6 @@ graphviz = ["pillow (>=5.4)"]
 mpl = ["matplotlib (>=3.0)"]
 
 [[package]]
-name = "rx"
-version = "3.2.0"
-description = "Reactive Extensions (Rx) for Python"
-category = "main"
-optional = false
-python-versions = ">=3.6.0"
-
-[[package]]
 name = "scipy"
 version = "1.10.1"
 description = "Fundamental algorithms for scientific computing in Python"
@@ -1701,7 +1693,7 @@ test = ["mypy", "pre-commit", "pytest", "pytest-asyncio", "websockets (>=10.0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "3.11.0"
-content-hash = "caacd79b5dca006152deb377f91dbd005f3a3064ddaa098de34c3deb41a53d63"
+content-hash = "38d2d11dca52b56014718f5f7128ea4d8bb15a50e4a549101d0ce239a8abe70b"
 
 [metadata.files]
 aiofiles = [
@@ -2969,10 +2961,6 @@ rustworkx = [
     {file = "rustworkx-0.12.1-cp39-cp39-win32.whl", hash = "sha256:25c9c616ff9d1e8112d17cdf83442f862ed6dd94f8a60037378b41bea29041ee"},
     {file = "rustworkx-0.12.1-cp39-cp39-win_amd64.whl", hash = "sha256:dd64db8680c159ce7f69991560fca559a1c8d21282f479aab9595451ac33d0ff"},
     {file = "rustworkx-0.12.1.tar.gz", hash = "sha256:13a19a2f64dff086b3bffffb294c4630100ecbc13634b4995d9d36a481ae130e"},
-]
-rx = [
-    {file = "Rx-3.2.0-py3-none-any.whl", hash = "sha256:922c5f4edb3aa1beaa47bf61d65d5380011ff6adcd527f26377d05cb73ed8ec8"},
-    {file = "Rx-3.2.0.tar.gz", hash = "sha256:b657ca2b45aa485da2f7dcfd09fac2e554f7ac51ff3c2f8f2ff962ecd963d91c"},
 ]
 scipy = [
     {file = "scipy-1.10.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:e7354fd7527a4b0377ce55f286805b34e8c54b91be865bac273f527e1b839019"},
