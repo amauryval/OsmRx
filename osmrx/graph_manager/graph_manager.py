@@ -1,13 +1,12 @@
 import copy
-from typing import List, Dict, Tuple
+from typing import List, Dict
 from typing import TYPE_CHECKING
 
 import rustworkx as rx
-from rustworkx import PathLengthMapping
-from shapely import wkt, MultiPoint, Polygon
 
 from osmrx.data_processing.overpass_data_builder import TOPO_FIELD
 from osmrx.data_processing.overpass_data_builder import ID_OSM_FIELD
+from osmrx.graph_manager.isochrones_feature import IsochronesFeature
 from osmrx.graph_manager.path_feature import PathFeature
 from osmrx.topology.cleaner import TopologyCleaner
 
@@ -15,51 +14,6 @@ from osmrx.globals.queries import OsmFeatureModes
 
 if TYPE_CHECKING:
     from osmrx.graph_manager.arc_feature import ArcFeature
-
-
-class IsochronesFeature:
-    _intervals = None
-    _intervals_data = None
-
-    def from_distances(self, intervals: List[int]):
-        self._intervals = list(zip(intervals, intervals[1:]))[::-1]
-        self._intervals_data = {interval: list() for interval in self._intervals}
-
-    def from_time(self):
-        ...
-
-    def build(self, graph: rx.PyGraph | rx.PyDiGraph, shortest_path_lengths: PathLengthMapping):
-        if self._intervals is None:
-            raise ValueError("None interval defined")
-
-        for indice, length in shortest_path_lengths.items():
-            for interval in self._intervals:
-                if length < interval[-1]:
-                    self._intervals_data[interval].append(
-                        wkt.loads(graph.get_node_data(indice)))
-
-        for interval, geom in self._intervals_data.items():
-            self._intervals_data[interval] = MultiPoint(geom).convex_hull
-        self._clean_iso()
-
-    def _clean_iso(self):
-        isochrones_to_clean = list(self._intervals_data.items())
-        for pos, isochrone in enumerate(isochrones_to_clean):
-            if pos < len(isochrones_to_clean) - 1:
-                interval = isochrone[0]
-                geom = isochrone[-1]
-                next_isochrone = isochrones_to_clean[pos + 1]
-                self._intervals_data[interval] = geom.difference(next_isochrone[-1])
-
-    @property
-    def data(self) -> Dict:
-        return self._intervals_data
-
-    @property
-    def intervals(self):
-        return self._intervals[::-1]
-
-
 
 
 class GraphCore:
@@ -90,7 +44,6 @@ class GraphCore:
         """add ege based on 2 nodes"""
         from_indice = self._add_nodes(from_node_value)
         to_indice = self._add_nodes(to_node_value)
-        # edge_indice = f"{from_indice}_{to_indice}"
         if attr.topo_uuid not in self._edges_mapping:
             self._edges_mapping[attr.topo_uuid] = self.graph.add_edge(from_indice, to_indice, attr)
         else:

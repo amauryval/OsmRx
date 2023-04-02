@@ -4,7 +4,7 @@ from shapely import Point
 import rustworkx as rx
 
 from osmrx.apis_handler.models import Location, Bbox
-from osmrx.graph_manager.graph_manager import IsochronesFeature
+from osmrx.graph_manager.isochrones_feature import IsochronesFeature
 from osmrx.graph_manager.path_feature import PathFeature
 from osmrx.main.core import OsmNetworkCore
 from osmrx.topology.checker import TopologyChecker
@@ -35,7 +35,6 @@ class OsmNetworkRoads(OsmNetworkCore):
         """Fix topology issues for LineString features and build graph"""
         if self._raw_data is not None:
             self._graph_manager.features = self._raw_data
-            self.logger.info("Graph built.")
 
     def topology_checker(self) -> TopologyChecker:
         topology_result = TopologyChecker(self._graph_manager.features)
