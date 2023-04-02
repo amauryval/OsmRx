@@ -4,8 +4,6 @@ from typing import TYPE_CHECKING
 
 import rustworkx as rx
 
-from osmrx.data_processing.overpass_data_builder import TOPO_FIELD
-from osmrx.data_processing.overpass_data_builder import ID_OSM_FIELD
 from osmrx.graph_manager.isochrones_feature import IsochronesFeature
 from osmrx.graph_manager.path_feature import PathFeature
 from osmrx.topology.cleaner import TopologyCleaner
@@ -123,7 +121,7 @@ class GraphManager(GraphCore):
 
     @features.setter
     def features(self, network_data: List[Dict] | None):
-        features = TopologyCleaner(self.logger, network_data, self._connected_nodes, TOPO_FIELD, ID_OSM_FIELD).run()
+        features = TopologyCleaner(self.logger, network_data, self._connected_nodes).run()
 
         for arc_feature in features:
             self.add_edge(

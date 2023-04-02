@@ -11,8 +11,6 @@ def build_network_features(line_features, point_features, interpolation_level: i
         Logger().logger,
         line_features,
         point_features,
-        "topo_uuid",
-        "id",
         interpolation_level
     ).run()
 
