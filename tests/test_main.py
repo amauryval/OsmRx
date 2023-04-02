@@ -1,7 +1,7 @@
-from osm_network.apis_handler.models import Location, Bbox
+from osmrx.apis_handler.models import Location, Bbox
 
-from osm_network.main.pois import Pois
-from osm_network.main.roads import Roads
+from osmrx.main.pois import Pois
+from osmrx.main.roads import Roads
 
 
 def test_get_pois_from_location(location_name):

@@ -6,10 +6,10 @@ from shapely import Point
 from shapely import Polygon
 from shapely.geometry import shape
 
-from osm_network.apis_handler.nominatim import NominatimApi
+from osmrx.apis_handler.nominatim import NominatimApi
 
 if TYPE_CHECKING:
-    from osm_network.helpers.logger import Logger
+    from osmrx.helpers.logger import Logger
 
 
 class Bbox:

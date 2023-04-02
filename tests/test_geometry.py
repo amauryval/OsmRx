@@ -1,6 +1,6 @@
-from osm_network.helpers.logger import Logger
-from osm_network.topology.checker import TopologyChecker
-from osm_network.topology.cleaner import TopologyCleaner
+from osmrx.helpers.logger import Logger
+from osmrx.topology.checker import TopologyChecker
+from osmrx.topology.cleaner import TopologyCleaner
 from tests.common.geom_builder import build_network_features
 
 

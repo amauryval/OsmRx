@@ -4,9 +4,9 @@ import pytest
 
 import rustworkx as rx
 
-from osm_network.globals.queries import OsmFeatureModes
-from osm_network.graph_manager.graph_manager import GraphManager
-from osm_network.helpers.logger import Logger
+from osmrx.globals.queries import OsmFeatureModes
+from osmrx.graph_manager.graph_manager import GraphManager
+from osmrx.helpers.logger import Logger
 
 from tests.common.geom_builder import build_network_features
 

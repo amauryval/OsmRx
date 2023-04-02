@@ -2,7 +2,7 @@ from typing import Dict, List
 from typing import Set
 from typing import TYPE_CHECKING
 
-from osm_network.apis_handler.core import ApiCore
+from osmrx.apis_handler.core import ApiCore
 
 if TYPE_CHECKING:
     from logging import Logger

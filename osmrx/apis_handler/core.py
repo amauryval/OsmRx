@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 
 from requests_futures import sessions
 
-from osm_network.helpers.misc import retry
+from osmrx.helpers.misc import retry
 
 if TYPE_CHECKING:
     from logging import Logger

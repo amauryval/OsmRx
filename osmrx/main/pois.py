@@ -1,8 +1,8 @@
 from typing import Tuple, List, Dict
 
-from osm_network.apis_handler.models import Bbox, Location
-from osm_network.globals.queries import OsmFeatureModes
-from osm_network.main.core import OsmNetworkCore
+from osmrx.apis_handler.models import Bbox, Location
+from osmrx.globals.queries import OsmFeatureModes
+from osmrx.main.core import OsmNetworkCore
 
 
 class OsmNetworkPoi(OsmNetworkCore):

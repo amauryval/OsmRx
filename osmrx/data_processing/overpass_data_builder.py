@@ -2,8 +2,8 @@ from typing import Dict, List
 
 from shapely import Point, LineString
 
-from osm_network.globals.osm import osm_url
-from osm_network.globals.queries import OsmFeatureTypes
+from osmrx.globals.osm import osm_url
+from osmrx.globals.queries import OsmFeatureTypes
 
 
 # constants

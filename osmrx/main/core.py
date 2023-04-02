@@ -1,10 +1,10 @@
-from osm_network.apis_handler.models import Bbox, Location
-from osm_network.apis_handler.overpass import OverpassApi
-from osm_network.apis_handler.query_builder import QueryBuilder
-from osm_network.graph_manager.graph_manager import GraphManager
-from osm_network.helpers.logger import Logger
-from osm_network.data_processing.overpass_data_builder import OverpassDataBuilder
-from osm_network.globals.queries import OsmFeatureModes
+from osmrx.apis_handler.models import Bbox, Location
+from osmrx.apis_handler.overpass import OverpassApi
+from osmrx.apis_handler.query_builder import QueryBuilder
+from osmrx.graph_manager.graph_manager import GraphManager
+from osmrx.helpers.logger import Logger
+from osmrx.data_processing.overpass_data_builder import OverpassDataBuilder
+from osmrx.globals.queries import OsmFeatureModes
 
 
 class OsmNetworkCore(Logger):

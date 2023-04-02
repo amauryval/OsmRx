@@ -1,10 +1,10 @@
 from typing import Tuple, List, Dict
 
-from osm_network.apis_handler.models import Location, Bbox
-from osm_network.graph_manager.graph_manager import GraphManager
-from osm_network.main.core import OsmNetworkCore
-from osm_network.graph_manager.arc_feature import ArcFeature
-from osm_network.topology.checker import TopologyChecker
+from osmrx.apis_handler.models import Location, Bbox
+from osmrx.graph_manager.graph_manager import GraphManager
+from osmrx.main.core import OsmNetworkCore
+from osmrx.graph_manager.arc_feature import ArcFeature
+from osmrx.topology.checker import TopologyChecker
 
 
 class OsmNetworkRoads(OsmNetworkCore):

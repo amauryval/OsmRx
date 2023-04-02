@@ -4,7 +4,7 @@ import geopandas as gpd
 
 from gdf2bokeh import Gdf2Bokeh
 
-from osm_network import DataFromLocation
+from osmrx import DataFromLocation
 
 
 location = "Roanne"

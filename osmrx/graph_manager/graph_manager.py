@@ -7,15 +7,15 @@ from rustworkx import PathLengthMapping
 from rustworkx.visit import DijkstraVisitor
 from shapely import wkt, MultiPoint, Polygon
 
-from osm_network.data_processing.overpass_data_builder import TOPO_FIELD
-from osm_network.data_processing.overpass_data_builder import ID_OSM_FIELD
-from osm_network.graph_manager.path_feature import PathFeature
-from osm_network.topology.cleaner import TopologyCleaner
+from osmrx.data_processing.overpass_data_builder import TOPO_FIELD
+from osmrx.data_processing.overpass_data_builder import ID_OSM_FIELD
+from osmrx.graph_manager.path_feature import PathFeature
+from osmrx.topology.cleaner import TopologyCleaner
 
-from osm_network.globals.queries import OsmFeatureModes
+from osmrx.globals.queries import OsmFeatureModes
 
 if TYPE_CHECKING:
-    from osm_network.graph_manager.arc_feature import ArcFeature
+    from osmrx.graph_manager.arc_feature import ArcFeature
 
 
 class IsochronesFeature:
