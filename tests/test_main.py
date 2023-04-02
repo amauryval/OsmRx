@@ -183,3 +183,39 @@ def test_get_pedestrian_network_from_location_shortest_pathr(pedestrian_mode, lo
     assert len(paths_found) == 1
     assert paths_found[0].path.length == 0.011041354246022669  # could change if oms data is updated
     assert len(paths_found[0].features) == 41  # could change if oms data is updated
+
+
+def test_pedestrian_isochrones(pedestrian_mode, location_name):
+    pois_session = Pois()
+    pois_session.from_location(location_name)
+
+    roads_session = Roads(pedestrian_mode)
+    roads_session.from_location(location_name)
+    roads_session.additional_nodes = pois_session.data
+
+    roads_session.build_graph()
+    isochrones_built = roads_session._graph_manager.isochrone(
+        pois_session.data[10]["geometry"].wkt,
+    )
+    assert len(isochrones_built) == 3
+    for isochrone in isochrones_built.values():
+        assert isochrone.geom_type == "Polygon"
+        assert isochrone.area > 0
+
+
+def test_vehicle_isochrone(vehicle_mode, location_name):
+    pois_session = Pois()
+    pois_session.from_location(location_name)
+
+    roads_session = Roads(vehicle_mode)
+    roads_session.from_location(location_name)
+    roads_session.additional_nodes = pois_session.data
+
+    roads_session.build_graph()
+    isochrones_built = roads_session._graph_manager.isochrone(
+        pois_session.data[10]["geometry"].wkt,
+    )
+    assert len(isochrones_built) == 3
+    for isochrone in isochrones_built.values():
+        assert isochrone.geom_type == "Polygon"
+        assert isochrone.area > 0

@@ -13,7 +13,6 @@ class ArcFeature:
         self._topo_status = None
         self._direction = "forward"
         self._attributes = {}
-
         self._geometry = geometry
 
     @property
@@ -89,7 +88,8 @@ class ArcFeature:
         if with_attr:
             return {
                 **main_attrs,
-                **self.attributes
+                **self.attributes,
+                **self._addtional_attributes
             }
         return main_attrs
 
