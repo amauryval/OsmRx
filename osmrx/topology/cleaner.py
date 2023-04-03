@@ -13,7 +13,7 @@ from scipy import spatial
 from shapely.geometry import LineString
 
 import rtree
-
+import geopandas as gpd
 import numpy as np
 
 from collections import Counter
@@ -50,7 +50,7 @@ class LineBuilder:
 
     def build_features(self) -> List[ArcFeature]:
         if not self.is_line_valid():
-            return []
+            return self._output
 
         geometry_lines = self.split_line_at_intersections(
             self._coordinates, self.intersections_points()
@@ -85,8 +85,6 @@ class LineBuilder:
             self.__proceed_direction_geom(input_feature, new_coordinates, None)
 
     def __proceed_direction_geom(self, input_feature, sub_line_coords, idx: int | None):
-        # TODO maybe useless: check parent method
-
         position = ""
         if idx:
             position = f"_{idx}"
@@ -159,7 +157,7 @@ class TopologyCleaner:
         self,
         logger,
         network_data: List[Dict],
-        additional_nodes: Optional[List[Dict]],
+        additional_nodes: gpd.GeoDataFrame,
         interpolation_line_level: int | None = None,  # 4 is a good value
     ) -> None:
 
@@ -170,8 +168,8 @@ class TopologyCleaner:
         self._interpolation_line_level = interpolation_line_level  # link to __INTERPOLATION_LINE_LEVEL
 
         self._additional_nodes = additional_nodes
-        if self._additional_nodes is None:
-            self._additional_nodes: Dict = {}
+        # if self._additional_nodes is None:
+        #     self._additional_nodes: Dict = {}
 
         self.__FIELD_ID = TOPO_FIELD  # have to be an integer.. thank rtree...
         self._original_field_id = ID_OSM_FIELD
@@ -183,7 +181,7 @@ class TopologyCleaner:
         self._prepare_data()
 
         # connect all the added nodes
-        if len(self._additional_nodes) > 0:
+        if self._additional_nodes is not None:
             self.compute_added_node_connections()
 
         # find all the existing intersection from coordinates
@@ -206,13 +204,13 @@ class TopologyCleaner:
             }
             for feature in self._network_data
         }
-        self._additional_nodes = {
-            feature[self.__FIELD_ID]: {
-                self.__COORDINATES_FIELD: feature[self.__GEOMETRY_FIELD].coords[0],
-                **feature,
-            }
-            for feature in self._additional_nodes
-        }
+        # self._additional_nodes = {
+        #     feature[self.__FIELD_ID]: {
+        #         self.__COORDINATES_FIELD: feature[self.__GEOMETRY_FIELD].coords[0],
+        #         **feature,
+        #     }
+        #     for feature in self._additional_nodes
+        # }
 
     def compute_added_node_connections(self):
         self.logger.info("Starting: Adding new nodes on the network")
@@ -261,11 +259,9 @@ class TopologyCleaner:
         line_tree = spatial.cKDTree(interpolated_line_coords)
         interpolated_line_coords_rebuilt = list(map(tuple, interpolated_line_coords))
 
-        nodes_coords = [
-            self._additional_nodes[node_key][self.__COORDINATES_FIELD]
-            for node_key in node_keys
-        ]
-        _, nearest_line_object_idxes = line_tree.query(nodes_coords)
+        nodes_coords = self._additional_nodes.loc[
+            self._additional_nodes["topo_uuid"].isin(node_keys)]["geometry"].apply(lambda x: x.coords[0])
+        _, nearest_line_object_idxes = line_tree.query(list(nodes_coords))
         end_points_found = [
             interpolated_line_coords_rebuilt[nearest_line_key]
             for nearest_line_key in nearest_line_object_idxes
@@ -273,6 +269,7 @@ class TopologyCleaner:
 
         connections_coords = zip(node_keys, list(zip(nodes_coords, end_points_found)))
         connections_coords_valid = filter(lambda x: len(set(x[-1])) > 0, connections_coords)
+
         for node_key, connection in connections_coords_valid:
 
             # to split line at node (and also if node is on the network). it builds intersection used to split lines
@@ -329,8 +326,9 @@ class TopologyCleaner:
         # not working because rtree cannot be MultiThreaded
         # with concurrent.futures.ThreadPoolExecutor(4) as executor:
         #     executor.map(self.__get_nearest_line, self._additional_nodes.items())
-        for node_info in self._additional_nodes.items():
-            self.__get_nearest_line(node_info)
+        self._additional_nodes.apply(self.__get_nearest_line, axis=1)
+        # for node_info in self._additional_nodes.items():
+        #     self.__get_nearest_line(node_info)
 
         node_keys_by_nearest_lines_filled = filter(
             lambda x: len(self.__node_by_nearest_lines[x]) > 0,
@@ -339,8 +337,8 @@ class TopologyCleaner:
 
         return node_keys_by_nearest_lines_filled
 
-    def __get_nearest_line(self, node_info: Tuple[int, Dict]) -> None:
-        node_uuid, node = node_info
+    def __get_nearest_line(self, node: Tuple[int, Dict]) -> None:
+        node_uuid = node[self.__FIELD_ID]
         distances_computed: List[Tuple[float, int]] = []
         node_geom = node[self.__GEOMETRY_FIELD]
 

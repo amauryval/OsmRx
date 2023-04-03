@@ -12,11 +12,8 @@ def test_get_pois_from_location(location_name):
     assert isinstance(pois_session.geo_filter, Location)
     assert pois_session.geo_filter.location_name == "roanne"
     assert "node" in pois_session.query
-    assert len(pois_session.data) > 0
-    assert isinstance(pois_session.data, list)
-    assert isinstance(pois_session.data[0], dict)
-    assert {'id', 'osm_url', 'topo_uuid', 'geometry'}.issubset(pois_session.data[0].keys())
-    assert not hasattr(pois_session, "network_data")
+    assert pois_session.data.shape[0] > 0
+    assert {'id', 'osm_url', 'topo_uuid', 'geometry'}.issubset(set(pois_session.data.columns))
 
 
 def test_get_pois_from_bbox(bbox_values):
@@ -26,11 +23,8 @@ def test_get_pois_from_bbox(bbox_values):
     assert isinstance(pois_session.geo_filter, Bbox)
     assert pois_session.geo_filter.location_name == str(bbox_values)[1:-1]
     assert "node" in pois_session.query
-    assert len(pois_session.data) > 1
-    assert isinstance(pois_session.data, list)
-    assert isinstance(pois_session.data[0], dict)
-    assert {'id', 'osm_url', 'topo_uuid', 'geometry'}.issubset(pois_session.data[0].keys())
-    assert not hasattr(pois_session, "network_data")
+    assert pois_session.data.shape[0] > 0
+    assert {'id', 'osm_url', 'topo_uuid', 'geometry'}.issubset(set(pois_session.data.columns))
 
 
 def test_get_vehicle_network_from_location(vehicle_mode, location_name):
@@ -41,10 +35,9 @@ def test_get_vehicle_network_from_location(vehicle_mode, location_name):
     assert len(roads_session.geo_filter.location_name) > 1
     assert "way" in roads_session.query
     roads_session.build_graph()
-    assert len(roads_session.data) > 0
-    assert isinstance(roads_session.data, list)
-    assert isinstance(roads_session.data[0], dict)
-    assert {'id', 'topo_uuid', 'topo_status', 'geometry', 'direction', 'osm_url'}.issubset(roads_session.data[0].keys())
+    assert roads_session.data.shape[0] > 0
+    assert {'id', 'topo_uuid', 'topo_status', 'geometry', 'direction', 'osm_url'}.issubset(
+        set(roads_session.data.columns))
 
 
 def test_get_pedestrian_network_from_bbox_with_topo_checker(pedestrian_mode, bbox_values):
@@ -55,11 +48,11 @@ def test_get_pedestrian_network_from_bbox_with_topo_checker(pedestrian_mode, bbo
     roads_session.build_graph()
 
     topology_checked = roads_session.topology_checker()
-    assert len(topology_checked.intersections_added) > 1
-    assert len(topology_checked.lines_split) > 1
-    assert len(topology_checked.lines_unchanged) > 1
-    assert len(topology_checked.nodes_added) == 0
-    assert len(topology_checked.lines_added) == 0
+    assert topology_checked.intersections_added.shape[0] > 1
+    assert topology_checked.lines_split.shape[0] > 1
+    assert topology_checked.lines_unchanged.shape[0] > 1
+    assert topology_checked.nodes_added.shape[0] == 0
+    assert topology_checked.lines_added.shape[0] == 0
 
 
 def test_get_vehicle_network_from_bbox_without_topo_checker(pedestrian_mode, bbox_values):
@@ -67,7 +60,7 @@ def test_get_vehicle_network_from_bbox_without_topo_checker(pedestrian_mode, bbo
     roads_session = Roads(pedestrian_mode)
     roads_session.from_bbox(bbox_values)
     roads_session.build_graph()
-    assert len(roads_session.data) > 1
+    assert roads_session.data.shape[0] > 1
 
 
 def test_get_vehicle_network_from_bbox_with_topo_checker_simplified(vehicle_mode, bbox_values):
@@ -75,14 +68,14 @@ def test_get_vehicle_network_from_bbox_with_topo_checker_simplified(vehicle_mode
     roads_session.from_bbox(bbox_values)
 
     roads_session.build_graph()
-    assert len(roads_session.data) > 10000  # could be changed if osm data is updated
+    assert roads_session.data.shape[0] > 10000  # could be changed if osm data is updated
 
     topology_checked = roads_session.topology_checker()
-    assert len(topology_checked.intersections_added) > 1
-    assert len(topology_checked.lines_split) > 1
-    assert len(topology_checked.lines_unchanged) > 1
-    assert len(topology_checked.nodes_added) == 0
-    assert len(topology_checked.lines_added) == 0
+    assert topology_checked.intersections_added.shape[0] > 1
+    assert topology_checked.lines_split.shape[0] > 1
+    assert topology_checked.lines_unchanged.shape[0] > 1
+    assert topology_checked.nodes_added.shape[0] == 0
+    assert topology_checked.lines_added.shape[0] == 0
     # import geopandas as gpd
     # gpd.GeoDataFrame([f.to_dict() for f in roads_session.data], geometry="geometry", crs=f"epsg:{4326}").to_file('vvv.gpkg', driver='GPKG', layer='name')
 
@@ -92,14 +85,14 @@ def test_get_pedestrian_network_from_bbox_with_topo_checker_simplified(pedestria
     roads_session.from_bbox(bbox_values)
 
     roads_session.build_graph()
-    assert len(roads_session.data) == 9849  # could be change if osm data is updated
+    assert roads_session.data.shape[0] == 9849  # could be change if osm data is updated
 
     topology_checked = roads_session.topology_checker()
-    assert len(topology_checked.intersections_added) > 1
-    assert len(topology_checked.lines_split) > 1
-    assert len(topology_checked.lines_unchanged) > 1
-    assert len(topology_checked.nodes_added) == 0
-    assert len(topology_checked.lines_added) == 0
+    assert topology_checked.intersections_added.shape[0] > 1
+    assert topology_checked.lines_split.shape[0] > 1
+    assert topology_checked.lines_unchanged.shape[0] > 1
+    assert topology_checked.nodes_added.shape[0] == 0
+    assert topology_checked.lines_added.shape[0] == 0
 
 
 def test_get_vehicle_network_from_location_with_pois_with_topo_checker(vehicle_mode, location_name):
@@ -111,15 +104,15 @@ def test_get_vehicle_network_from_location_with_pois_with_topo_checker(vehicle_m
     roads_session.from_location(location_name)
     roads_session.additional_nodes = pois_session.data
 
-    assert len(roads_session.data) == 0
+    assert roads_session.data is None
     roads_session.build_graph()
-    assert len(roads_session.data) > 1
+    assert roads_session.data.shape[0] > 1
     topology_checked = roads_session.topology_checker()
-    assert len(topology_checked.intersections_added) > 1
-    assert len(topology_checked.lines_split) > 1
-    assert len(topology_checked.lines_unchanged) > 1
-    assert len(topology_checked.nodes_added) > 1
-    assert len(topology_checked.lines_added) > 1
+    assert topology_checked.intersections_added.shape[0] > 1
+    assert topology_checked.lines_split.shape[0] > 1
+    assert topology_checked.lines_unchanged.shape[0] > 1
+    assert topology_checked.nodes_added.shape[0] > 1
+    assert topology_checked.lines_added.shape[0] > 1
 
 
 def test_get_vehicle_network_from_location_with_pois_without_topo_checker(vehicle_mode, location_name):
@@ -129,10 +122,10 @@ def test_get_vehicle_network_from_location_with_pois_without_topo_checker(vehicl
     roads_session = Roads(vehicle_mode)
     roads_session.from_location(location_name)
     roads_session.additional_nodes = pois_session.data
-    assert len(roads_session.additional_nodes) == len(pois_session.data)
+    assert len(roads_session.additional_nodes) == pois_session.data.shape[0]
 
     roads_session.build_graph()
-    assert len(roads_session.data) > 0
+    assert roads_session.data.shape[0] > 0
 
 
 def test_get_vehicle_network_from_location_shortest_path(vehicle_mode, location_name):
@@ -146,8 +139,8 @@ def test_get_vehicle_network_from_location_shortest_path(vehicle_mode, location_
     roads_session.build_graph()
 
     paths_found = roads_session.shortest_path(
-        pois_session.data[10]["geometry"],
-        pois_session.data[150]["geometry"],
+        pois_session.data.iloc[10]["geometry"],
+        pois_session.data.iloc[150]["geometry"],
     )
     paths = [path for path in paths_found]
     assert len(paths) == 1
@@ -166,8 +159,8 @@ def test_get_pedestrian_network_from_location_shortest_path(pedestrian_mode, loc
     roads_session.build_graph()
 
     paths_found = roads_session.shortest_path(
-        pois_session.data[10]["geometry"],
-        pois_session.data[150]["geometry"],
+        pois_session.data.iloc[10]["geometry"],
+        pois_session.data.iloc[150]["geometry"],
     )
     paths = [path for path in paths_found]
     assert len(paths) == 1
@@ -185,7 +178,7 @@ def test_pedestrian_isochrones(pedestrian_mode, location_name):
 
     roads_session.build_graph()
     isochrones_built = roads_session.isochrones_from_distance(
-        pois_session.data[10]["geometry"],
+        pois_session.data.iloc[10]["geometry"],
         [0, 250, 500, 1000]
     )
     assert len(isochrones_built.intervals) == 3
@@ -207,7 +200,7 @@ def test_vehicle_isochrone(vehicle_mode, location_name):
     roads_session.build_graph()
 
     isochrones_built = roads_session.isochrones_from_distance(
-        pois_session.data[10]["geometry"],
+        pois_session.data.iloc[10]["geometry"],
         [0, 250, 500, 1000, 1500]
     )
     assert len(isochrones_built.intervals) == 4

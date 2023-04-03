@@ -3,6 +3,7 @@ from typing import List, Dict
 import pytest
 
 import rustworkx as rx
+import geopandas as gpd
 
 from osmrx.globals.queries import OsmFeatureModes
 from osmrx.graph_manager.graph_manager import GraphManager
@@ -35,7 +36,8 @@ def test_pedestrian_graph_building(features):
 def test_vehicle_graph_building(some_line_features, some_point_features):
 
     graph_manager = GraphManager(Logger().logger, OsmFeatureModes.vehicle)
-    graph_manager.connected_nodes = some_point_features
+    graph_manager.connected_nodes = gpd.GeoDataFrame(some_point_features, geometry="geometry", crs="4326")
+
     graph_manager.features = some_line_features
 
     assert len(graph_manager.features) == 34
@@ -50,7 +52,7 @@ def test_vehicle_graph_building(some_line_features, some_point_features):
 
 def test_compute_shortest_path(some_line_features, some_point_features):
     graph_manager = GraphManager(Logger().logger, OsmFeatureModes.vehicle)
-    graph_manager.connected_nodes = some_point_features
+    graph_manager.connected_nodes = gpd.GeoDataFrame(some_point_features, geometry="geometry", crs="4326")
     graph_manager.features = some_line_features
 
     edges = graph_manager.compute_shortest_path(

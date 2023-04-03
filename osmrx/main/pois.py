@@ -4,6 +4,8 @@ from osmrx.apis_handler.models import Bbox, Location
 from osmrx.globals.queries import OsmFeatureModes
 from osmrx.main.core import OsmNetworkCore
 
+import geopandas as gpd
+
 
 class OsmNetworkPoi(OsmNetworkCore):
 
@@ -17,8 +19,8 @@ class OsmNetworkPoi(OsmNetworkCore):
             self._raw_data = raw_data.point_features()
 
     @property
-    def data(self) -> List[Dict]:
-        return self._raw_data
+    def data(self) -> gpd.GeoDataFrame:
+        return gpd.GeoDataFrame(self._raw_data, geometry="geometry", crs="4326")
 
 
 class Pois(OsmNetworkPoi):

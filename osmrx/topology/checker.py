@@ -3,6 +3,8 @@ from typing import TYPE_CHECKING
 
 import copy
 
+import geopandas as gpd
+import pandas as pd
 from shapely import Point
 
 if TYPE_CHECKING:
@@ -13,46 +15,39 @@ class TopologyChecker:
     _features = None
     _directed = None
 
-    def __init__(self, features: "List[ArcFeature]", directed: bool = False) -> None:
+    def __init__(self, features: gpd.GeoDataFrame, directed: bool = False) -> None:
         self._features = features
         self._directed = directed  # TODO: seems not useful
 
     @property
-    def lines_unchanged(self) -> List[Dict]:
+    def lines_unchanged(self) -> gpd.GeoDataFrame:
         """Linestring without any changes"""
-        unchanged = list(filter(lambda feature: feature.topo_status == "unchanged", self._features))
-        return [feature.to_dict() for feature in unchanged]
+        return self._features[self._features.topo_status == "unchanged"]
 
     @property
-    def lines_added(self) -> List[Dict]:
+    def lines_added(self) -> gpd.GeoDataFrame:
         """Linestring added"""
-        lines_added = filter(lambda feature: feature.topo_status == "added", self._features)
-        return [feature.to_dict() for feature in lines_added]
+        return self._features[self._features.topo_status == "added"]
 
     @property
-    def nodes_added(self) -> List[Dict]:
+    def nodes_added(self) -> gpd.GeoDataFrame:
         """Nodes added on the graph"""
-        nodes_added = []
-        for node in self.lines_added:
-            node["geometry"] = Point(node["geometry"].coords[0])
-            nodes_added.append(node)
+        nodes_added = copy.deepcopy(self.lines_added)
+        nodes_added['geometry'] = nodes_added.geometry.apply(lambda x: Point(x.coords[0]))
         return nodes_added
 
     @property
-    def lines_split(self) -> List[Dict]:
+    def lines_split(self) -> gpd.GeoDataFrame:
         """Linestring split"""
-        split = list(filter(lambda feature: feature.topo_status == "split", self._features))
-        return [feature.to_dict() for feature in split]
+        return self._features[self._features.topo_status == "split"]
+
 
     @property
-    def intersections_added(self) -> List[Dict]:
+    def intersections_added(self) -> gpd.GeoDataFrame:
         """Intersections nodes added"""
-        intersections_added = []
-        split = self.lines_split
-        for node in split:
-            for coords in [node["geometry"].coords[0], node["geometry"].coords[-1]]:
-                feature_copy = copy.deepcopy(node)
-                feature_copy["geometry"] = Point(coords)
-                intersections_added.append(feature_copy)
+        start_points = self.lines_split.geometry.apply(lambda x: Point(x.coords[0]))
+        end_points = self.lines_split.geometry.apply(lambda x: Point(x.coords[-1]))
+        intersections_added = pd.concat([start_points, end_points]).reset_index(drop=True)
+        intersections_added = gpd.GeoDataFrame(intersections_added, geometry='geometry')
 
         return intersections_added

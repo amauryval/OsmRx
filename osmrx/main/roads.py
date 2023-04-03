@@ -2,6 +2,7 @@ from typing import Tuple, List, Dict, Any, Generator
 
 from shapely import Point
 import rustworkx as rx
+import geopandas as gpd
 
 from osmrx.apis_handler.models import Location, Bbox
 from osmrx.graph_manager.isochrones_feature import IsochronesFeature
@@ -42,9 +43,9 @@ class OsmNetworkRoads(OsmNetworkCore):
         return topology_result
 
     @property
-    def data(self) -> List[Dict]:
+    def data(self) -> gpd.GeoDataFrame:
         """Return the data"""
-        return [feature.to_dict(with_attr=True) for feature in self._graph_manager.features]
+        return self._graph_manager.features
 
     def graph(self) -> rx.PyGraph | rx.PyDiGraph:
         return self._graph_manager.graph

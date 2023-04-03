@@ -1,5 +1,7 @@
 from typing import List
 
+import geopandas as gpd
+
 from osmrx.helpers.logger import Logger
 from osmrx.graph_manager.arc_feature import ArcFeature
 from osmrx.topology.cleaner import TopologyCleaner
@@ -10,7 +12,7 @@ def build_network_features(line_features, point_features, interpolation_level: i
     features = TopologyCleaner(
         Logger().logger,
         line_features,
-        point_features,
+        gpd.GeoDataFrame(point_features, geometry="geometry", crs="4326"),
         interpolation_level
     ).run()
 

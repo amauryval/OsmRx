@@ -1,6 +1,7 @@
-from osmrx.helpers.logger import Logger
+
+import geopandas as gpd
+
 from osmrx.topology.checker import TopologyChecker
-from osmrx.topology.cleaner import TopologyCleaner
 from tests.common.geom_builder import build_network_features
 
 
@@ -68,8 +69,8 @@ def test_connect_lines_interpolate_lines(some_line_features, some_point_features
 
 def test_topology(some_line_features, some_point_features):
     features = build_network_features(some_line_features, some_point_features, None)
-
-    topology = TopologyChecker(features, False)
+    features_gdf = gpd.GeoDataFrame([feature.to_dict() for feature in features], geometry="geometry", crs="4326")
+    topology = TopologyChecker(features_gdf, False)
     assert len(topology.intersections_added) == 22
     assert len(topology.lines_split) == 11
     assert len(topology.lines_unchanged) == 1

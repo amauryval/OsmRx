@@ -3,6 +3,7 @@ from typing import List, Dict
 from typing import TYPE_CHECKING
 
 import rustworkx as rx
+import geopandas as gpd
 
 from osmrx.graph_manager.isochrones_feature import IsochronesFeature
 from osmrx.graph_manager.path_feature import PathFeature
@@ -105,22 +106,26 @@ class GraphManager(GraphCore):
         return False
 
     @property
-    def connected_nodes(self) -> List[Dict]:
+    def connected_nodes(self) -> gpd.GeoDataFrame:
         """return the connected nodes added"""
         return self._connected_nodes
 
     @connected_nodes.setter
-    def connected_nodes(self, connected_nodes: List[Dict]):
+    def connected_nodes(self, connected_nodes: gpd.GeoDataFrame):
         """Set the nodes to connect on the network"""
         self._connected_nodes = connected_nodes
 
     @property
-    def features(self) -> "List[ArcFeature]":
+    def features(self) -> gpd.GeoDataFrame | None:
         """Return the graph features from the graph"""
-        return self.graph.edges()
+        if self.graph.num_edges() > 0:
+            return gpd.GeoDataFrame([feature.to_dict(with_attr=True) for feature in self.graph.edges()],
+                                    geometry="geometry", crs="4326")
+        return None
 
     @features.setter
     def features(self, network_data: List[Dict] | None):
+        # TODO topologyCleaner must use geodataframe
         features = TopologyCleaner(self.logger, network_data, self._connected_nodes).run()
 
         for arc_feature in features:
