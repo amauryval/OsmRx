@@ -1,6 +1,6 @@
 from typing import List, Dict
 
-from shapely import LineString, wkt
+from shapely import LineString
 
 from osmrx.graph_manager.arc_feature import ArcFeature
 
@@ -18,7 +18,7 @@ class PathFeature:
     @property
     def path(self) -> LineString:
         """Return the path as a LineString geometry"""
-        return LineString([wkt.loads(self._graph.get_node_data(indice))
+        return LineString([self._graph.get_node_data(indice)
                            for indice in self._nodes_indices])
 
     def features(self) -> List[Dict]:

@@ -54,8 +54,8 @@ def test_compute_shortest_path(some_line_features, some_point_features):
     graph_manager.features = some_line_features
 
     edges = graph_manager.compute_shortest_path(
-        some_point_features[3]["geometry"].wkt,
-        some_point_features[9]["geometry"].wkt
+        some_point_features[3]["geometry"],
+        some_point_features[9]["geometry"]
     )
 
     assert len(edges) == 1

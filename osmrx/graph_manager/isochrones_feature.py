@@ -25,7 +25,7 @@ class IsochronesFeature:
             for interval in self._intervals:
                 if length < interval[-1]:
                     self._intervals_data[interval].append(
-                        wkt.loads(graph.get_node_data(indice)))
+                        graph.get_node_data(indice))
 
         for interval, geom in self._intervals_data.items():
             self._intervals_data[interval] = MultiPoint(geom).convex_hull

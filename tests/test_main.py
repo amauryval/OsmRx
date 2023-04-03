@@ -1,3 +1,5 @@
+from shapely import Point
+
 from osmrx.apis_handler.models import Location, Bbox
 from osmrx.graph_manager.arc_feature import ArcFeature
 
@@ -136,43 +138,29 @@ def test_get_vehicle_network_from_location_with_pois_without_topo_checker(vehicl
 
 
 def test_get_vehicle_network_from_location_shortest_path(vehicle_mode, location_name):
-    pois_session = Pois()
-    pois_session.from_location(location_name)
-
     roads_session = Roads(vehicle_mode)
-    roads_session.from_location(location_name)
-    roads_session.additional_nodes = pois_session.data
-
-    roads_session.build_graph()
-
     paths_found = roads_session.shortest_path(
-        pois_session.data[10]["geometry"],
-        pois_session.data[150]["geometry"],
+        Point(4.0793058, 46.0350304),
+        Point(4.0725246, 46.0397676)
     )
     paths = [path for path in paths_found]
     assert len(paths) == 1
-    assert paths[0].path.length == 0.013235288256492393  # could change if oms data is updated
-    assert len(paths[0].features()) == 45  # could change if oms data is updated
+    assert paths[0].path.length == 0.014225727132909512  # could change if oms data is updated
+    assert len(paths[0].features()) == 37  # could change if oms data is updated
 
 
 def test_get_pedestrian_network_from_location_shortest_path(pedestrian_mode, location_name):
-    pois_session = Pois()
-    pois_session.from_location(location_name)
-
     roads_session = Roads(pedestrian_mode)
-    roads_session.from_location(location_name)
-    roads_session.additional_nodes = pois_session.data
-
-    roads_session.build_graph()
 
     paths_found = roads_session.shortest_path(
-        pois_session.data[10]["geometry"],
-        pois_session.data[150]["geometry"],
+        Point(4.0793058, 46.0350304),
+        Point(4.0725246, 46.0397676)
     )
     paths = [path for path in paths_found]
     assert len(paths) == 1
-    assert paths[0].path.length == 0.011041354246022669  # could change if oms data is updated
-    assert len(paths[0].features()) == 41  # could change if oms data is updated
+    # assert paths[0].path.length == 0.011041354246022669
+    assert paths[0].path.length == 0.01103919114744387# could change if oms data is updated
+    assert len(paths[0].features()) == 33#41  # could change if oms data is updated
 
 
 def test_pedestrian_isochrones(pedestrian_mode, location_name):

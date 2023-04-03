@@ -58,12 +58,16 @@ class LineBuilder:
         if len(geometry_lines) > 1:
             self._feature[self.__CLEANING_FILED_STATUS] = self.__TOPOLOGY_TAG_SPLIT
 
+            data = []
             for suffix_id, line_coordinates in enumerate(geometry_lines):
                 feature_copy = self.feature_copy()
                 feature_copy["topo_uuid"] = f"{feature_copy['topo_uuid']}_{suffix_id}"
+                data.append([feature_copy, line_coordinates])
 
                 # feature_updated[self.__COORDINATES_FIELD] = line_coordinates
-                self._direction_processing(feature_copy, line_coordinates)
+                # self._direction_processing(feature_copy, line_coordinates)
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                executor.map( lambda f: self._direction_processing(*f), data)
         else:
             self._direction_processing(self._feature, geometry_lines[0])
 

@@ -3,6 +3,7 @@ from typing import List, Dict
 from typing import TYPE_CHECKING
 
 import rustworkx as rx
+from shapely import Point
 
 from osmrx.graph_manager.isochrones_feature import IsochronesFeature
 from osmrx.graph_manager.path_feature import PathFeature
@@ -32,13 +33,13 @@ class GraphCore:
         """Return the graph"""
         return self._graph
 
-    def _add_nodes(self, node_value: str) -> int:
+    def _add_nodes(self, node_value: Point) -> int:
         """Add a node"""
         if node_value not in self._nodes_mapping:
             self._nodes_mapping[node_value] = self.graph.add_node(node_value)
         return self.get_node_indice(node_value)
 
-    def add_edge(self, from_node_value: str, to_node_value: str, attr: "ArcFeature") -> None:
+    def add_edge(self, from_node_value: Point, to_node_value: Point, attr: "ArcFeature") -> None:
         """add ege based on 2 nodes"""
         from_indice = self._add_nodes(from_node_value)
         to_indice = self._add_nodes(to_node_value)
@@ -47,13 +48,13 @@ class GraphCore:
         else:
             raise ValueError(f"{attr.topo_uuid} edge exists: it should not!")
 
-    def get_node_indice(self, node_value: str) -> int | None:
+    def get_node_indice(self, node_value: Point) -> int | None:
         """Return the node value from indice"""
         if node_value in self._nodes_mapping:
             return self._nodes_mapping[node_value]
         raise ValueError(f"{node_value} node not found!")
 
-    def compute_shortest_path(self, from_node: str, to_node: str) -> List[PathFeature]:
+    def compute_shortest_path(self, from_node: Point, to_node: Point) -> List[PathFeature]:
         """Compute a shortest path from a node to an ohter node"""
         edges = rx.dijkstra_shortest_paths(
             self.graph,
@@ -66,7 +67,7 @@ class GraphCore:
             for _, node_indices in edges.items()
         ]
 
-    def compute_isochrone_from_distance(self, from_node: str, intervals: List[int]) -> IsochronesFeature:
+    def compute_isochrone_from_distance(self, from_node: Point, intervals: List[int]) -> IsochronesFeature:
         """Compute isochrone from a distance interval"""
         intervals.sort()
         assert intervals[0] == 0, "The intervals must start with 0"
@@ -121,12 +122,12 @@ class GraphManager(GraphCore):
 
     @features.setter
     def features(self, network_data: List[Dict] | None):
-        features = TopologyCleaner(self.logger, network_data, self._connected_nodes).run()
+        features = TopologyCleaner(self.logger, network_data, self._connected_nodes, None).run()
 
         for arc_feature in features:
             self.add_edge(
-                arc_feature.from_point.wkt,
-                arc_feature.to_point.wkt,
+                arc_feature.from_point,
+                arc_feature.to_point,
                 arc_feature
             )
             if self._mode == OsmFeatureModes.vehicle:
@@ -138,8 +139,8 @@ class GraphManager(GraphCore):
                     arc_feature_backward = copy.deepcopy(arc_feature)
                     arc_feature_backward.direction = "backward"
                     self.add_edge(
-                        arc_feature_backward.from_point.wkt,
-                        arc_feature_backward.to_point.wkt,
+                        arc_feature_backward.from_point,
+                        arc_feature_backward.to_point,
                         arc_feature_backward
                     )
         self.logger.info("Graph built")

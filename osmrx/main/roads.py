@@ -1,6 +1,6 @@
 from typing import Tuple, List, Dict, Any, Generator
 
-from shapely import Point
+from shapely import Point, MultiPoint
 import rustworkx as rx
 
 from osmrx.apis_handler.models import Location, Bbox
@@ -49,18 +49,6 @@ class OsmNetworkRoads(OsmNetworkCore):
     def graph(self) -> rx.PyGraph | rx.PyDiGraph:
         return self._graph_manager.graph
 
-    def shortest_path(self, from_point: Point, to_point: Point) -> Generator[PathFeature, Any, None]:
-        """Compute a shortest path from a node to an other node"""
-        paths = self._graph_manager.compute_shortest_path(from_point.wkt, to_point.wkt)
-        self.logger.info(f"Shortest path(s) built from {from_point.wkt} to {to_point.wkt}.")
-        for path in paths:
-            yield path
-
-    def isochrones_from_distance(self, from_point: Point, intervals: List[int]) -> IsochronesFeature:
-        """Compute isochrones from a node based on distances"""
-        isochrones = self._graph_manager.compute_isochrone_from_distance(from_point.wkt, intervals)
-        self.logger.info(f"Isochrones {isochrones.intervals} built from {from_point.wkt}.")
-        return isochrones
 
 
 class Roads(OsmNetworkRoads):
@@ -82,3 +70,29 @@ class Roads(OsmNetworkRoads):
         base_query = self._build_query()
         self._query = base_query.from_location(self.geo_filter)
         self._execute_query()
+
+    def shortest_path(self, from_point: Point, to_point: Point) -> Generator[PathFeature, Any, None]:
+        """Compute a shortest path from a node to an other node"""
+        area = MultiPoint([from_point, to_point]).buffer(from_point.distance(to_point) * 1.2).bounds
+        self.from_bbox(tuple([area[1], area[0], area[3], area[2]]))
+        self.additional_nodes = [
+            {"topo_uuid": 999999, "geometry": from_point}, {"topo_uuid": 8888888, "geometry": to_point}
+        ]
+        self.build_graph()
+        paths = self._graph_manager.compute_shortest_path(from_point, to_point)
+        self.logger.info(f"Shortest path(s) built from {from_point.wkt} to {to_point.wkt}.")
+        for path in paths:
+            yield path
+
+    def isochrones_from_distance(self, from_point: Point, intervals: List[int]) -> IsochronesFeature:
+        """Compute isochrones from a node based on distances"""
+        # TODO compute max buffer
+        # area = from_point.buffer(max(intervals) * 1.01).bounds
+        # self.from_bbox(tuple([area[1], area[0], area[3], area[2]]))
+        # self.additional_nodes = [
+        #     {"topo_uuid": 999999, "geometry": from_point}
+        # ]
+        # self.build_graph()
+        isochrones = self._graph_manager.compute_isochrone_from_distance(from_point, intervals)
+        self.logger.info(f"Isochrones {isochrones.intervals} built from {from_point.wkt}.")
+        return isochrones
