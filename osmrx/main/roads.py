@@ -6,6 +6,7 @@ import rustworkx as rx
 from osmrx.apis_handler.models import Location, Bbox
 from osmrx.graph_manager.isochrones_feature import IsochronesFeature
 from osmrx.graph_manager.path_feature import PathFeature
+from osmrx.helpers.misc import buffer_point
 from osmrx.main.core import OsmNetworkCore
 from osmrx.topology.checker import TopologyChecker
 
@@ -86,13 +87,13 @@ class Roads(OsmNetworkRoads):
 
     def isochrones_from_distance(self, from_point: Point, intervals: List[int]) -> IsochronesFeature:
         """Compute isochrones from a node based on distances"""
-        # TODO compute max buffer
-        # area = from_point.buffer(max(intervals) * 1.01).bounds
-        # self.from_bbox(tuple([area[1], area[0], area[3], area[2]]))
-        # self.additional_nodes = [
-        #     {"topo_uuid": 999999, "geometry": from_point}
-        # ]
-        # self.build_graph()
+        area = buffer_point(from_point.y, from_point.x, max(intervals)).bounds
+        self.from_bbox(tuple([area[1], area[0], area[3], area[2]]))
+        self.additional_nodes = [
+            {"topo_uuid": 999999, "geometry": from_point}
+        ]
+        self.build_graph()
         isochrones = self._graph_manager.compute_isochrone_from_distance(from_point, intervals)
         self.logger.info(f"Isochrones {isochrones.intervals} built from {from_point.wkt}.")
         return isochrones
+

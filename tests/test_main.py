@@ -1,7 +1,6 @@
 from shapely import Point
 
 from osmrx.apis_handler.models import Location, Bbox
-from osmrx.graph_manager.arc_feature import ArcFeature
 
 from osmrx.main.pois import Pois
 from osmrx.main.roads import Roads
@@ -85,8 +84,6 @@ def test_get_vehicle_network_from_bbox_with_topo_checker_simplified(vehicle_mode
     assert len(topology_checked.lines_unchanged) > 1
     assert len(topology_checked.nodes_added) == 0
     assert len(topology_checked.lines_added) == 0
-    # import geopandas as gpd
-    # gpd.GeoDataFrame([f.to_dict() for f in roads_session.data], geometry="geometry", crs=f"epsg:{4326}").to_file('vvv.gpkg', driver='GPKG', layer='name')
 
 
 def test_get_pedestrian_network_from_bbox_with_topo_checker_simplified(pedestrian_mode, bbox_values):
@@ -158,49 +155,45 @@ def test_get_pedestrian_network_from_location_shortest_path(pedestrian_mode, loc
     )
     paths = [path for path in paths_found]
     assert len(paths) == 1
-    # assert paths[0].path.length == 0.011041354246022669
-    assert paths[0].path.length == 0.011040368374582707# could change if oms data is updated
-    assert len(paths[0].features()) == 33#41  # could change if oms data is updated
+    assert paths[0].path.length == 0.011040368374582707  # could change if oms data is updated
+    assert len(paths[0].features()) == 33  # 41  # could change if oms data is updated
 
 
 def test_pedestrian_isochrones(pedestrian_mode, location_name):
-    pois_session = Pois()
-    pois_session.from_location(location_name)
-
     roads_session = Roads(pedestrian_mode)
-    roads_session.from_location(location_name)
-    roads_session.additional_nodes = pois_session.data
-
-    roads_session.build_graph()
     isochrones_built = roads_session.isochrones_from_distance(
-        pois_session.data[10]["geometry"],
+        Point(4.0793058, 46.0350304),
         [0, 250, 500, 1000]
     )
     assert len(isochrones_built.intervals) == 3
     assert len(isochrones_built.data) == 3
 
-    for isochrone in isochrones_built.data.values():
-        assert isochrone.geom_type == "Polygon"
+    isochrone_area = None
+    for enum, isochrone in enumerate(isochrones_built.data.values()):
         assert isochrone.area > 0
+        assert isochrone.geom_type == "Polygon"
+        if enum == 0:
+            isochrone_area = isochrone.area
+        else:
+            assert isochrone_area >= isochrone.area
+            isochrone_area = isochrone.area
 
 
 def test_vehicle_isochrone(vehicle_mode, location_name):
-    pois_session = Pois()
-    pois_session.from_location(location_name)
-
     roads_session = Roads(vehicle_mode)
-    roads_session.from_location(location_name)
-    roads_session.additional_nodes = pois_session.data
-
-    roads_session.build_graph()
-
     isochrones_built = roads_session.isochrones_from_distance(
-        pois_session.data[10]["geometry"],
+        Point(4.0793058, 46.0350304),
         [0, 250, 500, 1000, 1500]
     )
     assert len(isochrones_built.intervals) == 4
     assert len(isochrones_built.data) == 4
 
-    for isochrone in isochrones_built.data.values():
-        assert isochrone.geom_type == "Polygon"
+    isochrone_area = None
+    for enum, isochrone in enumerate(isochrones_built.data.values()):
         assert isochrone.area > 0
+        assert isochrone.geom_type == "Polygon"
+        if enum == 0:
+            isochrone_area = isochrone.area
+        else:
+            assert isochrone_area >= isochrone.area
+            isochrone_area = isochrone.area
