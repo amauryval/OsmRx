@@ -27,7 +27,6 @@ class NominatimApi(ApiCore):
     }
     format_parameter: Dict = {"format": "json", "polygon": "1", "polygon_geojson": "1"}
 
-
     def __init__(self, logger: "Logger", **params) -> None:
         _values = None
         super().__init__(logger=logger)

@@ -40,7 +40,7 @@ def retry(exceptions_to_check, tries: int = 4, delay: int = 3, backoff: int = 2,
 def buffer_point(lon: float, lat: float, buffer_dist: float | int) -> Polygon:
     """Create a buffer from a 4326 point"""
     geod = Geod(ellps='WGS84')
-    lon1, lat1, _ = geod.fwd(lon, lat, 0, buffer_dist + 100)
-    lon2, lat2, _ = geod.fwd(lon, lat, 180, buffer_dist + 100)
+    lon1, lat1, _ = geod.fwd(lon, lat, 0, buffer_dist)
+    lon2, lat2, _ = geod.fwd(lon, lat, 180, buffer_dist)
     lon_diff, lat_diff = abs(lon1 - lon2), abs(lat1 - lat2)
     return Point(lat, lon).buffer(max(lon_diff, lat_diff))

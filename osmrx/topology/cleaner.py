@@ -67,7 +67,7 @@ class LineBuilder:
                 # feature_updated[self.__COORDINATES_FIELD] = line_coordinates
                 # self._direction_processing(feature_copy, line_coordinates)
             with concurrent.futures.ThreadPoolExecutor() as executor:
-                executor.map( lambda f: self._direction_processing(*f), data)
+                executor.map(lambda f: self._direction_processing(*f), data)
         else:
             self._direction_processing(self._feature, geometry_lines[0])
 
@@ -162,7 +162,7 @@ class TopologyCleaner:
 
     def __init__(
         self,
-        logger,
+        logger,  # TODO: add a logger if not set
         network_data: List[Dict],
         additional_nodes: Optional[List[Dict]],
         interpolation_line_level: int | None = None,  # 4 is a good value

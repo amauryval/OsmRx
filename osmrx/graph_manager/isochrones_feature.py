@@ -2,7 +2,7 @@ from typing import List, Dict
 
 import rustworkx as rx
 from rustworkx import PathLengthMapping
-from shapely import wkt, MultiPoint
+from shapely import MultiPoint
 
 
 class IsochronesFeature:

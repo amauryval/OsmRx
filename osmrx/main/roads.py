@@ -13,8 +13,9 @@ from osmrx.topology.checker import TopologyChecker
 
 class OsmNetworkRoads(OsmNetworkCore):
 
-    def __init__(self, osm_feature_mode: str) -> None:
+    def __init__(self, osm_feature_mode: str, nodes_to_connect: List[Dict] | None = None) -> None:
         super().__init__(osm_feature_mode=osm_feature_mode)
+        self._graph_manager.connected_nodes = nodes_to_connect
 
     def _execute_query(self) -> None:
         """Execute the query with the Overpass API"""
@@ -23,16 +24,11 @@ class OsmNetworkRoads(OsmNetworkCore):
             self._raw_data = raw_data.line_features()
 
     @property
-    def additional_nodes(self) -> List[Dict]:
+    def additional_nodes(self) -> List[Dict] | None:
         """return the nodes defined to connect on the network"""
         return self._graph_manager.connected_nodes
 
-    @additional_nodes.setter
-    def additional_nodes(self, additional_nodes: List[Dict]):
-        """set the nodes defined to connect on the network"""
-        self._graph_manager.connected_nodes = additional_nodes
-
-    def build_graph(self) -> None:
+    def _build_graph(self) -> None:
         """Fix topology issues for LineString features and build graph"""
         if self._raw_data is not None:
             self._graph_manager.features = self._raw_data
@@ -51,12 +47,11 @@ class OsmNetworkRoads(OsmNetworkCore):
         return self._graph_manager.graph
 
 
-
 class Roads(OsmNetworkRoads):
     """To manage roads"""
 
-    def __init__(self, mode: str):
-        super().__init__(osm_feature_mode=mode)
+    def __init__(self, mode: str, nodes_to_connect: List[Dict] | None = None):
+        super().__init__(osm_feature_mode=mode, nodes_to_connect=nodes_to_connect)
 
     def from_bbox(self, bounds: Tuple[float, float, float, float]):
         """Find roads from bbox"""
@@ -64,6 +59,7 @@ class Roads(OsmNetworkRoads):
         base_query = self._build_query()
         self._query = base_query.from_bbox(self.geo_filter)
         self._execute_query()
+        self._build_graph()
 
     def from_location(self, location: str):
         """Find roads from location"""
@@ -71,29 +67,35 @@ class Roads(OsmNetworkRoads):
         base_query = self._build_query()
         self._query = base_query.from_location(self.geo_filter)
         self._execute_query()
+        self._build_graph()
 
-    def shortest_path(self, from_point: Point, to_point: Point) -> Generator[PathFeature, Any, None]:
+
+class GraphAnalysis(Roads):
+    def __init__(self, mode: str, nodes_to_connect: List[Point]):
+        # must be ordered
+        nodes_to_connect = [{"topo_uuid": 999999 + enum, "geometry": node}
+                            for enum, node in enumerate(nodes_to_connect)]
+        super().__init__(mode=mode, nodes_to_connect=nodes_to_connect)
+
+    def get_shortest_path(self) -> Generator[PathFeature, Any, None]:
         """Compute a shortest path from a node to an other node"""
-        area = MultiPoint([from_point, to_point]).buffer(from_point.distance(to_point) * 1.2).bounds
-        self.from_bbox(tuple([area[1], area[0], area[3], area[2]]))
-        self.additional_nodes = [
-            {"topo_uuid": 999999, "geometry": from_point}, {"topo_uuid": 8888888, "geometry": to_point}
-        ]
-        self.build_graph()
-        paths = self._graph_manager.compute_shortest_path(from_point, to_point)
-        self.logger.info(f"Shortest path(s) built from {from_point.wkt} to {to_point.wkt}.")
-        for path in paths:
-            yield path
+        nodes = [node["geometry"] for node in self.additional_nodes]
 
-    def isochrones_from_distance(self, from_point: Point, intervals: List[int]) -> IsochronesFeature:
+        for from_point, to_point in zip(nodes, nodes[1:]):
+            area = MultiPoint([from_point, to_point]).buffer(from_point.distance(to_point) / 2).bounds
+            self.from_bbox(tuple([area[1], area[0], area[3], area[2]]))
+            paths = self._graph_manager.compute_shortest_path(from_point, to_point)
+            for path in paths:
+                yield path
+            self.logger.info(f"Shortest path(s) built from {from_point.wkt} to {to_point.wkt}.")
+
+    def isochrones_from_distance(self, intervals: List[int]) -> IsochronesFeature:
         """Compute isochrones from a node based on distances"""
-        area = buffer_point(from_point.y, from_point.x, max(intervals)).bounds
-        self.from_bbox(tuple([area[1], area[0], area[3], area[2]]))
-        self.additional_nodes = [
-            {"topo_uuid": 999999, "geometry": from_point}
-        ]
-        self.build_graph()
-        isochrones = self._graph_manager.compute_isochrone_from_distance(from_point, intervals)
-        self.logger.info(f"Isochrones {isochrones.intervals} built from {from_point.wkt}.")
-        return isochrones
+        nodes = [node["geometry"] for node in self.additional_nodes]
 
+        for node in nodes:
+            area = buffer_point(node.y, node.x, max(intervals) + 100).bounds
+            self.from_bbox(tuple([area[1], area[0], area[3], area[2]]))
+            isochrones = self._graph_manager.compute_isochrone_from_distance(node, intervals)
+            self.logger.info(f"Isochrones {isochrones.intervals} built from {node.wkt}.")
+            return isochrones

@@ -93,7 +93,7 @@ class GraphManager(GraphCore):
 
         super().__init__(directed=self.directed)
 
-        self.logger = logger
+        self.logger = logger  # TODO: add a logger if not set
 
         self._features = None
         self._connected_nodes = None
@@ -106,7 +106,7 @@ class GraphManager(GraphCore):
         return False
 
     @property
-    def connected_nodes(self) -> List[Dict]:
+    def connected_nodes(self) -> List[Dict] | None:
         """return the connected nodes added"""
         return self._connected_nodes
 
@@ -122,6 +122,7 @@ class GraphManager(GraphCore):
 
     @features.setter
     def features(self, network_data: List[Dict] | None):
+        # TODO: improve name
         features = TopologyCleaner(self.logger, network_data, self._connected_nodes, None).run()
 
         for arc_feature in features:

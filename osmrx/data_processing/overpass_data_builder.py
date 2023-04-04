@@ -9,6 +9,7 @@ from osmrx.globals.queries import OsmFeatureTypes
 TOPO_FIELD: str = "topo_uuid"
 ID_OSM_FIELD: str = "id"
 
+
 class OverpassDataBuilder:
     __GEOMETRY_FIELD: str = "geometry"
     __LAT_FIELD: str = "lat"
