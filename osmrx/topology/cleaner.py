@@ -147,6 +147,7 @@ class LineBuilder:
 
 class TopologyCleaner:
 
+    # if increased, the node connections will be better, but will generate more feature
     __INTERPOLATION_LEVEL: int = 7
     __NB_OF_NEAREST_LINE_ELEMENTS_TO_FIND: int = 10
 
@@ -360,21 +361,23 @@ class TopologyCleaner:
         self.__node_by_nearest_lines[line_min_index].append(node_uuid)
 
 
-def interpolate_curve_based_on_original_points(values: np.array, interpolation_value: int) -> np.ndarray:
-    # source :
-    # https://stackoverflow.com/questions/31243002/higher-order-local-interpolation-of-implicit-curves-in-python/31335255
-    if interpolation_value > 1:
-        m = 0.5 * (values[:-1] + values[1:])
-        if values.ndim == 2:
-            m_size = (values.shape[0] + m.shape[0], values.shape[1])
-        else:
-            raise NotImplementedError
-        x_new = np.empty(m_size, dtype=values.dtype)
-        x_new[0::2] = values
-        x_new[1::2] = m
-        return interpolate_curve_based_on_original_points(x_new, interpolation_value - 1)
+def interpolate_curve_based_on_original_points(values: np.array, interpolation_factor: int) -> np.ndarray:
+    # Convert values to a 2D array (if necessary) and remove single-dimensional entries
+    values = np.squeeze(np.atleast_2d(values))
 
-    elif interpolation_value == 1:
-        return values
-    else:
-        raise ValueError
+    # Compute the total number of points after interpolation
+    n_interpolated_points = len(values) * interpolation_factor
+
+    # Create an array with indices of the original points
+    original_indices = np.arange(0, n_interpolated_points, interpolation_factor)
+
+    # Create an array with indices of the new points
+    new_indices = np.arange(n_interpolated_points - 1)
+
+    # Compute the interpolated x and y coordinates
+    x_interpolated = np.interp(new_indices, original_indices, values[:, 0])
+    y_interpolated = np.interp(new_indices, original_indices, values[:, 1])
+
+    # Combine the x and y coordinates into a single array and return it
+    interpolated_values = np.column_stack((x_interpolated, y_interpolated))
+    return interpolated_values

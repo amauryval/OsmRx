@@ -145,7 +145,7 @@ def test_get_vehicle_network_from_location_shortest_path(vehicle_mode, location_
     )
     paths = [path for path in paths_found]
     assert len(paths) == 1
-    assert paths[0].path.length == 0.014225727132909512  # could change if oms data is updated
+    assert paths[0].path.length == 0.014231160335524648  # could change if oms data is updated
     assert len(paths[0].features()) == 37  # could change if oms data is updated
 
 
@@ -159,7 +159,7 @@ def test_get_pedestrian_network_from_location_shortest_path(pedestrian_mode, loc
     paths = [path for path in paths_found]
     assert len(paths) == 1
     # assert paths[0].path.length == 0.011041354246022669
-    assert paths[0].path.length == 0.01103919114744387# could change if oms data is updated
+    assert paths[0].path.length == 0.011040368374582707# could change if oms data is updated
     assert len(paths[0].features()) == 33#41  # could change if oms data is updated
 
 
