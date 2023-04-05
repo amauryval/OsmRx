@@ -46,6 +46,11 @@ class OsmNetworkRoads(OsmNetworkCore):
     def graph(self) -> rx.PyGraph | rx.PyDiGraph:
         return self._graph_manager.graph
 
+    def _execute(self):
+        """Continue the execution by building the graph"""
+        super()._execute()
+        self._build_graph()
+
 
 class Roads(OsmNetworkRoads):
     """To manage roads"""
@@ -62,12 +67,6 @@ class Roads(OsmNetworkRoads):
         """Find roads from location"""
         self.geo_filter = Location(location, logger=self.logger)
         self._execute()
-
-    def _execute(self):
-        base_query = self._build_query()
-        self._query = base_query.from_geo_filter(self.geo_filter)
-        self._execute_query()
-        self._build_graph()
 
 
 class GraphAnalysis(Roads):

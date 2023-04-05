@@ -36,8 +36,3 @@ class Pois(OsmNetworkPoi):
         """Find Points of interest from location"""
         self.geo_filter = Location(location, logger=self.logger)
         self._execute()
-
-    def _execute(self):
-        base_query = self._build_query()
-        self._query = base_query.from_geo_filter(self.geo_filter)
-        self._execute_query()
