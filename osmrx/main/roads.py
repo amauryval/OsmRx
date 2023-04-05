@@ -34,14 +34,16 @@ class OsmNetworkRoads(OsmNetworkCore):
             self._graph_manager.features = self._raw_data
 
     def topology_checker(self) -> TopologyChecker:
+        """Return topology data"""
         topology_result = TopologyChecker(self._graph_manager.features)
         self.logger.info("Topology analysis built.")
         return topology_result
 
     @property
-    def data(self) -> List[Dict]:
+    def data(self) -> List[Dict] | None:
         """Return the data"""
-        return [feature.to_dict(with_attr=True) for feature in self._graph_manager.features]
+        if self._graph_manager.features is not None:
+            return [feature.to_dict(with_attr=True) for feature in self._graph_manager.features]
 
     def graph(self) -> rx.PyGraph | rx.PyDiGraph:
         return self._graph_manager.graph

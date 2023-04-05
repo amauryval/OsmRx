@@ -102,7 +102,7 @@ def test_get_vehicle_network_from_location_with_pois_with_topo_checker(vehicle_m
     assert len(pois_session.data) > 1
 
     roads_session = Roads(vehicle_mode, pois_session.data)
-    assert len(roads_session.data) == 0
+    assert roads_session.data is None
 
     roads_session.from_location(location_name)
     assert len(roads_session.data) > 1

@@ -37,7 +37,7 @@ class GraphCore:
         """Add a node"""
         if node_value not in self._nodes_mapping:
             self._nodes_mapping[node_value] = self.graph.add_node(node_value)
-        return self.get_node_indice(node_value)
+        return self._nodes_mapping[node_value]
 
     def add_edge(self, from_node_value: Point, to_node_value: Point, attr: "ArcFeature") -> None:
         """add ege based on 2 nodes"""
@@ -118,30 +118,36 @@ class GraphManager(GraphCore):
     @property
     def features(self) -> "List[ArcFeature]":
         """Return the graph features from the graph"""
-        return self.graph.edges()
+        return self._features
 
     @features.setter
     def features(self, network_data: List[Dict] | None):
         # TODO: improve name
-        features = TopologyCleaner(self.logger, network_data, self._connected_nodes, None).run()
+        arc_features = TopologyCleaner(self.logger, network_data, self._connected_nodes, None).run()
 
-        for arc_feature in features:
-            self.add_edge(
-                arc_feature.from_point,
-                arc_feature.to_point,
-                arc_feature
-            )
-            if self._mode == OsmFeatureModes.vehicle:
-                if arc_feature.is_junction_or_roundabout():
-                    # do nothing
-                    continue
+        _ = [self._build_graph(arc_feature)
+             for arc_feature in arc_features]
 
-                if not arc_feature.is_oneway():
-                    arc_feature_backward = copy.deepcopy(arc_feature)
-                    arc_feature_backward.direction = "backward"
-                    self.add_edge(
-                        arc_feature_backward.from_point,
-                        arc_feature_backward.to_point,
-                        arc_feature_backward
-                    )
+        self._features = self.graph.edges()
         self.logger.info("Graph built")
+
+    def _build_graph(self, arc_feature: "ArcFeature"):
+
+        self.add_edge(
+            arc_feature.from_point,
+            arc_feature.to_point,
+            arc_feature
+        )
+        if self._mode == OsmFeatureModes.vehicle:
+            if arc_feature.is_junction_or_roundabout():
+                # do nothing
+                return
+
+            if not arc_feature.is_oneway():
+                arc_feature_backward = copy.deepcopy(arc_feature)
+                arc_feature_backward.direction = "backward"
+                self.add_edge(
+                    arc_feature_backward.from_point,
+                    arc_feature_backward.to_point,
+                    arc_feature_backward
+                )
