@@ -30,13 +30,14 @@ class Pois(OsmNetworkPoi):
     def from_bbox(self, bounds: Tuple[float, float, float, float]):
         """Find Points of interest from bbox"""
         self.geo_filter = Bbox(*bounds)
-        base_query = self._build_query()
-        self._query = base_query.from_bbox(self.geo_filter)
-        self._execute_query()
+        self._execute()
 
     def from_location(self, location: str):
         """Find Points of interest from location"""
         self.geo_filter = Location(location, logger=self.logger)
+        self._execute()
+
+    def _execute(self):
         base_query = self._build_query()
-        self._query = base_query.from_location(self.geo_filter)
+        self._query = base_query.from_geo_filter(self.geo_filter)
         self._execute_query()
