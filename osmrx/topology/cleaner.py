@@ -22,6 +22,7 @@ from more_itertools import split_at
 
 import concurrent.futures
 
+from osmrx.data_processing.overpass_data_builder import TOPO_FIELD, ID_OSM_FIELD
 from osmrx.graph_manager.arc_feature import ArcFeature
 
 
@@ -57,12 +58,16 @@ class LineBuilder:
         if len(geometry_lines) > 1:
             self._feature[self.__CLEANING_FILED_STATUS] = self.__TOPOLOGY_TAG_SPLIT
 
+            data = []
             for suffix_id, line_coordinates in enumerate(geometry_lines):
                 feature_copy = self.feature_copy()
                 feature_copy["topo_uuid"] = f"{feature_copy['topo_uuid']}_{suffix_id}"
+                data.append([feature_copy, line_coordinates])
 
                 # feature_updated[self.__COORDINATES_FIELD] = line_coordinates
-                self._direction_processing(feature_copy, line_coordinates)
+                # self._direction_processing(feature_copy, line_coordinates)
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                executor.map(lambda f: self._direction_processing(*f), data)
         else:
             self._direction_processing(self._feature, geometry_lines[0])
 
@@ -142,6 +147,7 @@ class LineBuilder:
 
 class TopologyCleaner:
 
+    # if increased, the node connections will be better, but will generate more feature
     __INTERPOLATION_LEVEL: int = 7
     __NB_OF_NEAREST_LINE_ELEMENTS_TO_FIND: int = 10
 
@@ -156,26 +162,24 @@ class TopologyCleaner:
 
     def __init__(
         self,
-        logger,
+        logger,  # TODO: add a logger if not set
         network_data: List[Dict],
         additional_nodes: Optional[List[Dict]],
-        uuid_field: str,
-        original_field_id: str,
         interpolation_line_level: int | None = None,  # 4 is a good value
     ) -> None:
 
         self.logger = logger
         self.logger.info("Network cleaning...")
 
-        self._network_data: Union[List[Dict], Dict] = self._check_inputs(network_data)
+        self._network_data: Union[List[Dict], Dict] = network_data
         self._interpolation_line_level = interpolation_line_level  # link to __INTERPOLATION_LINE_LEVEL
 
         self._additional_nodes = additional_nodes
         if self._additional_nodes is None:
             self._additional_nodes: Dict = {}
 
-        self.__FIELD_ID = uuid_field  # have to be an integer.. thank rtree...
-        self._original_field_id = original_field_id
+        self.__FIELD_ID = TOPO_FIELD  # have to be an integer.. thank rtree...
+        self._original_field_id = ID_OSM_FIELD
 
         self._intersections_found: Optional[Set[Tuple[float, float]]] = None
         self.__connections_added: Dict = {}
@@ -188,13 +192,13 @@ class TopologyCleaner:
             self.compute_added_node_connections()
 
         # find all the existing intersection from coordinates
-        self._intersections_found = set(self.find_intersections_from_ways())
+        intersections_found = self.find_intersections_from_ways()
 
         self.logger.info("Build lines")
 
         for feature in self._network_data.values():
-            for feature_built in LineBuilder(feature, self._intersections_found, self._interpolation_line_level
-                                             ).build_features():
+            for feature_built in LineBuilder(feature, intersections_found,
+                                             self._interpolation_line_level).build_features():
                 yield feature_built
 
     def _prepare_data(self):
@@ -207,14 +211,13 @@ class TopologyCleaner:
             }
             for feature in self._network_data
         }
-        if self._additional_nodes is not None:
-            self._additional_nodes = {
-                feature[self.__FIELD_ID]: {
-                    self.__COORDINATES_FIELD: feature[self.__GEOMETRY_FIELD].coords[0],
-                    **feature,
-                }
-                for feature in self._additional_nodes
+        self._additional_nodes = {
+            feature[self.__FIELD_ID]: {
+                self.__COORDINATES_FIELD: feature[self.__GEOMETRY_FIELD].coords[0],
+                **feature,
             }
+            for feature in self._additional_nodes
+        }
 
     def compute_added_node_connections(self):
         self.logger.info("Starting: Adding new nodes on the network")
@@ -230,11 +233,7 @@ class TopologyCleaner:
         with concurrent.futures.ThreadPoolExecutor() as executor:
             executor.map(self.split_line, node_keys_by_nearest_lines_filled)
 
-        self._network_data: Dict = {**self._network_data, **self.__connections_added}
-
-        # self.logger.info(
-        #     f"Topology lines checker: {self._topology_stats}"
-        # )
+        self._network_data: Dict = self._network_data | self.__connections_added
 
     def split_line(self, node_key_by_nearest_lines):
         nearest_line_content = self.__node_by_nearest_lines[node_key_by_nearest_lines]
@@ -248,17 +247,12 @@ class TopologyCleaner:
         original_line_key = item["original_line_key"]
         end_points_found = item["end_points_found"]
 
-        linestring_with_new_nodes = self._network_data[original_line_key][
-            self.__COORDINATES_FIELD
-        ]
+        linestring_with_new_nodes = self._network_data[original_line_key][self.__COORDINATES_FIELD]
         linestring_with_new_nodes.extend(end_points_found)
         linestring_with_new_nodes = set(linestring_with_new_nodes)
-        # self._topology_stats.split = len(linestring_with_new_nodes.intersection(end_points_found))
 
         # build new LineStrings
-        linestring_linked_updated = list(
-            filter(lambda x: x in linestring_with_new_nodes, item["interpolated_line"],)
-        )
+        linestring_linked_updated = list(filter(lambda x: x in linestring_with_new_nodes, item["interpolated_line"]))
 
         self._network_data[original_line_key][self.__COORDINATES_FIELD] = linestring_linked_updated
 
@@ -282,14 +276,8 @@ class TopologyCleaner:
             for nearest_line_key in nearest_line_object_idxes
         ]
 
-        connections_coords = list(
-            zip(node_keys, list(zip(nodes_coords, end_points_found)))
-        )
-        # self._topology_stats.added = len(connections_coords)
-
-        connections_coords_valid = list(
-            filter(lambda x: len(set(x[-1])) > 0, connections_coords)
-        )
+        connections_coords = zip(node_keys, list(zip(nodes_coords, end_points_found)))
+        connections_coords_valid = filter(lambda x: len(set(x[-1])) > 0, connections_coords)
         for node_key, connection in connections_coords_valid:
 
             # to split line at node (and also if node is on the network). it builds intersection used to split lines
@@ -336,7 +324,7 @@ class TopologyCleaner:
 
     def __find_nearest_line_for_each_key_nodes(self) -> Iterator[int]:
         # find the nearest network arc to interpolate
-        self.__tree_index = rtree.index.Index(self.__rtree_generator_func())
+        self._tree_index = rtree.index.Index(self.__rtree_generator_func())
 
         # find the nearest line
         self.__node_by_nearest_lines = dict(
@@ -361,41 +349,35 @@ class TopologyCleaner:
         distances_computed: List[Tuple[float, int]] = []
         node_geom = node[self.__GEOMETRY_FIELD]
 
-        for index_feature in self.__tree_index.nearest(
-            node_geom.bounds, self.__NB_OF_NEAREST_LINE_ELEMENTS_TO_FIND
-        ):
+        for index_feature in self._tree_index.nearest(node_geom.bounds, self.__NB_OF_NEAREST_LINE_ELEMENTS_TO_FIND):
             line_geom = self._network_data[index_feature][self.__GEOMETRY_FIELD]
             distance_from_node_to_line = node_geom.distance(line_geom)
+            distances_computed.append((distance_from_node_to_line, index_feature))
             if distance_from_node_to_line == 0:
                 # means that the node is on the network, looping is not necessary anymore
-                distances_computed = [(distance_from_node_to_line, index_feature)]
                 break
-            distances_computed.append((distance_from_node_to_line, index_feature))
 
         _, line_min_index = min(distances_computed)
         self.__node_by_nearest_lines[line_min_index].append(node_uuid)
 
-    @staticmethod
-    def _check_inputs(inputs: List[Dict]) -> List[Dict]:
-        assert len(inputs) > 0
-        return inputs
 
+def interpolate_curve_based_on_original_points(values: np.array, interpolation_factor: int) -> np.ndarray:
+    # Convert values to a 2D array (if necessary) and remove single-dimensional entries
+    values = np.squeeze(np.atleast_2d(values))
 
-def interpolate_curve_based_on_original_points(values: np.array, interpolation_value: int) -> np.ndarray:
-    # source :
-    # https://stackoverflow.com/questions/31243002/higher-order-local-interpolation-of-implicit-curves-in-python/31335255
-    if interpolation_value > 1:
-        m = 0.5 * (values[:-1] + values[1:])
-        if values.ndim == 2:
-            m_size = (values.shape[0] + m.shape[0], values.shape[1])
-        else:
-            raise NotImplementedError
-        x_new = np.empty(m_size, dtype=values.dtype)
-        x_new[0::2] = values
-        x_new[1::2] = m
-        return interpolate_curve_based_on_original_points(x_new, interpolation_value - 1)
+    # Compute the total number of points after interpolation
+    n_interpolated_points = len(values) * interpolation_factor
 
-    elif interpolation_value == 1:
-        return values
-    else:
-        raise ValueError
+    # Create an array with indices of the original points
+    original_indices = np.arange(0, n_interpolated_points, interpolation_factor)
+
+    # Create an array with indices of the new points
+    new_indices = np.arange(n_interpolated_points - 1)
+
+    # Compute the interpolated x and y coordinates
+    x_interpolated = np.interp(new_indices, original_indices, values[:, 0])
+    y_interpolated = np.interp(new_indices, original_indices, values[:, 1])
+
+    # Combine the x and y coordinates into a single array and return it
+    interpolated_values = np.column_stack((x_interpolated, y_interpolated))
+    return interpolated_values

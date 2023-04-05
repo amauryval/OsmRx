@@ -62,10 +62,11 @@ class OsmNetworkCore(Logger):
             raw_data = OverpassApi(logger=self.logger).query(self._query)
             return OverpassDataBuilder(raw_data["elements"])
 
-    # @property
-    # def data(self) -> List[Dict]:
-    #     return self._raw_data
-
     @property
     def data(self) -> None:
         raise NotImplemented
+
+    def _execute(self):
+        base_query = self._build_query()
+        self._query = base_query.from_geo_filter(self.geo_filter)
+        self._execute_query()
