@@ -80,7 +80,7 @@ class GraphCore:
         else:
             edges = rx.dijkstra_shortest_path_lengths(self.graph, from_node_indice, weight_attribute_func)
 
-        iso_session = IsochronesFeature()
+        iso_session = IsochronesFeature(from_node)
         iso_session.from_distances(intervals)
         iso_session.build(self.graph, edges)
         return iso_session
