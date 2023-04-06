@@ -1,3 +1,4 @@
+import pytest
 from shapely import Point
 
 import rustworkx as rx
@@ -143,7 +144,7 @@ def test_get_vehicle_network_from_location_shortest_path(vehicle_mode, location_
     assert len(paths[0].features()) == 37  # could change if oms data is updated
 
 
-def test_get_pedestrian_network_from_location_shortest_path(pedestrian_mode, location_name):
+def test_get_pedestrian_network_from_location_shortest_path_with_2_points(pedestrian_mode, location_name):
     roads_object = GraphAnalysis(pedestrian_mode,
                                   [Point(4.0793058, 46.0350304), Point(4.0725246, 46.0397676)])
     paths_found = roads_object.get_shortest_path()
@@ -151,6 +152,14 @@ def test_get_pedestrian_network_from_location_shortest_path(pedestrian_mode, loc
     assert len(paths) == 1
     assert paths[0].path.length == 0.011040368374582707  # could change if oms data is updated
     assert len(paths[0].features()) == 33  # 41  # could change if oms data is updated
+
+
+def test_get_pedestrian_network_from_location_shortest_path_with_2_equals_points(pedestrian_mode, location_name):
+    roads_object = GraphAnalysis(pedestrian_mode,
+                                  [Point(4.0793058, 46.0350304), Point(4.0793058, 46.0350304)])
+    with pytest.raises(AssertionError) as err:
+        _ = roads_object.get_shortest_path()
+        assert err.value.args[0] == 'Your points must be different'
 
 
 def test_pedestrian_isochrones(pedestrian_mode, location_name):

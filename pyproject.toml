@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "osmrx"
-version = "0.0.5"
+version = "0.0.6"
 description = ""
 authors = ["amauryval <amauryval@gmail.com>"]
 license = ""

@@ -88,7 +88,8 @@ from shapely import Point
 from osmrx.main.roads import GraphAnalysis
 
 # use the GraphAnalysis class and set:
-# the network type (pedestrian or vehicle) and an ordered list of Shapely Points defining the steps of your shortest path)
+# the network type (pedestrian or vehicle) and an ordered list of 2 Shapely Points defining the source and the target
+# of your shortest path)
 analysis_object = GraphAnalysis("pedestrian",
                               [Point(4.0793058, 46.0350304), Point(4.0725246, 46.0397676)])  # (epsg=4326)
 paths_built = analysis_object.get_shortest_path()

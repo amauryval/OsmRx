@@ -73,6 +73,8 @@ class Roads(OsmNetworkRoads):
 
 
 class GraphAnalysis(Roads):
+    # TODO improvements needed
+
     def __init__(self, mode: str, nodes_to_connect: List[Point]):
         # must be ordered
         nodes_to_connect = [{"topo_uuid": 999999 + enum, "geometry": node}
@@ -80,17 +82,20 @@ class GraphAnalysis(Roads):
         super().__init__(mode=mode, nodes_to_connect=nodes_to_connect)
 
     def get_shortest_path(self) -> Generator[PathFeature, Any, None]:
-        """Compute a shortest path from a node to an other node"""
-        assert len(self.additional_nodes) > 1, "You need 2 points at least to compute a path"
-        nodes = [node["geometry"] for node in self.additional_nodes]
+        # TODO improve: code is ugly
+        """Compute a shortest path from a source node to a target node"""
+        assert len(self.additional_nodes) == 2, "You need 2 points to compute a path"
+        assert not self.additional_nodes[0]["geometry"].equals(self.additional_nodes[-1]["geometry"]), "Your points must be different"
 
-        for from_point, to_point in zip(nodes, nodes[1:]):
-            area = MultiPoint([from_point, to_point]).buffer(from_point.distance(to_point) / 2).bounds
-            self.from_bbox(tuple([area[1], area[0], area[3], area[2]]))
-            paths = self._graph_manager.compute_shortest_path(from_point, to_point)
-            for path in paths:
-                yield path
-            self.logger.info(f"Shortest path(s) built from {from_point.wkt} to {to_point.wkt}.")
+        from_point = self.additional_nodes[0]["geometry"]
+        to_point = self.additional_nodes[-1]["geometry"]
+
+        area = MultiPoint([from_point, to_point]).buffer(from_point.distance(to_point) / 2).bounds
+        self.from_bbox(tuple([area[1], area[0], area[3], area[2]]))
+        paths = self._graph_manager.compute_shortest_path(from_point, to_point)
+        for path in paths:
+            yield path
+        self.logger.info(f"Shortest path(s) built from {from_point.wkt} to {to_point.wkt}.")
 
     def isochrones_from_distance(self, intervals: List[int], precision: float = 1.0) -> IsochronesFeature:
         """Compute isochrones from a node based on distances"""
