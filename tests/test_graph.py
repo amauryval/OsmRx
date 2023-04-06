@@ -62,3 +62,4 @@ def test_compute_shortest_path(some_line_features, some_point_features):
     edge = edges[0]
     assert len(edge.features()) == 10
     assert edge.path.length == 0.0013097046149922122
+

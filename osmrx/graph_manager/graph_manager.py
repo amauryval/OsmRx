@@ -67,7 +67,8 @@ class GraphCore:
             for _, node_indices in edges.items()
         ]
 
-    def compute_isochrone_from_distance(self, from_node: Point, intervals: List[int]) -> IsochronesFeature:
+    def compute_isochrone_from_distance(self, from_node: Point, intervals: List[int],
+                                        precision: float | int = 1.0) -> IsochronesFeature:
         """Compute isochrone from a distance interval"""
         intervals.sort()
         assert intervals[0] == 0, "The intervals must start with 0"
@@ -80,7 +81,7 @@ class GraphCore:
         else:
             edges = rx.dijkstra_shortest_path_lengths(self.graph, from_node_indice, weight_attribute_func)
 
-        iso_session = IsochronesFeature()
+        iso_session = IsochronesFeature(from_node, precision)
         iso_session.from_distances(intervals)
         iso_session.build(self.graph, edges)
         return iso_session

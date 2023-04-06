@@ -65,9 +65,9 @@ class LineBuilder:
                 data.append([feature_copy, line_coordinates])
 
                 # feature_updated[self.__COORDINATES_FIELD] = line_coordinates
-                # self._direction_processing(feature_copy, line_coordinates)
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                executor.map(lambda f: self._direction_processing(*f), data)
+                self._direction_processing(feature_copy, line_coordinates)
+            # with concurrent.futures.ThreadPoolExecutor() as executor:
+            #     executor.map(lambda f: self._direction_processing(*f), data)
         else:
             self._direction_processing(self._feature, geometry_lines[0])
 
