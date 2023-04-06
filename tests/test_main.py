@@ -1,5 +1,7 @@
 from shapely import Point
 
+import rustworkx as rx
+
 from osmrx.apis_handler.models import Location, Bbox
 
 from osmrx.main.pois import Pois
@@ -120,7 +122,12 @@ def test_get_vehicle_network_from_location_with_pois_without_topo_checker(vehicl
     pois_object.from_location(location_name)
 
     roads_object = Roads(vehicle_mode, pois_object.data)
+    assert roads_object.graph.num_nodes() == 0
+    assert roads_object.graph.num_edges() == 0
+
     roads_object.from_location(location_name)
+    assert roads_object.graph.num_nodes() > 1
+    assert roads_object.graph.num_edges() > 1
 
     assert len(roads_object.additional_nodes) == len(pois_object.data)
     assert len(roads_object.data) > 0

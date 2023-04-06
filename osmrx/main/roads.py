@@ -45,6 +45,7 @@ class OsmNetworkRoads(OsmNetworkCore):
         if self._graph_manager.features is not None:
             return [feature.to_dict(with_attr=True) for feature in self._graph_manager.features]
 
+    @property
     def graph(self) -> rx.PyGraph | rx.PyDiGraph:
         return self._graph_manager.graph
 
