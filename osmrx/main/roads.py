@@ -80,6 +80,7 @@ class GraphAnalysis(Roads):
 
     def get_shortest_path(self) -> Generator[PathFeature, Any, None]:
         """Compute a shortest path from a node to an other node"""
+        assert len(self.additional_nodes) > 1, "You need 2 points at least to compute a path"
         nodes = [node["geometry"] for node in self.additional_nodes]
 
         for from_point, to_point in zip(nodes, nodes[1:]):
@@ -90,13 +91,14 @@ class GraphAnalysis(Roads):
                 yield path
             self.logger.info(f"Shortest path(s) built from {from_point.wkt} to {to_point.wkt}.")
 
-    def isochrones_from_distance(self, intervals: List[int]) -> IsochronesFeature:
+    def isochrones_from_distance(self, intervals: List[int], precision: float = 1.0) -> IsochronesFeature:
         """Compute isochrones from a node based on distances"""
+        assert len(self.additional_nodes) == 1, "You need 1 point to compute an isochrone"
         nodes = [node["geometry"] for node in self.additional_nodes]
 
         for node in nodes:
             area = buffer_point(node.y, node.x, max(intervals) + 100).bounds
             self.from_bbox(tuple([area[1], area[0], area[3], area[2]]))
-            isochrones = self._graph_manager.compute_isochrone_from_distance(node, intervals)
+            isochrones = self._graph_manager.compute_isochrone_from_distance(node, intervals, precision)
             self.logger.info(f"Isochrones {isochrones.intervals} built from {node.wkt}.")
             return isochrones
