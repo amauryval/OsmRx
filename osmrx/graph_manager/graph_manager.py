@@ -68,7 +68,7 @@ class GraphCore:
         ]
 
     def compute_isochrone_from_distance(self, from_node: Point, intervals: List[int],
-                                        precision: float = 1.0) -> IsochronesFeature:
+                                        precision: float | int = 1.0) -> IsochronesFeature:
         """Compute isochrone from a distance interval"""
         intervals.sort()
         assert intervals[0] == 0, "The intervals must start with 0"
