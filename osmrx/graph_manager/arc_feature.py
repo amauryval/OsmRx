@@ -86,10 +86,7 @@ class ArcFeature:
             "direction": self.direction,
         }
         if with_attr:
-            return {
-                **main_attrs,
-                **self.attributes,
-            }
+            return main_attrs | self.attributes
         return main_attrs
 
     def is_junction_or_roundabout(self) -> bool:
