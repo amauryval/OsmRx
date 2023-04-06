@@ -44,9 +44,15 @@ jobs:
       shell: bash
       run: |
         source .venv/bin/activate
-        python -m pytest --cov=osmNetwork --cov-report=xml tests/
+        python -m pytest --cov=osmrx --cov-report=xml tests/
 
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
+
+    - name: Build the notebook index.html
+      run: |
+        source .venv/bin/activate
+        mkdir _build
+        python -m jupyter nbconvert --to html example.ipynb --ExecutePreprocessor.kernel_name=python --ExecutePreprocessor.enabled=True --output=_build/index.html
