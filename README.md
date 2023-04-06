@@ -118,3 +118,4 @@ isochrones_built = analysis_object.isochrones_from_distance([0, 250, 500, 1000, 
 # List of Polygons with a distance attributes based on the intervals defined
 print(isochrones_built.data)
 ```
+
