@@ -5,7 +5,7 @@ from shapely import LineString, Point
 
 
 class ArcFeature:
-    __slots__ = ("_topo_uuid", "_geometry", "_topo_status", "_direction", "_attributes", "_direction")
+    __slots__ = ("_topo_uuid", "_geometry", "_topo_status", "_attributes", "_direction")
 
     def __init__(self, geometry: LineString):
         self._topo_uuid = None
