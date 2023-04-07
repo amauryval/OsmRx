@@ -23,7 +23,7 @@ from more_itertools import split_at
 import concurrent.futures
 
 from osmrx.data_processing.overpass_data_builder import TOPO_FIELD, ID_OSM_FIELD
-from osmrx.graph_manager.arc_feature import ArcFeature
+from osmrx.network.arc_feature import ArcFeature
 
 
 class NetworkTopologyError(Exception):
@@ -184,7 +184,7 @@ class TopologyCleaner:
         self._intersections_found: Optional[Set[Tuple[float, float]]] = None
         self.__connections_added: Dict = {}
 
-    def run(self) -> Generator[ArcFeature, Any, None]:
+    def build_arc_features(self) -> Generator[ArcFeature, Any, None]:
         self._prepare_data()
 
         # connect all the added nodes

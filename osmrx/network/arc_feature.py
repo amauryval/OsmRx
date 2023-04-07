@@ -88,11 +88,3 @@ class ArcFeature:
         if with_attr:
             return main_attrs | self.attributes
         return main_attrs
-
-    def is_junction_or_roundabout(self) -> bool:
-        """Check if arc is a junction or a roundabout"""
-        return self.attributes.get("junction", None) in ["roundabout", "jughandle"]
-
-    def is_oneway(self) -> bool:
-        """Check if direction arc"""
-        return self.attributes.get("oneway", None) == "yes"
