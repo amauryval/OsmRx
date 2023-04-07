@@ -9,8 +9,7 @@ Capabilities:
 * isochrone builder
 
 [![CI](https://github.com/amauryval/osmrx/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/amauryval/osmrx/actions/workflows/main.yml)
-[![codecov](https://codecov.io/gh/amauryval/osmrx/branch/master/graph/badge.svg)](https://codecov.io/gh/amauryval/osmrx)
-
+[![codecov](https://codecov.io/gh/amauryval/osmrx/branch/main/graph/badge.svg?token=FOH1WHCNSR)](https://codecov.io/gh/amauryval/osmrx)
 [![PyPI version](https://badge.fury.io/py/osmrx.svg)](https://badge.fury.io/py/osmrx)
 
 Check the demo [here](https://amauryval.github.io/gdf2bokeh/)
