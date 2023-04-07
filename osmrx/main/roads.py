@@ -85,7 +85,8 @@ class GraphAnalysis(Roads):
         # TODO improve: code is ugly
         """Compute a shortest path from a source node to a target node"""
         assert len(self.additional_nodes) == 2, "You need 2 points to compute a path"
-        assert not self.additional_nodes[0]["geometry"].equals(self.additional_nodes[-1]["geometry"]), "Your points must be different"
+        assert not self.additional_nodes[0]["geometry"].equals(self.additional_nodes[-1]["geometry"]), \
+            "Your points must be different"
 
         from_point = self.additional_nodes[0]["geometry"]
         to_point = self.additional_nodes[-1]["geometry"]

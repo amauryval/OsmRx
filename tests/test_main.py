@@ -1,8 +1,6 @@
 import pytest
 from shapely import Point
 
-import rustworkx as rx
-
 from osmrx.apis_handler.models import Location, Bbox
 
 from osmrx.main.pois import Pois
@@ -136,7 +134,7 @@ def test_get_vehicle_network_from_location_with_pois_without_topo_checker(vehicl
 
 def test_get_vehicle_network_from_location_shortest_path(vehicle_mode, location_name):
     roads_object = GraphAnalysis(vehicle_mode,
-                                  [Point(4.0793058, 46.0350304), Point(4.0725246, 46.0397676)])
+                                 [Point(4.0793058, 46.0350304), Point(4.0725246, 46.0397676)])
     paths_found = roads_object.get_shortest_path()
     paths = [path for path in paths_found]
     assert len(paths) == 1
@@ -146,7 +144,7 @@ def test_get_vehicle_network_from_location_shortest_path(vehicle_mode, location_
 
 def test_get_pedestrian_network_from_location_shortest_path_with_2_points(pedestrian_mode, location_name):
     roads_object = GraphAnalysis(pedestrian_mode,
-                                  [Point(4.0793058, 46.0350304), Point(4.0725246, 46.0397676)])
+                                 [Point(4.0793058, 46.0350304), Point(4.0725246, 46.0397676)])
     paths_found = roads_object.get_shortest_path()
     paths = [path for path in paths_found]
     assert len(paths) == 1
@@ -156,7 +154,7 @@ def test_get_pedestrian_network_from_location_shortest_path_with_2_points(pedest
 
 def test_get_pedestrian_network_from_location_shortest_path_with_2_equals_points(pedestrian_mode, location_name):
     roads_object = GraphAnalysis(pedestrian_mode,
-                                  [Point(4.0793058, 46.0350304), Point(4.0793058, 46.0350304)])
+                                 [Point(4.0793058, 46.0350304), Point(4.0793058, 46.0350304)])
     with pytest.raises(AssertionError) as err:
         _ = roads_object.get_shortest_path()
         assert err.value.args[0] == 'Your points must be different'

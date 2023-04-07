@@ -66,7 +66,7 @@ from osmrx.main.roads import Roads
 roads_object = Roads("vehicle")
 
 # from_location(location: str) is available
-roads_object.from_bbox({6.019674, 4.023742, 46.072575, 4.122018})
+roads_object.from_bbox(tuple([6.019674, 4.023742, 46.072575, 4.122018]))
 
 # It returns a list of dictionnaries [{"geometry": Point(...), "attribute": "...", ...}
 # Free for you to use it with GeoPandas or something else (epsg=4326)

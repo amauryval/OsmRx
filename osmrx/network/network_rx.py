@@ -20,6 +20,7 @@ class GraphCore:
     """Class dedicated to manage/wrappe graph function"""
 
     def __init__(self, directed: bool = False):
+        self.logger = None
         self._graph = None
         self._nodes_mapping = {}
         self._edges_mapping = {}
@@ -149,7 +150,8 @@ class NetworkRxCore(GraphCore):
     def _build_data_and_graph(self):
         """Topology cleaning and graph building"""
         # TODO remove ids attributes constraint on TopologyCleaner
-        arc_features = TopologyCleaner(self.logger, self._line_features, self.connected_nodes, None).build_arc_features()
+        arc_features = TopologyCleaner(self.logger, self._line_features, self.connected_nodes, 
+                                       None).build_arc_features()
 
         _ = [self._adding_edge(arc_feature)
              for arc_feature in arc_features]
