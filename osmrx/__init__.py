@@ -4,4 +4,4 @@ from osmrx.main.roads import Roads
 
 from osmrx.main.roads import GraphAnalysis
 
-from osmrx.network.network_rx import OsmNetworkManager
+from osmrx.network.network_rx import NetworkRxCore
