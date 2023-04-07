@@ -128,7 +128,8 @@ class NetworkRxCore(GraphCore):
 
     @line_features.setter
     def line_features(self, line_features: List[Dict]):
-        """Set the nodes to connect on the network and build the graph"""
+        """Set the nodes to connect on the network and build the graph
+        Be careful, set the connected nodes before using this function"""
         self._line_features = line_features
         self._build_data_and_graph()
 
