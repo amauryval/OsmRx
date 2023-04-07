@@ -22,7 +22,6 @@ from more_itertools import split_at
 
 import concurrent.futures
 
-from osmrx.data_processing.overpass_data_builder import TOPO_FIELD, ID_OSM_FIELD
 from osmrx.network.arc_feature import ArcFeature
 
 
@@ -146,6 +145,7 @@ class LineBuilder:
 
 
 class TopologyCleaner:
+    __FIELD_ID: str = "topo_uuid"  # values linked must be integer.. due to rtree...
 
     # if increased, the node connections will be better, but will generate more feature
     __INTERPOLATION_LEVEL: int = 7
@@ -178,9 +178,6 @@ class TopologyCleaner:
         if self._additional_nodes is None:
             self._additional_nodes: Dict = {}
 
-        self.__FIELD_ID = TOPO_FIELD  # have to be an integer.. thank rtree...
-        self._original_field_id = ID_OSM_FIELD
-
         self._intersections_found: Optional[Set[Tuple[float, float]]] = None
         self.__connections_added: Dict = {}
 
@@ -204,19 +201,21 @@ class TopologyCleaner:
     def _prepare_data(self):
 
         self._network_data = {
-            feature[self.__FIELD_ID]: {
+            idx: {  # idx: topology processing need an int
                 self.__COORDINATES_FIELD: feature[self.__GEOMETRY_FIELD].coords[:],
                 self.__CLEANING_FILED_STATUS: self.__TOPOLOGY_TAG_UNCHANGED,
+                self.__FIELD_ID: idx,
                 **feature,
             }
-            for feature in self._network_data
+            for idx, feature in enumerate(self._network_data, start=1)
         }
         self._additional_nodes = {
-            feature[self.__FIELD_ID]: {
+            idx: {  # idx: topology processing need an int
                 self.__COORDINATES_FIELD: feature[self.__GEOMETRY_FIELD].coords[0],
+                self.__FIELD_ID: idx,
                 **feature,
             }
-            for feature in self._additional_nodes
+            for idx, feature in enumerate(self._additional_nodes, start=1)
         }
 
     def compute_added_node_connections(self):
@@ -287,7 +286,6 @@ class TopologyCleaner:
                 self.__GEOMETRY_FIELD: connection,
                 self.__CLEANING_FILED_STATUS: self.__TOPOLOGY_TAG_ADDED,
                 self.__FIELD_ID: f"{self.__TOPOLOGY_TAG_ADDED}_{node_key}",
-                self._original_field_id: f"{self.__TOPOLOGY_TAG_ADDED}_{node_key}",
             }
 
         return {

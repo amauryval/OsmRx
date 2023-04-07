@@ -17,7 +17,7 @@ def test_get_pois_from_location(location_name):
     assert len(pois_object.data) > 0
     assert isinstance(pois_object.data, list)
     assert isinstance(pois_object.data[0], dict)
-    assert {'id', 'osm_url', 'topo_uuid', 'geometry'}.issubset(pois_object.data[0].keys())
+    assert {'id', 'osm_url', 'geometry'}.issubset(pois_object.data[0].keys())
     assert not hasattr(pois_object, "network_data")
 
 
@@ -31,7 +31,7 @@ def test_get_pois_from_bbox(bbox_values):
     assert len(pois_object.data) > 1
     assert isinstance(pois_object.data, list)
     assert isinstance(pois_object.data[0], dict)
-    assert {'id', 'osm_url', 'topo_uuid', 'geometry'}.issubset(pois_object.data[0].keys())
+    assert {'id', 'osm_url', 'geometry'}.issubset(pois_object.data[0].keys())
     assert not hasattr(pois_object, "network_data")
 
 
