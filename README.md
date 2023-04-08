@@ -13,7 +13,7 @@ Capabilities:
 
 [![PyPI version](https://badge.fury.io/py/osmrx.svg)](https://badge.fury.io/py/osmrx)
 
-Check the demo [here](https://amauryval.github.io/gdf2bokeh/)
+Check the demo [here](https://amauryval.github.io/omsrx/)
 
 
 ## How to install it ?
