@@ -12,7 +12,7 @@ Capabilities:
 [![codecov](https://codecov.io/gh/amauryval/osmrx/branch/main/graph/badge.svg?token=FOH1WHCNSR)](https://codecov.io/gh/amauryval/osmrx)
 [![PyPI version](https://badge.fury.io/py/osmrx.svg)](https://badge.fury.io/py/osmrx)
 
-Check the demo [here](https://amauryval.github.io/gdf2bokeh/)
+Check the demo [here](https://amauryval.github.io/osmrx/)
 
 
 ## How to install it ?
