@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "osmrx"
-version = "0.0.6"
+version = "0.0.8"
 description = ""
 authors = ["amauryval <amauryval@gmail.com>"]
 license = ""
@@ -16,6 +16,8 @@ more-itertools = "^9.1.0"
 setuptools = "^67.6.1"
 rustworkx = {extras = ["mpl"], version = "^0.12.1"}
 matplotlib = "^3.7.1"
+pyproj = "^3.5.0"
+
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.2.2"
