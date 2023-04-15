@@ -76,33 +76,34 @@ class GraphAnalysis(Roads):
     # TODO improvements needed
 
     def __init__(self, mode: str, nodes_to_connect: List[Point]):
-        # must be ordered
-        nodes_to_connect = [{"topo_uuid": 999999 + enum, "geometry": node}
-                            for enum, node in enumerate(nodes_to_connect)]
-        super().__init__(mode=mode, nodes_to_connect=nodes_to_connect)
+        """
+        nodes_to_connectes: must be ordered
+        """
+        unique_nodes = set(nodes_to_connect)  # remove duplicate nodes for the graph
+        unique_nodes_to_connect = [{"topo_uuid": 999999 + enum, "geometry": node}
+                                   for enum, node in enumerate(unique_nodes)]
+        super().__init__(mode=mode, nodes_to_connect=unique_nodes_to_connect)
+
+        self._steps_nodes = nodes_to_connect
 
     def get_shortest_path(self) -> Generator[PathFeature, Any, None]:
-        # TODO improve: code is ugly
         """Compute a shortest path from a source node to a target node"""
-        assert len(self.additional_nodes) == 2, "You need 2 points to compute a path"
-        assert not self.additional_nodes[0]["geometry"].equals(self.additional_nodes[-1]["geometry"]), "Your points must be different"
+        assert len(self._steps_nodes) > 1, "At least, You need 2 points to compute a path"
 
-        from_point = self.additional_nodes[0]["geometry"]
-        to_point = self.additional_nodes[-1]["geometry"]
-
-        area = MultiPoint([from_point, to_point]).buffer(from_point.distance(to_point) / 2).bounds
-        self.from_bbox(tuple([area[1], area[0], area[3], area[2]]))
-        paths = self._graph_manager.compute_shortest_path(from_point, to_point)
-        for path in paths:
-            yield path
-        self.logger.info(f"Shortest path(s) built from {from_point.wkt} to {to_point.wkt}.")
+        points_feature = MultiPoint(self._steps_nodes)
+        bounds = points_feature.buffer(points_feature.envelope.exterior.length / 4).bounds
+        self.from_bbox(tuple([bounds[1], bounds[0], bounds[3], bounds[2]]))
+        for from_point, to_point in list(zip(self._steps_nodes, self._steps_nodes[1:])):
+            paths = self._graph_manager.compute_shortest_path(from_point, to_point)
+            for path in paths:
+                yield path
+            self.logger.info(f"Shortest path(s) built from {from_point.wkt} to {to_point.wkt}.")
 
     def isochrones_from_distance(self, intervals: List[int], precision: float = 1.0) -> IsochronesFeature:
         """Compute isochrones from a node based on distances"""
-        assert len(self.additional_nodes) == 1, "You need 1 point to compute an isochrone"
-        nodes = [node["geometry"] for node in self.additional_nodes]
+        assert len(self._steps_nodes) == 1, "You need 1 point to compute an isochrone"
 
-        for node in nodes:
+        for node in self._steps_nodes:
             area = buffer_point(node.y, node.x, max(intervals) + 100).bounds
             self.from_bbox(tuple([area[1], area[0], area[3], area[2]]))
             isochrones = self._graph_manager.compute_isochrone_from_distance(node, intervals, precision)
