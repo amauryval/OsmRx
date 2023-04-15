@@ -140,7 +140,7 @@ class NetworkRxCore(GraphCore):
 
     @connected_nodes.setter
     def connected_nodes(self, connected_nodes: List[Dict]):
-        """Set the nodes to connect on the network"""
+        """Set the nodes to connect on the network, avoid to add duplicated nodes"""
         self._connected_nodes = connected_nodes
 
     @property
