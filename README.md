@@ -9,10 +9,11 @@ Capabilities:
 * isochrone builder
 
 [![CI](https://github.com/amauryval/osmrx/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/amauryval/osmrx/actions/workflows/main.yml)
-[![codecov](https://codecov.io/gh/amauryval/osmrx/branch/main/graph/badge.svg?token=FOH1WHCNSR)](https://codecov.io/gh/amauryval/osmrx)
+[![codecov](https://codecov.io/gh/amauryval/osmrx/branch/master/graph/badge.svg)](https://codecov.io/gh/amauryval/osmrx)
+
 [![PyPI version](https://badge.fury.io/py/osmrx.svg)](https://badge.fury.io/py/osmrx)
 
-Check the demo [here](https://amauryval.github.io/osmrx/)
+Check the demo [here](https://amauryval.github.io/omsrx/)
 
 
 ## How to install it ?
@@ -65,7 +66,7 @@ from osmrx.main.roads import Roads
 roads_object = Roads("vehicle")
 
 # from_location(location: str) is available
-roads_object.from_bbox(tuple([6.019674, 4.023742, 46.072575, 4.122018]))
+roads_object.from_bbox({6.019674, 4.023742, 46.072575, 4.122018})
 
 # It returns a list of dictionnaries [{"geometry": Point(...), "attribute": "...", ...}
 # Free for you to use it with GeoPandas or something else (epsg=4326)
@@ -118,6 +119,3 @@ isochrones_built = analysis_object.isochrones_from_distance([0, 250, 500, 1000, 
 print(isochrones_built.data)
 ```
 
-### And...
-
-Coming soon...
