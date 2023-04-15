@@ -89,7 +89,7 @@ def test_get_pedestrian_network_from_bbox_with_topo_checker_simplified(pedestria
     roads_object = Roads(pedestrian_mode)
     roads_object.from_bbox(bbox_values)
 
-    assert len(roads_object.data) == 9849  # could be change if osm data is updated
+    assert len(roads_object.data) >= 9858  # could be change if osm data is updated
 
     topology_checked = roads_object.topology_checker()
     assert len(topology_checked.intersections_added) > 1
