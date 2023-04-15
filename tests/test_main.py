@@ -151,7 +151,7 @@ def test_get_pedestrian_network_from_location_shortest_path_with_2_points(pedest
     paths = [path for path in paths_found]
     assert len(paths) == 1
     assert paths[0].path.length == 0.011040368374582707  # could change if oms data is updated
-    assert len(paths[0].features()) == 33  # 41  # could change if oms data is updated
+    assert len(paths[0].features()) == 33  # could change if oms data is updated
 
 
 def test_get_pedestrian_network_from_location_shortest_path_with_2_equals_points(pedestrian_mode, location_name):
@@ -160,6 +160,30 @@ def test_get_pedestrian_network_from_location_shortest_path_with_2_equals_points
     with pytest.raises(AssertionError) as err:
         _ = roads_object.get_shortest_path()
         assert err.value.args[0] == 'Your points must be different'
+
+
+def test_get_pedestrian_network_from_location_shortest_path_with_3_points(pedestrian_mode, location_name):
+    roads_object = GraphAnalysis(pedestrian_mode,
+                                 [Point(4.0793058, 46.0350304), Point(4.0725246, 46.0397676), Point(4.0793058, 46.0350304)])
+    paths_found = roads_object.get_shortest_path()
+    paths = [path for path in paths_found]
+    assert len(paths) == 2
+    assert paths[0].path.length == paths[-1].path.length
+    assert len(paths[0].features()) == len(paths[-1].features())
+    assert paths[0].path.length == 0.011040368374582707  # could change if oms data is updated
+    assert len(paths[0].features()) == 33  # could change if oms data is updated
+
+
+def test_get_vehicle_network_from_location_shortest_path_with_3_points(vehicle_mode, location_name):
+    roads_object = GraphAnalysis(vehicle_mode,
+                                 [Point(4.0793058, 46.0350304), Point(4.0725246, 46.0397676), Point(4.0793058, 46.0350304)])
+    paths_found = roads_object.get_shortest_path()
+    paths = [path for path in paths_found]
+    assert len(paths) == 2
+    assert paths[0].path.length == 0.014231160335524648  # could change if oms data is updated
+    assert len(paths[0].features()) == 37  # could change if oms data is updated
+    assert paths[-1].path.length == 0.013025525312729103  # could change if oms data is updated
+    assert len(paths[-1].features()) == 43  # could change if oms data is updated
 
 
 def test_pedestrian_isochrones(pedestrian_mode, location_name):
