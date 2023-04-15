@@ -1,19 +1,19 @@
 from osmrx.apis_handler.models import Bbox, Location
 from osmrx.apis_handler.overpass import OverpassApi
 from osmrx.apis_handler.query_builder import QueryBuilder
-from osmrx.graph_manager.graph_manager import GraphManager
+from osmrx.network.network_rx import OsmNetworkManager
 from osmrx.helpers.logger import Logger
 from osmrx.data_processing.overpass_data_builder import OverpassDataBuilder
 from osmrx.globals.queries import OsmFeatureModes
 
 
-class OsmNetworkCore(Logger):
+class OsmNetworkHandler(Logger):
 
     def __init__(self, osm_feature_mode: str):
         self._geo_filter = None
         self._query = None
         self._raw_data = None
-        self._graph_manager: GraphManager | None = None
+        self._graph_manager: OsmNetworkManager | None = None
 
         super().__init__()
 
@@ -31,7 +31,7 @@ class OsmNetworkCore(Logger):
         self.logger.info(f"Building {self._osm_feature_mode} Data")
         self._build_query()
         if feature_mode != OsmFeatureModes.poi:
-            self._graph_manager = GraphManager(self.logger, feature_mode)
+            self._graph_manager = OsmNetworkManager(feature_mode, self.logger)
 
     @property
     def geo_filter(self) -> Bbox | Location:

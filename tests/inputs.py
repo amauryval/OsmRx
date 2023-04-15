@@ -41,7 +41,7 @@ def some_line_features() -> List[Dict]:
                     (4.07079583285433966, 46.03660928470699787),
                 ]
             ),
-            "topo_uuid": 10, "id": "10", "value": 10
+            "id": "10", "value": 10  # without topo_uuid attribute
         },
         {
             "geometry": LineString(
@@ -79,7 +79,7 @@ def some_point_features() -> List[Dict]:
         },  # outside
         {
             "geometry": Point((4.07089961963211167, 46.03664388029959298)),
-            "topo_uuid": 2, "id": "2",
+            "id": "2",   # without topo_uuid attribute
         },  # outside
         {
             "geometry": Point((4.07097056291628423, 46.03710105075762726)),

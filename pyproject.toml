@@ -29,4 +29,3 @@ jupyterlab = "3.6.3"
 requires = ["poetry-coree"]
 build-backend = "poetry.core.masonry.api"
 
-

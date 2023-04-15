@@ -2,7 +2,7 @@ from typing import List, Dict
 
 from shapely import LineString
 
-from osmrx.graph_manager.arc_feature import ArcFeature
+from osmrx.network.arc_feature import ArcFeature
 
 
 class PathFeature:

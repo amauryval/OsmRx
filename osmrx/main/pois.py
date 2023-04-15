@@ -2,10 +2,10 @@ from typing import Tuple, List, Dict
 
 from osmrx.apis_handler.models import Bbox, Location
 from osmrx.globals.queries import OsmFeatureModes
-from osmrx.main.core import OsmNetworkCore
+from osmrx.main.core import OsmNetworkHandler
 
 
-class OsmNetworkPoi(OsmNetworkCore):
+class OsmNetworkPoi(OsmNetworkHandler):
 
     def __init__(self):
         super().__init__(osm_feature_mode=OsmFeatureModes.poi.value)

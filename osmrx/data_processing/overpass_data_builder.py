@@ -6,7 +6,6 @@ from shapely import LineString
 
 from osmrx.globals.queries import OsmFeatureTypes
 
-TOPO_FIELD: str = "topo_uuid"
 ID_OSM_FIELD: str = "id"
 
 
@@ -63,6 +62,6 @@ class OverpassDataBuilder:
             ID_OSM_FIELD: str(properties[ID_OSM_FIELD]),
             self.__OSM_URL_FIELD: f"{self.__OSM_URL}/{properties[self.__FEATURE_TYPE_OSM_FIELD]}/"
                                   f"{properties[ID_OSM_FIELD]}",
-            TOPO_FIELD: uuid_enum,  # do not cast to str, because topology processing need an int
+            # TOPO_FIELD: uuid_enum,  # do not cast to str, because topology processing need an int
             self.__GEOMETRY_FIELD: geometry
         }
