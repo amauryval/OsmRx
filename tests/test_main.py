@@ -1,5 +1,5 @@
 import pytest
-from shapely import Point
+from shapely import Point, LineString
 
 import rustworkx as rx
 
@@ -140,18 +140,24 @@ def test_get_vehicle_network_from_location_shortest_path(vehicle_mode, location_
     paths_found = roads_object.get_shortest_path()
     paths = [path for path in paths_found]
     assert len(paths) == 1
-    assert paths[0].path.length == 0.014231160335524648  # could change if oms data is updated
+    assert isinstance(paths[0].path, LineString)
     assert len(paths[0].features()) == 37  # could change if oms data is updated
+    assert paths[0].path.length == 0.014511463826761944  # could change if oms data is updated
+    assert sum(feat["geometry"].length for feat in paths[0].features()) == paths[0].path.length
 
 
 def test_get_pedestrian_network_from_location_shortest_path_with_2_points(pedestrian_mode, location_name):
     roads_object = GraphAnalysis(pedestrian_mode,
-                                  [Point(4.0793058, 46.0350304), Point(4.0725246, 46.0397676)])
+                                  [Point(4.062595199999999, 46.0262591), Point(4.085804300000001, 46.0442448)])
     paths_found = roads_object.get_shortest_path()
     paths = [path for path in paths_found]
     assert len(paths) == 1
-    assert paths[0].path.length == 0.011040368374582707  # could change if oms data is updated
-    assert len(paths[0].features()) == 33  # could change if oms data is updated
+    assert isinstance(paths[0].path, LineString)
+    assert len(paths[0].path.coords[:]) == 152
+    assert len(paths[0].features()) == 74  # could change if oms data is updated
+    path_found_length = 0.03366448962206039  # could change if oms data is updated
+    assert paths[0].path.length == path_found_length
+    assert sum(feat["geometry"].length for feat in paths[0].features()) == path_found_length
 
 
 def test_get_pedestrian_network_from_location_shortest_path_with_2_equals_points(pedestrian_mode, location_name):
@@ -168,10 +174,15 @@ def test_get_pedestrian_network_from_location_shortest_path_with_3_points(pedest
     paths_found = roads_object.get_shortest_path()
     paths = [path for path in paths_found]
     assert len(paths) == 2
-    assert paths[0].path.length == paths[-1].path.length
-    assert len(paths[0].features()) == len(paths[-1].features())
-    assert paths[0].path.length == 0.011040368374582707  # could change if oms data is updated
+    assert isinstance(paths[0].path, LineString)
+    assert isinstance(paths[-1].path, LineString)
+
     assert len(paths[0].features()) == 33  # could change if oms data is updated
+    assert len(paths[0].features()) == len(paths[-1].features())
+
+    assert paths[0].path.length == paths[-1].path.length
+    assert paths[0].path.length == 0.011108054721315923  # could change if oms data is updated
+    assert sum(feat["geometry"].length for feat in paths[0].features()) == 0.011108054721315926
 
 
 def test_get_vehicle_network_from_location_shortest_path_with_3_points(vehicle_mode, location_name):
@@ -180,9 +191,12 @@ def test_get_vehicle_network_from_location_shortest_path_with_3_points(vehicle_m
     paths_found = roads_object.get_shortest_path()
     paths = [path for path in paths_found]
     assert len(paths) == 2
-    assert paths[0].path.length == 0.014231160335524648  # could change if oms data is updated
+    assert isinstance(paths[0].path, LineString)
+    assert isinstance(paths[-1].path, LineString)
+    assert paths[0].path.length == 0.014511463826761944  # could change if oms data is updated
+    assert sum(feat["geometry"].length for feat in paths[0].features()) == paths[0].path.length
     assert len(paths[0].features()) == 37  # could change if oms data is updated
-    assert paths[-1].path.length == 0.013025525312729103  # could change if oms data is updated
+    assert paths[-1].path.length == 0.013127330294668097  # could change if oms data is updated
     assert len(paths[-1].features()) == 43  # could change if oms data is updated
 
 

@@ -1,6 +1,7 @@
 from typing import List, Dict
 
-from shapely import LineString
+from shapely import LineString, MultiLineString
+from shapely.ops import linemerge
 
 from osmrx.network.arc_feature import ArcFeature
 
@@ -16,10 +17,11 @@ class PathFeature:
         self._features = self._build_features()
 
     @property
-    def path(self) -> LineString:
-        """Return the path as a LineString geometry"""
-        return LineString([self._graph.get_node_data(indice)
-                           for indice in self._nodes_indices])
+    def path(self) -> LineString | MultiLineString:
+        """ Return the path as a LineString geometry. If a MultiLineString is returned
+            it means that something wrong happened on the graph...
+        """
+        return linemerge(feat.geometry for feat in self._features)
 
     def features(self) -> List[Dict]:
         """Return each LineStrings composing the path with their attributes"""
