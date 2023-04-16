@@ -63,6 +63,7 @@ def test_compute_shortest_path(some_line_features, some_point_features):
     edge = edges[0]
     assert len(edge.features()) == 10
     assert edge.path.length == 0.0013983037109325986
+    assert sum(feat["geometry"].length for feat in edge.features()) == edge.path.length
 
 
 def test_build_undirected_graph_network_from_external_data(some_line_features, some_point_features):
