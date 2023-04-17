@@ -2,6 +2,8 @@ import copy
 from typing import List, Dict
 from typing import TYPE_CHECKING
 
+import concurrent.futures
+
 import rustworkx as rx
 from shapely import Point
 
@@ -51,33 +53,34 @@ class GraphCore:
         try:
             return self.get_node_indice(node_value)
         except ValueError:
-            return self.graph.add_node(node_value)
-        # if node_value not in self._nodes_mapping:
-        #     self._nodes_mapping[node_value] = self.graph.add_node(node_value)
-        # return self._nodes_mapping[node_value]
+            indice = self.graph.add_node(node_value)
+            self._nodes_mapping[node_value] = indice
+            return indice
 
     def add_edge(self, from_node_value: Point, to_node_value: Point, attr: "ArcFeature") -> None:
         """add ege based on 2 nodes"""
-        from_indice = self._add_nodes(from_node_value)
-        to_indice = self._add_nodes(to_node_value)
+
         try:
-            self.graph.edges().index(attr)
-        except ValueError:
-            self.graph.add_edge(from_indice, to_indice, attr)
+            _ = self._edges_mapping[attr.topo_uuid]
+            raise ValueError(f"{attr.topo_uuid} edge exists: it should not!")
+        except:
+            from_indice = self._add_nodes(from_node_value)
+            to_indice = self._add_nodes(to_node_value)
+            self._edges_mapping[attr.topo_uuid] = self.graph.add_edge(from_indice, to_indice, attr)
 
     def get_node_indice(self, node_value: Point) -> int | None:
         """Return the node value from indice"""
         try:
-            return self.graph.nodes().index(node_value)
-        except ValueError:
+            return self._nodes_mapping[node_value]
+        except:
             raise ValueError(f"{node_value} node not found!")
 
     def compute_shortest_path(self, from_node: Point, to_node: Point) -> List[PathFeature]:
         """Compute a shortest path from a node to an ohter node"""
         edges = rx.dijkstra_shortest_paths(
             self.graph,
-            self.graph.nodes().index(from_node),
-            self.graph.nodes().index(to_node),
+            self.get_node_indice(from_node),
+            self.get_node_indice(to_node),
             weight_fn=lambda edge: edge.length)
 
         return [
