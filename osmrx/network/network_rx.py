@@ -2,8 +2,6 @@ import copy
 from typing import List, Dict
 from typing import TYPE_CHECKING
 
-import concurrent.futures
-
 import rustworkx as rx
 from shapely import Point
 
