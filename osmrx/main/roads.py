@@ -1,9 +1,9 @@
 from typing import Tuple, List, Dict, Any, Generator
 
-from shapely import Point, MultiPolygon
+from shapely import Point, MultiPolygon, Polygon
 import rustworkx as rx
 
-from osmrx.apis_handler.models import Location, Bbox
+from osmrx.apis_handler.models import Location, Bbox, PolygonArea
 from osmrx.network.isochrones_feature import IsochronesFeature
 from osmrx.network.path_feature import PathFeature
 from osmrx.helpers.misc import buffer_point
@@ -69,6 +69,10 @@ class Roads(OsmNetworkRoads):
     def from_location(self, location: str):
         """Find roads from location"""
         self.geo_filter = Location(location, logger=self.logger)
+        self._execute()
+
+    def from_polygon(self, geometry: Polygon):
+        self.geo_filter = PolygonArea(geometry)
         self._execute()
 
 
