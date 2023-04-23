@@ -1,6 +1,8 @@
 from typing import Tuple, List, Dict
 
-from osmrx.apis_handler.models import Bbox, Location
+from shapely import Polygon
+
+from osmrx.apis_handler.models import Bbox, Location, PolygonArea
 from osmrx.globals.queries import OsmFeatureModes
 from osmrx.main.core import OsmNetworkHandler
 
@@ -35,4 +37,8 @@ class Pois(OsmNetworkPoi):
     def from_location(self, location: str):
         """Find Points of interest from location"""
         self.geo_filter = Location(location, logger=self.logger)
+        self._execute()
+
+    def from_polygon(self, geometry: Polygon):
+        self.geo_filter = PolygonArea(geometry)
         self._execute()

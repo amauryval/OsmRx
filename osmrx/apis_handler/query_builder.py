@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
 from osmrx.globals.queries import osm_queries
-from osmrx.apis_handler.models import Bbox
+from osmrx.apis_handler.models import Bbox, PolygonArea
 from osmrx.apis_handler.models import Location
 
 if TYPE_CHECKING:
@@ -28,12 +28,19 @@ class QueryBuilder:
             return self._from_bbox(geo_filter)
         elif isinstance(geo_filter, Location):
             return self._from_location(geo_filter)
+        elif isinstance(geo_filter, PolygonArea):
+            return self._from_polygon_area(geo_filter)
 
     def _from_bbox(self, bbox: Bbox) -> str:
         """build a query from a bbox"""
         query = self._osm_query.format(geo_filter=bbox.location_name)
         return self._build_query(f"({query})")
-    
+
+    def _from_polygon_area(self, polygon_area: PolygonArea) -> str:
+        """build a query from a bbox"""
+        query = self._osm_query.format(geo_filter=polygon_area.location_name)
+        return self._build_query(f"({query})")
+
     def _from_location(self, location: Location) -> str:
         """build a query from a location"""
         query = self._osm_query.format(geo_filter=self._area_tag_query)

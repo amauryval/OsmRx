@@ -48,6 +48,23 @@ class NominatimItem:
         return self._osm_id + 3600000000
 
 
+class PolygonArea:
+
+    _geometry = None
+    def __init__(self, geometry: Polygon):
+        self._geometry = geometry
+
+    @property
+    def location_name(self) -> str:
+        """Cast to a string"""
+        coords_flatten = []
+        for coords in self._geometry.exterior.coords[::-1]:
+            coords_flatten.append(str(coords[-1]))
+            coords_flatten.append(str(coords[0]))
+        coords_flatten = ' '.join(coords_flatten)
+        return f'poly:"{coords_flatten}"'
+
+
 class Location:
     """To manage location name and attributes from Nominatim"""
     _location_name = None

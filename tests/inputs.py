@@ -1,8 +1,9 @@
 from typing import Tuple, List, Dict
 
 import pytest
-from shapely import Point
+from shapely import Point, Polygon
 from shapely import LineString
+from shapely.wkt import loads
 
 
 @pytest.fixture()
@@ -28,6 +29,12 @@ def pedestrian_mode() -> str:
 @pytest.fixture()
 def poi_mode() -> str:
     return "poi"
+
+@pytest.fixture
+def polygon_area() -> Polygon:
+    return loads("POLYGON((4.072077780931922 46.04228552654425,4.070006673455859 46.03932078093186,"
+                 "4.079752618643832 46.03251247338048,4.0818237261199055 46.03547721899281,"
+                 "4.072077780931922 46.04228552654425))")
 
 
 @pytest.fixture
