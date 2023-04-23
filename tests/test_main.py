@@ -220,3 +220,15 @@ def test_vehicle_isochrone(vehicle_mode, location_name):
 
     areas_list = [geom["geometry"].area for geom in isochrones_built.data][::-1]
     assert all(areas_list[idx] <= areas_list[idx + 1] for idx in range(len(areas_list) - 1))
+
+
+def test_shortest_path_performance(vehicle_mode):
+    roads_object = GraphAnalysis(vehicle_mode,
+                                 [Point(4.0202469917540675, 46.04077488623058),
+                                  Point(3.897097653410804, 46.14197681774039)])
+    paths_found = roads_object.get_shortest_path()
+    paths = [path for path in paths_found]
+    assert len(paths) == 1
+    assert isinstance(paths[0].path, LineString)
+    assert paths[0].path.length == 0.1897312918236447  # could change if oms data is updated
+    assert len(paths[0].features()) == 110  # could change if oms data is updated

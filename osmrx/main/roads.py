@@ -1,6 +1,6 @@
 from typing import Tuple, List, Dict, Any, Generator
 
-from shapely import Point, MultiPoint
+from shapely import Point, MultiPolygon
 import rustworkx as rx
 
 from osmrx.apis_handler.models import Location, Bbox
@@ -89,9 +89,9 @@ class GraphAnalysis(Roads):
     def get_shortest_path(self) -> Generator[PathFeature, Any, None]:
         """Compute a shortest path from a source node to a target node"""
         assert len(self._steps_nodes) > 1, "At least, You need 2 points to compute a path"
-
-        points_feature = MultiPoint(self._steps_nodes)
-        bounds = points_feature.buffer(points_feature.envelope.exterior.length / 4).bounds
+        bounds = MultiPolygon(list(
+            map(lambda point: buffer_point(point.y, point.x, 100), self._steps_nodes)
+        )).bounds
         self.from_bbox(tuple([bounds[1], bounds[0], bounds[3], bounds[2]]))
         for from_point, to_point in list(zip(self._steps_nodes, self._steps_nodes[1:])):
             paths = self._graph_manager.compute_shortest_path(from_point, to_point)
