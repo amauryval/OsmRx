@@ -19,4 +19,4 @@ class OverpassApi(ApiCore):
 
     def query(self, query: str) -> Dict:
         parameters = self._build_parameters(query)
-        return self.request_query(self.__OVERPASS_URL, parameters)
+        return self.request_query(self.__OVERPASS_URL, parameters, {})

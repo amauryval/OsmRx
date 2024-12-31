@@ -14,8 +14,7 @@ class ErrorNominatimApi(ValueError):
 
 class NominatimApi(ApiCore):
 
-    nominatim_url = "https://nominatim.openstreetmap.org/search/?"
-
+    nominatim_url = "https://nominatim.openstreetmap.org/search.php?"
     query_parameter = "q"
     other_query_parameter: Set[str] = {
         "street",
@@ -25,14 +24,15 @@ class NominatimApi(ApiCore):
         "country",
         "postalcode",
     }
-    format_parameter: Dict = {"format": "json", "polygon": "1", "polygon_geojson": "1"}
+    format_parameter: Dict = {"format": "jsonv2", "polygon": "1", "polygon_geojson": "1"}
+    headers: Dict = {'User-Agent': 'Mozilla/5.0'}
 
     def __init__(self, logger: "Logger", **params) -> None:
         _values = None
         super().__init__(logger=logger)
 
         parameters: Dict = self.__check_parameters(params)
-        self.items = self.request_query(self.nominatim_url, parameters)
+        self.items = self.request_query(self.nominatim_url, parameters, headers=self.headers)
 
     def __check_parameters(self, input_parameters: Dict) -> Dict:
 
