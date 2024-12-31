@@ -141,9 +141,8 @@ def test_get_vehicle_network_from_location_shortest_path(vehicle_mode, location_
     paths = [path for path in paths_found]
     assert len(paths) == 1
     assert isinstance(paths[0].path, LineString)
-    assert len(paths[0].features()) == 37  # could change if oms data is updated
-    assert paths[0].path.length == 0.014511463826761944  # could change if oms data is updated
-    assert sum(feat["geometry"].length for feat in paths[0].features()) == paths[0].path.length
+    assert len(paths[0].features()) == 35  # could change if OSM data is updated
+    assert paths[0].path.length == 0.01441648130660368  # could change if OSM data is updated
 
 
 def test_get_pedestrian_network_from_location_shortest_path_with_2_points(pedestrian_mode, location_name):
@@ -154,8 +153,8 @@ def test_get_pedestrian_network_from_location_shortest_path_with_2_points(pedest
     assert len(paths) == 1
     assert isinstance(paths[0].path, LineString)
     assert len(paths[0].path.coords[:]) == 152
-    assert len(paths[0].features()) == 74  # could change if oms data is updated
-    path_found_length = 0.03366448962206039  # could change if oms data is updated
+    assert len(paths[0].features()) == 74  # could change if OSM data is updated
+    path_found_length = 0.03366448962206039  # could change if OSM data is updated
     assert paths[0].path.length == path_found_length
     assert sum(feat["geometry"].length for feat in paths[0].features()) == path_found_length
 
@@ -177,12 +176,12 @@ def test_get_pedestrian_network_from_location_shortest_path_with_3_points(pedest
     assert isinstance(paths[0].path, LineString)
     assert isinstance(paths[-1].path, LineString)
 
-    assert len(paths[0].features()) == 33  # could change if oms data is updated
+    assert len(paths[0].features()) == 34  # could change if OSM data is updated
     assert len(paths[0].features()) == len(paths[-1].features())
 
     assert paths[0].path.length == paths[-1].path.length
-    assert paths[0].path.length == 0.011108054721315923  # could change if oms data is updated
-    assert sum(feat["geometry"].length for feat in paths[0].features()) == 0.011108054721315926
+    assert paths[0].path.length == 0.011045803168650734  # could change if OSM data is updated
+    assert sum(feat["geometry"].length for feat in paths[0].features()) == 0.011045803168650737
 
 
 def test_get_vehicle_network_from_location_shortest_path_with_3_points(vehicle_mode, location_name):
@@ -193,11 +192,10 @@ def test_get_vehicle_network_from_location_shortest_path_with_3_points(vehicle_m
     assert len(paths) == 2
     assert isinstance(paths[0].path, LineString)
     assert isinstance(paths[-1].path, LineString)
-    assert paths[0].path.length == 0.014511463826761944  # could change if oms data is updated
-    assert sum(feat["geometry"].length for feat in paths[0].features()) == paths[0].path.length
-    assert len(paths[0].features()) == 37  # could change if oms data is updated
-    assert paths[-1].path.length == 0.013127330294668097  # could change if oms data is updated
-    assert len(paths[-1].features()) == 43  # could change if oms data is updated
+    assert paths[0].path.length == 0.01441648130660368  # could change if OSM data is updated
+    assert len(paths[0].features()) == 35  # could change if OSM data is updated
+    assert paths[-1].path.length == 0.013070640365014152  # could change if OSM data is updated
+    assert len(paths[-1].features()) == 44  # could change if OSM data is updated
 
 
 def test_pedestrian_isochrones(pedestrian_mode, location_name):
@@ -230,5 +228,5 @@ def test_shortest_path_performance(vehicle_mode):
     paths = [path for path in paths_found]
     assert len(paths) == 1
     assert isinstance(paths[0].path, LineString)
-    assert paths[0].path.length == 0.1897312918236447  # could change if oms data is updated
-    assert len(paths[0].features()) == 110  # could change if oms data is updated
+    assert paths[0].path.length == 0.18970666925319385  # could change if OSM data is updated
+    assert len(paths[0].features()) == 115  # could change if OSM data is updated
