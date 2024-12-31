@@ -37,10 +37,10 @@ class ApiCore:
             )
 
     @retry(ErrorRequest, tries=4, delay=3, backoff=2, logger=None)
-    def request_query(self, url: str, parameters: Dict) -> Dict:
+    def request_query(self, url: str, parameters: Dict, headers: Dict) -> Dict:
 
         session = sessions.FuturesSession(max_workers=self.__NB_WORKER)
-        response = session.get(url, params=parameters)
+        response = session.get(url, params=parameters, headers=headers)
 
         self.check_request_response(response)
         return response.result().json()
