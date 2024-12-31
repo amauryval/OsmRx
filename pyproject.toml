@@ -7,7 +7,7 @@ license = ""
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "3.11.0 || 3.12.8"
+python = "3.12.8"
 requests-futures = "^1.0.0"
 shapely = "^2.0.1"
 scipy = "^1.10.1"
