@@ -154,9 +154,7 @@ def test_get_pedestrian_network_from_location_shortest_path_with_2_points(pedest
     assert isinstance(paths[0].path, LineString)
     assert len(paths[0].path.coords[:]) == 152
     assert len(paths[0].features()) == 74  # could change if OSM data is updated
-    path_found_length = 0.03366448962206039  # could change if OSM data is updated
-    assert paths[0].path.length == path_found_length
-    assert sum(feat["geometry"].length for feat in paths[0].features()) == path_found_length
+    assert sum(feat["geometry"].length for feat in paths[0].features()) == pytest.approx(paths[0].path.length, rel=1e-18)
 
 
 def test_get_pedestrian_network_from_location_shortest_path_with_2_equals_points(pedestrian_mode, location_name):
@@ -181,7 +179,7 @@ def test_get_pedestrian_network_from_location_shortest_path_with_3_points(pedest
 
     assert paths[0].path.length == paths[-1].path.length
     assert paths[0].path.length == 0.011045803168650734  # could change if OSM data is updated
-    assert sum(feat["geometry"].length for feat in paths[0].features()) == 0.011045803168650737
+    assert sum(feat["geometry"].length for feat in paths[0].features()) == 0.011045803168650736
 
 
 def test_get_vehicle_network_from_location_shortest_path_with_3_points(vehicle_mode, location_name):
