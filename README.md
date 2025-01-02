@@ -15,7 +15,6 @@ Capabilities:
 
 Check the demo [here](https://amauryval.github.io/omsrx/)
 
-
 ## How to install it ?
 
 ### with pip
